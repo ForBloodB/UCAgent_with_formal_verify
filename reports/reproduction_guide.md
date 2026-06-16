@@ -1,56 +1,19 @@
-# 三案例复现指南
+# 真实 NutShell Cache PR 复现指南
 
 - Date: 2026-06-16
-- Goal: 复现三个 cache bug case 的 formal、directed dynamic、UCAgent/Toffee 互补验证结果。
+- Scope: 只保留真实 NutShell 历史 PR case，不再保留 compact/artificial 三案例。
 
-## 复现思路
+## 结果矩阵
 
-本仓库用 `CaseBuggy` 和 `CaseFixed` 做 A/B 对照：
-
-- `CaseBuggy` 表示历史旧 bug 或人工注入 bug。
-- `CaseFixed` 表示修复后的正确行为。
-- 正确的验证结果应是 `CaseBuggy` 失败、`CaseFixed` 通过。
-
-这套结构能同时回答两个问题：
-
-- 属性/测试是否真的能抓 bug：看 `CaseBuggy` 是否 FAIL。
-- 属性/测试是否误报：看 `CaseFixed` 是否 PASS。
-
-## 快速结果矩阵
-
-| Case | Formal | Directed dynamic | UCAgent/Toffee |
+| Case | 版本 | 验证方式 | 当前结果 |
 | --- | --- | --- | --- |
-| PR #21 MMIO prefetch | Buggy FAIL / fixed PASS | Buggy FAIL / fixed PASS | `INFRA_FAIL` in current run |
-| PR #74 CacheIO idBits | Buggy FAIL / fixed PASS | Buggy FAIL / fixed PASS | Fixed PASS / buggy FAIL |
-| Flush outstanding miss | Buggy FAIL / fixed PASS | Buggy FAIL / fixed PASS | Fixed PASS / buggy FAIL |
+| PR #21 `Bug prefetch mmio` | pre `bd425dee` | real Cache BMC | FAIL, step 10 counterexample |
+| PR #21 `Bug prefetch mmio` | fixed `f0d7c494` | real Cache BMC | PASS, depth 16 |
+| PR #74 `cache: fix cache io` | pre `4b656f32` | real Cache Chisel elaboration | ELAB_FAIL, missing `id` field |
+| PR #74 `cache: fix cache io` | fixed `287c5e02` | real Cache generation | PASS |
+| PR #74 `cache: fix cache io` | fixed `287c5e02` | real Cache BMC | PASS, depth 24 |
 
-## 1. 环境准备
-
-不要在终端打印 `.ucagent_env` 内容。只需要确认文件存在，并在运行 UCAgent 前 source：
-
-```bash
-source .ucagent_env
-```
-
-可选拉取官方参考源：
-
-```bash
-bash scripts/00_setup_ucagent_sources.sh
-```
-
-当前 UCAgent 实跑使用已有 conda 环境：
-
-```bash
-conda run -n ucagent python -c "import ucagent, toffee, toffee_test"
-picker --version
-verilator --version
-```
-
-## 2. 复现 Formal
-
-### 2.1 PR #21 真实 NutShell Cache Wrapper Formal
-
-这条 flow 是 PR #21 的严格复现路径：DUT 不是 compact litmus，而是从 NutShell 上游精确 commit 生成的真实 `nutcore.Cache`。
+## PR #21 复现
 
 使用文件：
 
@@ -69,12 +32,12 @@ scripts/41_run_pr21_real_nutshell_cache_formal.sh
 bash scripts/40_prepare_pr21_real_nutshell_cache.sh all
 ```
 
-这个脚本会：
+脚本会下载并使用两个真实上游版本：
 
-- 下载 PR #21 合入前父提交 `bd425deedff4e896fca59895b34d778f2c8724d9`。
-- 下载 PR #21 修复分支提交 `f0d7c49411197047dc8464addfacc0fcba5b9e45`。
-- 在下载到 `third_party/nutshell_pr21_real/*` 的上游源码副本中插入 `BoringUtils` probe。
-- 运行上游 Chisel/Mill flow，生成：
+- pre-PR parent: `bd425deedff4e896fca59895b34d778f2c8724d9`
+- fixed PR head: `f0d7c49411197047dc8464addfacc0fcba5b9e45`
+
+然后在临时上游源码副本里插入 `BoringUtils` probe，生成：
 
 ```text
 formal/nutshell_pr21_real/generated/pre/Pr21CacheFormalDut.v
@@ -88,111 +51,80 @@ docker run --rm --user "$(id -u):$(id -g)" -v "$PWD:/work" -w /work \
   nutshell-cache-formal:latest bash scripts/41_run_pr21_real_nutshell_cache_formal.sh
 ```
 
-期望报告：
+报告：
 
 ```text
 reports/pr21_real_nutshell_cache_formal.md
+reports/formal_batch/logs/pr21_real_nutshell_cache_pre.log
+reports/formal_batch/logs/pr21_real_nutshell_cache_fixed.log
 ```
 
-接受标准：
+## PR #74 复现
+
+使用文件：
 
 ```text
-pr21_real_nutshell_cache_pre:   FAIL
-pr21_real_nutshell_cache_fixed: PASS
+formal/nutshell_pr74_real/Pr74CacheIOFormalDut.scala
+formal/nutshell_pr74_real/pr74_nutshell_cache_io_idbits_formal.sv
+formal/nutshell_pr74_real/nutshell_pr74_real_cache_fixed.sby
+scripts/42_prepare_pr74_real_nutshell_cache.sh
+scripts/43_run_pr74_real_nutshell_cache_formal.sh
 ```
 
-当前已复现成功：pre-PR 真实 Cache 在 BMC step 10 失败，fixed 真实 Cache 在 depth 16 内通过。
+PR #74 的真实修复点是：
 
-### 2.2 三案例 Compact Formal
+```scala
+// pre
+val in = Flipped(new SimpleBusUC(userBits = userBits))
 
-下面这条 flow 运行三个 compact executable litmus。它适合快速解释 bug 语义，但 PR #21 的核心证据以上面的真实 Cache wrapper flow 为准。
+// fixed
+val in = Flipped(new SimpleBusUC(userBits = userBits, idBits = idBits))
+```
 
-本地有 SymbiYosys/Yosys/Z3 时：
+生成 fixed DUT：
 
 ```bash
-bash scripts/24_run_three_case_formal.sh
+bash scripts/42_prepare_pr74_real_nutshell_cache.sh fixed
 ```
 
-没有本地 formal 工具链时使用 Docker fallback：
+验证 pre 版本确实失败：
 
 ```bash
-docker build -f docker/formal.Dockerfile -t nutshell-cache-formal:latest .
-bash scripts/25_docker_run_three_case_formal.sh
+bash scripts/42_prepare_pr74_real_nutshell_cache.sh pre
 ```
 
-期望报告：
+期望失败信息包含：
 
 ```text
-reports/formal_batch/three_case_formal.md
+Right Record missing field (id)
 ```
 
-接受标准：六个任务全部符合预期，即三个 buggy FAIL、三个 fixed PASS。
-
-## 3. 复现手写 Directed Dynamic
+运行 formal：
 
 ```bash
-bash scripts/31_run_directed_three_cases.sh
+docker run --rm --user "$(id -u):$(id -g)" -v "$PWD:/work" -w /work \
+  nutshell-cache-formal:latest bash scripts/43_run_pr74_real_nutshell_cache_formal.sh
 ```
 
-期望报告：
+报告：
 
 ```text
-reports/directed_three_case_results.md
+reports/pr74_real_nutshell_cache_formal.md
+reports/formal_batch/logs/pr74_real_nutshell_cache_pre_generate.log
+reports/formal_batch/logs/pr74_real_nutshell_cache_fixed_generate.log
+reports/formal_batch/logs/pr74_real_nutshell_cache_fixed_formal.log
 ```
 
-接受标准：三个 buggy pytest 失败、三个 fixed pytest 通过。这里的失败是预期失败，用于证明 directed test 能检出对应 bug。
+## UCAgent 状态
 
-## 4. 复现 UCAgent 官方流程风格运行
+之前的 UCAgent 产物来自 compact/artificial DUT，不再作为真实 NutShell Cache 证据保留。
+当前保留 `reports/ucagent_real_case_status.md`，明确记录这个边界。
 
-完整三案例：
+官方工具链来源仍可通过以下脚本准备：
 
 ```bash
-source .ucagent_env
-UCAGENT_TIMEOUT=900 UCAGENT_RUN_BUGGY_PROBE=0 UCAGENT_POLL_SEC=10 bash scripts/30_run_ucagent_three_cases.sh
+bash scripts/00_setup_ucagent_sources.sh
+bash scripts/01_install_ucagent_venv.sh
 ```
 
-单独复现已检出的两个 case：
-
-```bash
-source .ucagent_env
-UCAGENT_CASE_FILTER=pr74_cache_io_idbits UCAGENT_TIMEOUT=900 UCAGENT_RUN_BUGGY_PROBE=0 bash scripts/30_run_ucagent_three_cases.sh
-UCAGENT_CASE_FILTER=flush_outstanding_miss UCAGENT_TIMEOUT=900 UCAGENT_RUN_BUGGY_PROBE=0 bash scripts/30_run_ucagent_three_cases.sh
-```
-
-PR #21 在当前模型/环境 run 中是 UCAgent 生成阶段失败，不作为设计漏检结论：
-
-```bash
-source .ucagent_env
-UCAGENT_CASE_FILTER=pr21_prefetch_mmio UCAGENT_TIMEOUT=900 UCAGENT_RUN_BUGGY_PROBE=0 bash scripts/30_run_ucagent_three_cases.sh
-```
-
-主要产物：
-
-```text
-reports/ucagent_three_case_results.md
-reports/formal_vs_ucagent_comparison.md
-reports/ucagent_logs/
-reports/ucagent_artifacts/
-```
-
-## UCAgent 判定流程
-
-`scripts/30_run_ucagent_three_cases.sh` 做了五步：
-
-1. 调用 Picker 从 `rtl/CaseFixed.sv` 导出 Python DUT 包。
-2. 调用 `scripts/32_seed_ucagent_case.sh` 预置官方 `unity_test/tests`、API、coverage 和 case prompt。
-3. 运行 UCAgent，让它在 `unity_test/tests` 下生成或补强 pytest。
-4. 将生成测试回放到 `CaseFixed`，应当 PASS。
-5. 将同一组测试回放到 `CaseBuggy`，应当 FAIL。
-
-UCAgent case 分类：
-
-- `DETECTED`: fixed replay PASS 且 buggy replay FAIL。
-- `MISSED`: fixed replay PASS 但 buggy replay PASS。
-- `FALSE_POSITIVE`: fixed replay FAIL。
-- `INFRA_FAIL`: Picker、pytest、UCAgent 生成或超时等基础设施问题。
-- `BLOCKED_NO_LLM_ENV`: 缺少 LLM 环境变量。
-
-## 当前结论
-
-Formal 和手写 directed 已经完整覆盖三案例，均证明验证意图有效。UCAgent 在 PR #74 和 flush case 上把验证意图转成了可维护动态回归；PR #21 当前是 UCAgent 生成流程在 900 秒内没有完成 pytest 模板编辑，因此记录为 `INFRA_FAIL`。这正好体现互补性：formal 可以稳定给出短反例，UCAgent 更适合沉淀动态回归，但会受到模型路径探索和工具调用稳定性的影响。
+不要在终端打印 `.ucagent_env` 内容。

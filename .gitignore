@@ -11,19 +11,7 @@ __pycache__/
 .venv-ucagent/
 log/
 third_party/
-ucagent_cases/*/.generated/
-ucagent_cases/*/.ucagent/
-ucagent_cases/*/.pytest_cache/
-ucagent_cases/*/AGENTS.md
-ucagent_cases/*/CaseBuggy/
-ucagent_cases/*/CaseFixed/
-ucagent_cases/*/Guide_Doc/
-ucagent_cases/*/unity_test/
-ucagent_cases/*/uc_test_report/
-ucagent_cases/*/test/test_ucagent_generated.py
-ucagent_cases/*/build_CaseBuggy/
-ucagent_cases/*/build_CaseFixed/
 
 # SymbiYosys generated run directories.
-formal/historical/*/
 formal/nutshell_pr21_real/nutshell_pr21_real_cache_*/
+formal/nutshell_pr74_real/nutshell_pr74_real_cache_*/

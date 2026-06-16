@@ -1,9 +1,0 @@
-[smoke] picker
-Running as normal executable
-version: 0.9.0-master-4cb1cd2-2026-05-28
-
-[smoke] verilator
-Verilator 5.020 2024-01-01 rev (Debian 5.020-1)
-
-[smoke] ucagent python imports
-imports ok

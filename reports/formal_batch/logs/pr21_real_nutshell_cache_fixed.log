@@ -1,38 +1,38 @@
-SBY 13:10:23 [formal/nutshell_pr21_real/nutshell_pr21_real_cache_fixed] Removing directory '/work/formal/nutshell_pr21_real/nutshell_pr21_real_cache_fixed'.
-SBY 13:10:23 [formal/nutshell_pr21_real/nutshell_pr21_real_cache_fixed] Copy '/work/formal/nutshell_pr21_real/generated/fixed/Pr21CacheFormalDut.v' to '/work/formal/nutshell_pr21_real/nutshell_pr21_real_cache_fixed/src/Pr21CacheFormalDut.v'.
-SBY 13:10:23 [formal/nutshell_pr21_real/nutshell_pr21_real_cache_fixed] Copy '/work/formal/nutshell_pr21_real/pr21_nutshell_cache_mmio_prefetch_formal.sv' to '/work/formal/nutshell_pr21_real/nutshell_pr21_real_cache_fixed/src/pr21_nutshell_cache_mmio_prefetch_formal.sv'.
-SBY 13:10:23 [formal/nutshell_pr21_real/nutshell_pr21_real_cache_fixed] engine_0: smtbmc --nopresat --unroll z3
-SBY 13:10:23 [formal/nutshell_pr21_real/nutshell_pr21_real_cache_fixed] base: starting process "cd formal/nutshell_pr21_real/nutshell_pr21_real_cache_fixed/src; yosys -ql ../model/design.log ../model/design.ys"
-SBY 13:10:23 [formal/nutshell_pr21_real/nutshell_pr21_real_cache_fixed] base: Warning: Wire pr21_nutshell_cache_mmio_prefetch_formal.\clock is used but has no driver.
-SBY 13:10:23 [formal/nutshell_pr21_real/nutshell_pr21_real_cache_fixed] base: finished (returncode=0)
-SBY 13:10:23 [formal/nutshell_pr21_real/nutshell_pr21_real_cache_fixed] prep: starting process "cd formal/nutshell_pr21_real/nutshell_pr21_real_cache_fixed/model; yosys -ql design_prep.log design_prep.ys"
-SBY 13:10:23 [formal/nutshell_pr21_real/nutshell_pr21_real_cache_fixed] prep: Warning: Wire pr21_nutshell_cache_mmio_prefetch_formal.\clock is used but has no driver.
-SBY 13:10:23 [formal/nutshell_pr21_real/nutshell_pr21_real_cache_fixed] prep: finished (returncode=0)
-SBY 13:10:23 [formal/nutshell_pr21_real/nutshell_pr21_real_cache_fixed] smt2: starting process "cd formal/nutshell_pr21_real/nutshell_pr21_real_cache_fixed/model; yosys -ql design_smt2.log design_smt2.ys"
-SBY 13:10:23 [formal/nutshell_pr21_real/nutshell_pr21_real_cache_fixed] smt2: finished (returncode=0)
-SBY 13:10:23 [formal/nutshell_pr21_real/nutshell_pr21_real_cache_fixed] engine_0: starting process "cd formal/nutshell_pr21_real/nutshell_pr21_real_cache_fixed; yosys-smtbmc -s z3 --unroll --noprogress -t 16  --append 0 --dump-vcd engine_0/trace.vcd --dump-yw engine_0/trace.yw --dump-vlogtb engine_0/trace_tb.v --dump-smtc engine_0/trace.smtc model/design_smt2.smt2"
-SBY 13:10:23 [formal/nutshell_pr21_real/nutshell_pr21_real_cache_fixed] engine_0: ##   0:00:00  Solver: z3
-SBY 13:10:23 [formal/nutshell_pr21_real/nutshell_pr21_real_cache_fixed] engine_0: ##   0:00:00  Checking assertions in step 0..
-SBY 13:10:23 [formal/nutshell_pr21_real/nutshell_pr21_real_cache_fixed] engine_0: ##   0:00:00  Checking assertions in step 1..
-SBY 13:10:23 [formal/nutshell_pr21_real/nutshell_pr21_real_cache_fixed] engine_0: ##   0:00:00  Checking assertions in step 2..
-SBY 13:10:23 [formal/nutshell_pr21_real/nutshell_pr21_real_cache_fixed] engine_0: ##   0:00:00  Checking assertions in step 3..
-SBY 13:10:23 [formal/nutshell_pr21_real/nutshell_pr21_real_cache_fixed] engine_0: ##   0:00:00  Checking assertions in step 4..
-SBY 13:10:23 [formal/nutshell_pr21_real/nutshell_pr21_real_cache_fixed] engine_0: ##   0:00:00  Checking assertions in step 5..
-SBY 13:10:24 [formal/nutshell_pr21_real/nutshell_pr21_real_cache_fixed] engine_0: ##   0:00:00  Checking assertions in step 6..
-SBY 13:10:24 [formal/nutshell_pr21_real/nutshell_pr21_real_cache_fixed] engine_0: ##   0:00:00  Checking assertions in step 7..
-SBY 13:10:24 [formal/nutshell_pr21_real/nutshell_pr21_real_cache_fixed] engine_0: ##   0:00:00  Checking assertions in step 8..
-SBY 13:10:24 [formal/nutshell_pr21_real/nutshell_pr21_real_cache_fixed] engine_0: ##   0:00:00  Checking assertions in step 9..
-SBY 13:10:24 [formal/nutshell_pr21_real/nutshell_pr21_real_cache_fixed] engine_0: ##   0:00:01  Checking assertions in step 10..
-SBY 13:10:24 [formal/nutshell_pr21_real/nutshell_pr21_real_cache_fixed] engine_0: ##   0:00:01  Checking assertions in step 11..
-SBY 13:10:24 [formal/nutshell_pr21_real/nutshell_pr21_real_cache_fixed] engine_0: ##   0:00:01  Checking assertions in step 12..
-SBY 13:10:25 [formal/nutshell_pr21_real/nutshell_pr21_real_cache_fixed] engine_0: ##   0:00:01  Checking assertions in step 13..
-SBY 13:10:26 [formal/nutshell_pr21_real/nutshell_pr21_real_cache_fixed] engine_0: ##   0:00:02  Checking assertions in step 14..
-SBY 13:10:27 [formal/nutshell_pr21_real/nutshell_pr21_real_cache_fixed] engine_0: ##   0:00:03  Checking assertions in step 15..
-SBY 13:10:28 [formal/nutshell_pr21_real/nutshell_pr21_real_cache_fixed] engine_0: ##   0:00:05  Status: passed
-SBY 13:10:28 [formal/nutshell_pr21_real/nutshell_pr21_real_cache_fixed] engine_0: finished (returncode=0)
-SBY 13:10:28 [formal/nutshell_pr21_real/nutshell_pr21_real_cache_fixed] engine_0: Status returned by engine: pass
-SBY 13:10:28 [formal/nutshell_pr21_real/nutshell_pr21_real_cache_fixed] summary: Elapsed clock time [H:MM:SS (secs)]: 0:00:05 (5)
-SBY 13:10:28 [formal/nutshell_pr21_real/nutshell_pr21_real_cache_fixed] summary: Elapsed process time [H:MM:SS (secs)]: 0:00:05 (5)
-SBY 13:10:28 [formal/nutshell_pr21_real/nutshell_pr21_real_cache_fixed] summary: engine_0 (smtbmc --nopresat --unroll z3) returned pass
-SBY 13:10:28 [formal/nutshell_pr21_real/nutshell_pr21_real_cache_fixed] summary: engine_0 did not produce any traces
-SBY 13:10:28 [formal/nutshell_pr21_real/nutshell_pr21_real_cache_fixed] DONE (PASS, rc=0)
+SBY 13:52:35 [formal/nutshell_pr21_real/nutshell_pr21_real_cache_fixed] Removing directory '/work/formal/nutshell_pr21_real/nutshell_pr21_real_cache_fixed'.
+SBY 13:52:35 [formal/nutshell_pr21_real/nutshell_pr21_real_cache_fixed] Copy '/work/formal/nutshell_pr21_real/generated/fixed/Pr21CacheFormalDut.v' to '/work/formal/nutshell_pr21_real/nutshell_pr21_real_cache_fixed/src/Pr21CacheFormalDut.v'.
+SBY 13:52:35 [formal/nutshell_pr21_real/nutshell_pr21_real_cache_fixed] Copy '/work/formal/nutshell_pr21_real/pr21_nutshell_cache_mmio_prefetch_formal.sv' to '/work/formal/nutshell_pr21_real/nutshell_pr21_real_cache_fixed/src/pr21_nutshell_cache_mmio_prefetch_formal.sv'.
+SBY 13:52:35 [formal/nutshell_pr21_real/nutshell_pr21_real_cache_fixed] engine_0: smtbmc --nopresat --unroll z3
+SBY 13:52:35 [formal/nutshell_pr21_real/nutshell_pr21_real_cache_fixed] base: starting process "cd formal/nutshell_pr21_real/nutshell_pr21_real_cache_fixed/src; yosys -ql ../model/design.log ../model/design.ys"
+SBY 13:52:35 [formal/nutshell_pr21_real/nutshell_pr21_real_cache_fixed] base: Warning: Wire pr21_nutshell_cache_mmio_prefetch_formal.\clock is used but has no driver.
+SBY 13:52:35 [formal/nutshell_pr21_real/nutshell_pr21_real_cache_fixed] base: finished (returncode=0)
+SBY 13:52:35 [formal/nutshell_pr21_real/nutshell_pr21_real_cache_fixed] prep: starting process "cd formal/nutshell_pr21_real/nutshell_pr21_real_cache_fixed/model; yosys -ql design_prep.log design_prep.ys"
+SBY 13:52:35 [formal/nutshell_pr21_real/nutshell_pr21_real_cache_fixed] prep: Warning: Wire pr21_nutshell_cache_mmio_prefetch_formal.\clock is used but has no driver.
+SBY 13:52:35 [formal/nutshell_pr21_real/nutshell_pr21_real_cache_fixed] prep: finished (returncode=0)
+SBY 13:52:35 [formal/nutshell_pr21_real/nutshell_pr21_real_cache_fixed] smt2: starting process "cd formal/nutshell_pr21_real/nutshell_pr21_real_cache_fixed/model; yosys -ql design_smt2.log design_smt2.ys"
+SBY 13:52:35 [formal/nutshell_pr21_real/nutshell_pr21_real_cache_fixed] smt2: finished (returncode=0)
+SBY 13:52:35 [formal/nutshell_pr21_real/nutshell_pr21_real_cache_fixed] engine_0: starting process "cd formal/nutshell_pr21_real/nutshell_pr21_real_cache_fixed; yosys-smtbmc -s z3 --unroll --noprogress -t 16  --append 0 --dump-vcd engine_0/trace.vcd --dump-yw engine_0/trace.yw --dump-vlogtb engine_0/trace_tb.v --dump-smtc engine_0/trace.smtc model/design_smt2.smt2"
+SBY 13:52:35 [formal/nutshell_pr21_real/nutshell_pr21_real_cache_fixed] engine_0: ##   0:00:00  Solver: z3
+SBY 13:52:35 [formal/nutshell_pr21_real/nutshell_pr21_real_cache_fixed] engine_0: ##   0:00:00  Checking assertions in step 0..
+SBY 13:52:36 [formal/nutshell_pr21_real/nutshell_pr21_real_cache_fixed] engine_0: ##   0:00:00  Checking assertions in step 1..
+SBY 13:52:36 [formal/nutshell_pr21_real/nutshell_pr21_real_cache_fixed] engine_0: ##   0:00:00  Checking assertions in step 2..
+SBY 13:52:36 [formal/nutshell_pr21_real/nutshell_pr21_real_cache_fixed] engine_0: ##   0:00:00  Checking assertions in step 3..
+SBY 13:52:36 [formal/nutshell_pr21_real/nutshell_pr21_real_cache_fixed] engine_0: ##   0:00:00  Checking assertions in step 4..
+SBY 13:52:36 [formal/nutshell_pr21_real/nutshell_pr21_real_cache_fixed] engine_0: ##   0:00:00  Checking assertions in step 5..
+SBY 13:52:36 [formal/nutshell_pr21_real/nutshell_pr21_real_cache_fixed] engine_0: ##   0:00:00  Checking assertions in step 6..
+SBY 13:52:36 [formal/nutshell_pr21_real/nutshell_pr21_real_cache_fixed] engine_0: ##   0:00:00  Checking assertions in step 7..
+SBY 13:52:36 [formal/nutshell_pr21_real/nutshell_pr21_real_cache_fixed] engine_0: ##   0:00:00  Checking assertions in step 8..
+SBY 13:52:36 [formal/nutshell_pr21_real/nutshell_pr21_real_cache_fixed] engine_0: ##   0:00:00  Checking assertions in step 9..
+SBY 13:52:36 [formal/nutshell_pr21_real/nutshell_pr21_real_cache_fixed] engine_0: ##   0:00:01  Checking assertions in step 10..
+SBY 13:52:37 [formal/nutshell_pr21_real/nutshell_pr21_real_cache_fixed] engine_0: ##   0:00:01  Checking assertions in step 11..
+SBY 13:52:37 [formal/nutshell_pr21_real/nutshell_pr21_real_cache_fixed] engine_0: ##   0:00:01  Checking assertions in step 12..
+SBY 13:52:37 [formal/nutshell_pr21_real/nutshell_pr21_real_cache_fixed] engine_0: ##   0:00:01  Checking assertions in step 13..
+SBY 13:52:38 [formal/nutshell_pr21_real/nutshell_pr21_real_cache_fixed] engine_0: ##   0:00:02  Checking assertions in step 14..
+SBY 13:52:39 [formal/nutshell_pr21_real/nutshell_pr21_real_cache_fixed] engine_0: ##   0:00:03  Checking assertions in step 15..
+SBY 13:52:40 [formal/nutshell_pr21_real/nutshell_pr21_real_cache_fixed] engine_0: ##   0:00:05  Status: passed
+SBY 13:52:40 [formal/nutshell_pr21_real/nutshell_pr21_real_cache_fixed] engine_0: finished (returncode=0)
+SBY 13:52:40 [formal/nutshell_pr21_real/nutshell_pr21_real_cache_fixed] engine_0: Status returned by engine: pass
+SBY 13:52:40 [formal/nutshell_pr21_real/nutshell_pr21_real_cache_fixed] summary: Elapsed clock time [H:MM:SS (secs)]: 0:00:05 (5)
+SBY 13:52:40 [formal/nutshell_pr21_real/nutshell_pr21_real_cache_fixed] summary: Elapsed process time [H:MM:SS (secs)]: 0:00:05 (5)
+SBY 13:52:40 [formal/nutshell_pr21_real/nutshell_pr21_real_cache_fixed] summary: engine_0 (smtbmc --nopresat --unroll z3) returned pass
+SBY 13:52:40 [formal/nutshell_pr21_real/nutshell_pr21_real_cache_fixed] summary: engine_0 did not produce any traces
+SBY 13:52:40 [formal/nutshell_pr21_real/nutshell_pr21_real_cache_fixed] DONE (PASS, rc=0)

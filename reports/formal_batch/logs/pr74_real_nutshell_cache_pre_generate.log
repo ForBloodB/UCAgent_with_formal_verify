@@ -1,0 +1,86 @@
+[pr74-real] generating pre from NutShell 4b656f32aea0687fe8c823b99a54dc76517c3a41
+Compiling /home/distortionk/WorkSpace/VCS/NutShellCacheVerify/third_party/nutshell_pr74_real/pre/build.sc
+[1/63] chiselModule.resources
+[1A[2K[9999D[2/63] mill.scalalib.ZincWorkerModule.classpath
+[1A[2K[9999D[3/63] mill.scalalib.ZincWorkerModule.worker
+[1A[2K[9999D[4/63] difftest.upstreamCompileOutput
+[1A[2K[9999D[5/63] difftest.sources
+[1A[2K[9999D[6/63] difftest.generatedSources
+[1A[2K[9999D[7/63] difftest.allSources
+[1A[2K[9999D[8/63] difftest.allSourceFiles
+[1A[2K[9999D[9/63] difftest.transitiveLocalClasspath
+[1A[2K[9999D[10/63] difftest.resources
+[1A[2K[9999D[11/63] difftest.unmanagedClasspath
+[1A[2K[9999D[12/63] difftest.scalaVersion
+[1A[2K[9999D[13/63] difftest.platformSuffix
+[1A[2K[9999D[14/63] difftest.compileIvyDeps
+[1A[2K[9999D[15/63] difftest.transitiveCompileIvyDeps
+[1A[2K[9999D[16/63] difftest.scalaOrganization
+[1A[2K[9999D[17/63] difftest.scalaLibraryIvyDeps
+[1A[2K[9999D[18/63] difftest.ivyDeps
+[1A[2K[9999D[19/63] difftest.transitiveIvyDeps
+[1A[2K[9999D[20/63] difftest.resolvedIvyDeps
+[1A[2K[9999D[21/63] difftest.compileClasspath
+[1A[2K[9999D[22/63] difftest.javacOptions
+[1A[2K[9999D[23/63] difftest.scalacOptions
+[1A[2K[9999D[24/63] difftest.scalaCompilerClasspath
+[1A[2K[9999D[25/63] difftest.scalacPluginIvyDeps
+[1A[2K[9999D[26/63] difftest.scalacPluginClasspath
+[1A[2K[9999D[27/63] difftest.compile
+[info] compiling 1 Scala source to /home/distortionk/WorkSpace/VCS/NutShellCacheVerify/third_party/nutshell_pr74_real/pre/out/difftest/compile/dest/classes ...
+[warn] /home/distortionk/WorkSpace/VCS/NutShellCacheVerify/third_party/nutshell_pr74_real/pre/difftest/src/main/scala/Difftest.scala:222:19: non-variable type argument chisel3.Data in type pattern chisel3.Vec[chisel3.Data] is unchecked since it is eliminated by erasure
+[warn]         case vec: Vec[Data] => vec.zipWithIndex.map{ case (v, i) => (s"io_${name}_$i", v) }
+[warn]                   ^
+[warn] one warning found
+[info] done compiling
+[28/63] chiselModule.upstreamCompileOutput
+[1A[2K[9999D[29/63] chiselModule.sources.overriden.mill.scalalib.SbtModule.sources
+[1A[2K[9999D[30/63] chiselModule.sources
+[1A[2K[9999D[31/63] chiselModule.generatedSources
+[1A[2K[9999D[32/63] chiselModule.allSources
+[1A[2K[9999D[33/63] chiselModule.allSourceFiles
+[1A[2K[9999D[34/63] difftest.localClasspath
+[1A[2K[9999D[35/63] chiselModule.transitiveLocalClasspath
+[1A[2K[9999D[36/63] chiselModule.unmanagedClasspath
+[1A[2K[9999D[37/63] chiselModule.scalaVersion
+[1A[2K[9999D[38/63] chiselModule.platformSuffix
+[1A[2K[9999D[39/63] chiselModule.compileIvyDeps
+[1A[2K[9999D[40/63] chiselModule.transitiveCompileIvyDeps
+[1A[2K[9999D[41/63] chiselModule.scalaOrganization
+[1A[2K[9999D[42/63] chiselModule.scalaLibraryIvyDeps
+[1A[2K[9999D[43/63] chiselModule.ivyDeps
+[1A[2K[9999D[44/63] chiselModule.transitiveIvyDeps
+[1A[2K[9999D[45/63] chiselModule.resolvedIvyDeps
+[1A[2K[9999D[46/63] chiselModule.compileClasspath
+[1A[2K[9999D[47/63] chiselModule.javacOptions
+[1A[2K[9999D[48/63] chiselModule.scalacOptions.overriden.mill.scalalib.ScalaModule.scalacOptions
+[1A[2K[9999D[49/63] chiselModule.scalacOptions
+[1A[2K[9999D[50/63] chiselModule.scalaCompilerClasspath
+[1A[2K[9999D[51/63] chiselModule.scalacPluginIvyDeps
+[1A[2K[9999D[52/63] chiselModule.scalacPluginClasspath
+[1A[2K[9999D[53/63] chiselModule.compile
+[info] compiling 78 Scala sources to /home/distortionk/WorkSpace/VCS/NutShellCacheVerify/third_party/nutshell_pr74_real/pre/out/chiselModule/compile/dest/classes ...
+[warn] 2118 feature warnings; re-run with -feature for details
+[warn] one warning found
+[info] done compiling
+[54/63] chiselModule.localClasspath
+[1A[2K[9999D[55/63] chiselModule.runIvyDeps
+[1A[2K[9999D[56/63] chiselModule.resolvedRunIvyDeps
+[1A[2K[9999D[57/63] chiselModule.upstreamAssemblyClasspath
+[1A[2K[9999D[58/63] chiselModule.runClasspath
+[1A[2K[9999D[59/63] chiselModule.forkArgs
+[1A[2K[9999D[60/63] chiselModule.forkEnv
+[1A[2K[9999D[61/63] chiselModule.forkWorkingDir
+[1A[2K[9999D[62/63] chiselModule.runUseArgsFile
+[1A[2K[9999D[63/63] chiselModule.runMain
+Exception in thread "main" chisel3.internal.ChiselException: Connection between left (DecoupledIO(IO io_in_1 in Arbiter)) and source (DecoupledIO(IO in unelaborated Cache)) failed @.bits.id: Right Record missing field (id).
+	at ... ()
+	at nutcore.Cache.<init>(Cache.scala:496)
+	at top.Pr74CacheIOFormalDut.$anonfun$cache$1(Pr74CacheIOFormalDut.scala:37)
+	at chisel3.Module$.do_apply(Module.scala:52)
+	at top.Pr74CacheIOFormalDut.<init>(Pr74CacheIOFormalDut.scala:37)
+	at top.Pr74CacheIOFormalMain$.$anonfun$new$25(Pr74CacheIOFormalDut.scala:93)
+	at ... ()
+	at ... (Stack trace trimmed to user code only. Rerun with --full-stacktrace to see the full stack trace)
+1 targets failed
+chiselModule.runMain subprocess failed

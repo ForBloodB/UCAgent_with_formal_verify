@@ -1,6 +1,6 @@
 # PR21 Real NutShell Cache Formal Report
 
-- Date: 2026-06-16T13:10:19+00:00
+- Date: 2026-06-16T13:52:32+00:00
 - Scope: real NutShell Cache generated from PR #21 parent/fixed commits, with a formal wrapper probing the real s2->s3 cache pipeline.
 
 | Case | Source | Expected | Actual | Verdict | Log |
