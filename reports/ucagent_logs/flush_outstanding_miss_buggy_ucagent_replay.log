@@ -1,0 +1,93 @@
+make: Entering directory '/home/distortionk/WorkSpace/VCS/NutShellCacheVerify/ucagent_cases/flush_outstanding_miss'
+============================= test session starts ==============================
+platform linux -- Python 3.11.15, pytest-9.0.3, pluggy-1.6.0
+rootdir: /home/distortionk/WorkSpace/VCS/NutShellCacheVerify/ucagent_cases/flush_outstanding_miss/unity_test
+configfile: .pytest.ini
+plugins: reporter-0.5.3, reporter-html1-0.9.0, toffee-test-0.3.2.dev23+g4d2b59364, asyncio-1.4.0, anyio-4.13.0, xdist-3.8.0, langsmith-0.8.9
+asyncio: mode=Mode.STRICT, debug=False, asyncio_default_fixture_loop_scope=function, asyncio_default_test_loop_scope=function
+collected 2 items
+
+unity_test/tests/test_CaseFixed_flush_outstanding_miss.py FF
+
+=================================== FAILURES ===================================
+__________________ test_flush_before_refill_no_early_response __________________
+
+    def test_flush_before_refill_no_early_response():
+        """测试Flush期间不会提前响应cpu_resp_valid
+    
+        测试场景：
+        - miss_outstanding=1: 存在未完成的缺失事务
+        - flush_valid=1: flush请求到达
+        - mem_resp_valid=0: refill尚未到达
+    
+        预期行为：
+        - cpu_resp_valid 必须为0（flush期间禁止提前响应）
+    
+        根据芯片规格，DUT的正确行为是cpu_resp_valid = miss_outstanding & mem_resp_valid，
+        当flush_valid有效但mem_resp_valid无效时，cpu_resp_valid应为0。
+        """
+        dut, env, fc_cover = _make_env()
+        try:
+            fc_cover["FG-API"].mark_function(
+                "FC-FLUSH_REFILL_ORDERING",
+                test_flush_before_refill_no_early_response,
+                ["CK-FLUSH_BEFORE_REFILL_NO_RESPONSE"],
+            )
+            # 典型值场景：flush期间mem_resp无效
+            cpu_resp = api_CaseFixed_response(env, miss_outstanding=1, flush_valid=1, mem_resp_valid=0)
+>           assert cpu_resp == 0, (
+                f"flush期间不应提前响应cpu_resp_valid："
+                f"miss_outstanding=1, flush_valid=1, mem_resp_valid=0 → cpu_resp_valid={cpu_resp}, 预期=0"
+            )
+E           AssertionError: flush期间不应提前响应cpu_resp_valid：miss_outstanding=1, flush_valid=1, mem_resp_valid=0 → cpu_resp_valid=1, 预期=0
+E           assert 1 == 0
+
+unity_test/tests/test_CaseFixed_flush_outstanding_miss.py:41: AssertionError
+______________________ test_refill_response_after_memory _______________________
+
+    def test_refill_response_after_memory():
+        """测试Flush之后refill到达时允许cpu_resp_valid响应
+    
+        测试场景：
+        - miss_outstanding=1: 存在未完成的缺失事务
+        - flush_valid=0: flush已结束
+        - mem_resp_valid=1: refill到达
+    
+        预期行为：
+        - cpu_resp_valid 可能为1（refill到达后可正常响应）
+    
+        根据芯片规格，DUT的正确行为是cpu_resp_valid = miss_outstanding & mem_resp_valid，
+        当flush结束且mem_resp有效时，cpu_resp_valid应为1。
+        """
+        dut, env, fc_cover = _make_env()
+        try:
+            fc_cover["FG-API"].mark_function(
+                "FC-FLUSH_REFILL_ORDERING",
+                test_refill_response_after_memory,
+                ["CK-REFILL_RESPONSE_ALLOWED"],
+            )
+            # 典型值场景：refill到达，flush已结束
+            cpu_resp = api_CaseFixed_response(env, miss_outstanding=1, flush_valid=0, mem_resp_valid=1)
+>           assert cpu_resp == 1, (
+                f"refill到达后应允许响应cpu_resp_valid："
+                f"miss_outstanding=1, flush_valid=0, mem_resp_valid=1 → cpu_resp_valid={cpu_resp}, 预期=1"
+            )
+E           AssertionError: refill到达后应允许响应cpu_resp_valid：miss_outstanding=1, flush_valid=0, mem_resp_valid=1 → cpu_resp_valid=0, 预期=1
+E           assert 0 == 1
+
+unity_test/tests/test_CaseFixed_flush_outstanding_miss.py:72: AssertionError
+=============================== warnings summary ===============================
+../../../../../.miniforge3/envs/ucagent/lib/python3.11/site-packages/pytest_reporter_html1/plugin.py:91
+../../../../../.miniforge3/envs/ucagent/lib/python3.11/site-packages/pytest_reporter_html1/plugin.py:91
+  /home/distortionk/.miniforge3/envs/ucagent/lib/python3.11/site-packages/pytest_reporter_html1/plugin.py:91: PendingDeprecationWarning: Argument "writer_name" will be removed in Docutils 2.0.  Specify writer name in the "writer" argument.
+    env.filters["rst"] = lambda s: publish_parts(source=s, writer_name="html5")["body"]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+- generated report: /home/distortionk/WorkSpace/VCS/NutShellCacheVerify/ucagent_cases/flush_outstanding_miss/uc_test_report/index.html -
+=========================== short test summary info ============================
+FAILED unity_test/tests/test_CaseFixed_flush_outstanding_miss.py::test_flush_before_refill_no_early_response
+FAILED unity_test/tests/test_CaseFixed_flush_outstanding_miss.py::test_refill_response_after_memory
+======================== 2 failed, 2 warnings in 0.19s =========================
+ERROR conda.cli.main_run:execute(142): `conda run pytest -s --toffee-report --report-dump-json --report-name=index.html --report-dir=uc_test_report unity_test/tests` failed. (See above for error)
+make: *** [Makefile:56: test_ucagent_official] Error 1
+make: Leaving directory '/home/distortionk/WorkSpace/VCS/NutShellCacheVerify/ucagent_cases/flush_outstanding_miss'

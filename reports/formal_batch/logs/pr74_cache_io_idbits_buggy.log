@@ -1,0 +1,32 @@
+SBY 15:28:46 [formal/historical/nutshell_pr74_cache_io_idbits_buggy] Removing directory '/work/formal/historical/nutshell_pr74_cache_io_idbits_buggy'.
+SBY 15:28:46 [formal/historical/nutshell_pr74_cache_io_idbits_buggy] Copy '/work/formal/historical/nutshell_pr74_cache_io_idbits_formal.sv' to '/work/formal/historical/nutshell_pr74_cache_io_idbits_buggy/src/nutshell_pr74_cache_io_idbits_formal.sv'.
+SBY 15:28:46 [formal/historical/nutshell_pr74_cache_io_idbits_buggy] engine_0: smtbmc --nopresat --unroll z3 -- --logic QF_BV
+SBY 15:28:46 [formal/historical/nutshell_pr74_cache_io_idbits_buggy] base: starting process "cd formal/historical/nutshell_pr74_cache_io_idbits_buggy/src; yosys -ql ../model/design.log ../model/design.ys"
+SBY 15:28:46 [formal/historical/nutshell_pr74_cache_io_idbits_buggy] base: finished (returncode=0)
+SBY 15:28:46 [formal/historical/nutshell_pr74_cache_io_idbits_buggy] prep: starting process "cd formal/historical/nutshell_pr74_cache_io_idbits_buggy/model; yosys -ql design_prep.log design_prep.ys"
+SBY 15:28:46 [formal/historical/nutshell_pr74_cache_io_idbits_buggy] prep: finished (returncode=0)
+SBY 15:28:46 [formal/historical/nutshell_pr74_cache_io_idbits_buggy] smt2: starting process "cd formal/historical/nutshell_pr74_cache_io_idbits_buggy/model; yosys -ql design_smt2.log design_smt2.ys"
+SBY 15:28:46 [formal/historical/nutshell_pr74_cache_io_idbits_buggy] smt2: finished (returncode=0)
+SBY 15:28:46 [formal/historical/nutshell_pr74_cache_io_idbits_buggy] engine_0: starting process "cd formal/historical/nutshell_pr74_cache_io_idbits_buggy; yosys-smtbmc -s z3 --logic QF_BV --unroll --noprogress -t 8  --append 0 --dump-vcd engine_0/trace.vcd --dump-yw engine_0/trace.yw --dump-vlogtb engine_0/trace_tb.v --dump-smtc engine_0/trace.smtc model/design_smt2.smt2"
+SBY 15:28:46 [formal/historical/nutshell_pr74_cache_io_idbits_buggy] engine_0: ##   0:00:00  Solver: z3
+SBY 15:28:46 [formal/historical/nutshell_pr74_cache_io_idbits_buggy] engine_0: ##   0:00:00  Checking assertions in step 0..
+SBY 15:28:46 [formal/historical/nutshell_pr74_cache_io_idbits_buggy] engine_0: ##   0:00:00  Checking assertions in step 1..
+SBY 15:28:46 [formal/historical/nutshell_pr74_cache_io_idbits_buggy] engine_0: ##   0:00:00  Checking assertions in step 2..
+SBY 15:28:46 [formal/historical/nutshell_pr74_cache_io_idbits_buggy] engine_0: ##   0:00:00  Checking assertions in step 3..
+SBY 15:28:46 [formal/historical/nutshell_pr74_cache_io_idbits_buggy] engine_0: ##   0:00:00  Checking assertions in step 4..
+SBY 15:28:46 [formal/historical/nutshell_pr74_cache_io_idbits_buggy] engine_0: ##   0:00:00  BMC failed!
+SBY 15:28:46 [formal/historical/nutshell_pr74_cache_io_idbits_buggy] engine_0: ##   0:00:00  Value for anyconst nutshell_pr74_cache_io_idbits_formal.f_req_id (nutshell_pr74_cache_io_idbits_formal.sv:0.0-0.0): 1
+SBY 15:28:46 [formal/historical/nutshell_pr74_cache_io_idbits_buggy] engine_0: ##   0:00:00  Assert failed in nutshell_pr74_cache_io_idbits_formal: nutshell_pr74_cache_io_idbits_formal.sv:42.31-43.35 ($assert$nutshell_pr74_cache_io_idbits_formal.sv:42$61)
+SBY 15:28:46 [formal/historical/nutshell_pr74_cache_io_idbits_buggy] engine_0: ##   0:00:00  Writing trace to VCD file: engine_0/trace.vcd
+SBY 15:28:46 [formal/historical/nutshell_pr74_cache_io_idbits_buggy] engine_0: ##   0:00:00  Writing trace to Verilog testbench: engine_0/trace_tb.v
+SBY 15:28:46 [formal/historical/nutshell_pr74_cache_io_idbits_buggy] engine_0: ##   0:00:00  Writing trace to constraints file: engine_0/trace.smtc
+SBY 15:28:46 [formal/historical/nutshell_pr74_cache_io_idbits_buggy] engine_0: ##   0:00:00  Writing trace to Yosys witness file: engine_0/trace.yw
+SBY 15:28:46 [formal/historical/nutshell_pr74_cache_io_idbits_buggy] engine_0: ##   0:00:00  Status: failed
+SBY 15:28:46 [formal/historical/nutshell_pr74_cache_io_idbits_buggy] engine_0: finished (returncode=1)
+SBY 15:28:46 [formal/historical/nutshell_pr74_cache_io_idbits_buggy] engine_0: Status returned by engine: FAIL
+SBY 15:28:46 [formal/historical/nutshell_pr74_cache_io_idbits_buggy] summary: Elapsed clock time [H:MM:SS (secs)]: 0:00:00 (0)
+SBY 15:28:46 [formal/historical/nutshell_pr74_cache_io_idbits_buggy] summary: Elapsed process time [H:MM:SS (secs)]: 0:00:00 (0)
+SBY 15:28:46 [formal/historical/nutshell_pr74_cache_io_idbits_buggy] summary: engine_0 (smtbmc --nopresat --unroll z3 -- --logic QF_BV) returned FAIL
+SBY 15:28:46 [formal/historical/nutshell_pr74_cache_io_idbits_buggy] summary: counterexample trace: formal/historical/nutshell_pr74_cache_io_idbits_buggy/engine_0/trace.vcd
+SBY 15:28:46 [formal/historical/nutshell_pr74_cache_io_idbits_buggy] summary:   failed assertion nutshell_pr74_cache_io_idbits_formal.$assert$nutshell_pr74_cache_io_idbits_formal.sv:42$61 at nutshell_pr74_cache_io_idbits_formal.sv:42.31-43.35 step 4
+SBY 15:28:46 [formal/historical/nutshell_pr74_cache_io_idbits_buggy] DONE (FAIL, rc=2)

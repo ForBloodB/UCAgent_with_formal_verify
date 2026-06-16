@@ -1,0 +1,4 @@
+*
+!docker/
+!docker/formal.Dockerfile
+!docker/ucagent.Dockerfile

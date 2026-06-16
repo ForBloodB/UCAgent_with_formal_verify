@@ -1,0 +1,16 @@
+[options]
+mode bmc
+depth 8
+timeout 30
+append 0
+
+[engines]
+smtbmc --nopresat --unroll z3 -- --logic QF_BV
+
+[script]
+read_verilog -formal -sv flush_outstanding_miss_formal.sv
+chparam -set BUGGY 1 flush_outstanding_miss_formal
+prep -top flush_outstanding_miss_formal
+
+[files]
+formal/historical/flush_outstanding_miss_formal.sv

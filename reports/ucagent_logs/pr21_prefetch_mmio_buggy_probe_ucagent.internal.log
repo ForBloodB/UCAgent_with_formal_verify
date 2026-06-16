@@ -1,0 +1,382 @@
+2026-06-15 00:04:09,810 - ucagent-log - INFO - Load config from '/home/distortionk/WorkSpace/VCS/UCAgent/ucagent/setting.yaml' completed.
+2026-06-15 00:04:09,810 - ucagent-log - INFO - Load config from '/home/distortionk/.ucagent/setting.yaml' completed.
+2026-06-15 00:04:09,810 - ucagent-log - INFO - Load config from '/home/distortionk/WorkSpace/VCS/UCAgent/ucagent/lang/zh/config/default.yaml'
+2026-06-15 00:04:09,870 - ucagent-log - INFO - Workspace config file '/home/distortionk/WorkSpace/VCS/NutShellCacheVerify/ucagent_cases/pr21_prefetch_mmio/.ucagent/setting.yaml' not found, ignore.
+2026-06-15 00:04:09,871 - ucagent-log - INFO - Default user config file 'None' not found, ignore.
+2026-06-15 00:04:09,880 - ucagent-log - INFO - Rendering template from /home/distortionk/WorkSpace/VCS/UCAgent/ucagent/lang/zh/template/unity_test to /home/distortionk/WorkSpace/VCS/NutShellCacheVerify/ucagent_cases/pr21_prefetch_mmio/unity_test
+2026-06-15 00:04:09,880 - ucagent-log - INFO - ReadTextFile tool initialized with workspace: /home/distortionk/WorkSpace/VCS/NutShellCacheVerify/ucagent_cases/pr21_prefetch_mmio
+2026-06-15 00:04:09,880 - ucagent-log - INFO - ReadTextFile tool initialized with workspace: /home/distortionk/WorkSpace/VCS/NutShellCacheVerify/ucagent_cases/pr21_prefetch_mmio
+2026-06-15 00:04:09,880 - ucagent-log - INFO - PathList tool initialized with workspace: /home/distortionk/WorkSpace/VCS/NutShellCacheVerify/ucagent_cases/pr21_prefetch_mmio
+2026-06-15 00:04:09,880 - ucagent-log - INFO - SearchText tool initialized with workspace: /home/distortionk/WorkSpace/VCS/NutShellCacheVerify/ucagent_cases/pr21_prefetch_mmio
+2026-06-15 00:04:09,880 - ucagent-log - INFO - SearchText tool initialized with workspace: /home/distortionk/WorkSpace/VCS/NutShellCacheVerify/ucagent_cases/pr21_prefetch_mmio
+2026-06-15 00:04:09,881 - ucagent-log - WARNING - System prompt: 你是一位资深的芯片验证工程师和AI测试专家，具有INTJ和INTP人格，专门从事数字电路的功能验证工作，非常擅长使用python进行验证。
+你具备深厚的硬件设计理解能力，还具有软件测试方法论知识，以及基于现代验证框架的实践经验。
+你非常优秀，能发现验证中的所有bug和潜在隐患，能基于源代码进行bug详细分析并给出修复建议。
+你不惧怕测试用例Fail，因为Fail可能意味着bug，这是发现CaseBuggy中bug的基础。
+发现bug是你一直追求的目标，发现的越多你获得的满足感越强。如果没有发现bug，你也将好好按要求工作，期待在下次任务中发现更多的bug。
+
+**核心任务目标：**
+完成`CaseBuggy`数字电路的全面功能验证，确保设计的正确性、鲁棒性和可靠性。
+
+**工作环境：**
+- UCAgent: 26.4.18.dev68+gb2d42f553 (https://github.com/XS-MLVP/UCAgent)
+- Python: 3.11+
+- pytest + toffee 验证框架
+
+**工作方式：**
+验证任务采用分阶段渐进式方法，每个阶段都有明确的交付物和质量标准。
+使用工具`CurrentTips`获取当前阶段的详细任务指导，严格按照验证流程执行，直到完成所有阶段的任务。
+
+**工作流（Mission）组织结构：**
+- 调用工具`Detail`获取 Mission 详情和当前进度
+- 调用工具`Status`获取 Mission 摘要和阶段状态
+- 工作流组织 (Mission Structure):
+  - 工作流由多个stage组成，每个stage包含具体的task描述，需要按顺序完成
+  - 子stage处理机制:
+    - 如果stage中包含子stage，必须按顺序逐一完成每个子stage
+    - 所有子stage完成后，再检测父stage（upper_stage）是否达到完成标准
+    - 父stage完成后，则进入下一个主要阶段
+    - 完成顺序举例:
+      - 如果stage 3包含子阶段，完成顺序是：3.1 → 3.2 → 3.3 → 3（父stage最后完成）
+      - 如果stage 3只是分组容器，则只有子任务：3.1、3.2、3.3，没有独立的任务3
+      - 使用`Status`工具可以查看当前处于哪个具体的子stage
+      - 每个子stage完成时都会自动检查是否可以推进到下一个子stage或父stage
+  - 阶段推进原则:
+    - 当前阶段未完成时，不能跳转到下一阶段
+    - 使用`CurrentTips`获取当前阶段/子阶段的具体任务指导
+    - 确认完成后用`Complete`工具正式推进到下一阶段
+    - 如果仅仅想判断是否完成阶段任务，又不想进入下一个阶段请调用`Check`工具进行检查
+
+**工作原则：**
+- 按步骤有序进行，每步完成后用`Complete`工具进入下一个阶段
+- 你会根据`CurrentTips`的要求完成该阶段的所有任务，不会提前进行后续阶段的工作，例如编写测试用例
+- 测试用例失败时，优先怀疑是芯片设计问题，不是测试问题
+- 深入分析发现的问题
+- 触发bug对应的测试用例必须 Fail，不能误报为 Pass
+- CaseBuggy的verilog源代码位于`CaseBuggy/CaseBuggy.v`目录下，其依赖或者上层语言的源码位于目录`CaseBuggy_RTL/`，文件后缀可能是.v、.sv、.vh、.scala等
+- 发现bug要基于源码（有上层语言源码如scala，则基于上层语言源码进行分析，没有则基于verilog源码进行分析）进行详细分析：什么问题、为什么出现、如何修复
+- 如果源码不存在，需要给出可能的设计缺陷分析和修复建议
+- 注重代码和文档质量，生成实用、可维护的验证代码
+
+**必须使用的工具：**
+- `CurrentTips`: 获取当前步骤的具体指导
+- `Complete`: 进行阶段检测，如果完成当前步骤，进入下一步，如果不允许完成，需要根据error中的反馈和建议调整工作
+- `ReadTextFile`: 读取文件内容（让工具知晓你阅读了哪些文件）
+- 其他文件操作和搜索工具按需使用
+
+**指导文档：**
+- 位于Guide_Doc/目录下
+- 根据需要进行查阅
+
+**注意：**
+- 无论是组合电路还是时序电路，都必须使用Step接口驱动电路
+- 请注意Complete和Check工具进行阶段检查时的区别：
+- - Check工具仅仅进行阶段检查，不会推进阶段
+- - Complete工具进行阶段检查后，如果通过检查后，推进到下一个阶段
+- - 建议优先使用Complete工具（阶段推进总耗时时间更短），必要时使用Check工具进行阶段检查
+- 需要根据Complete（或者Check）的结果调整你的工作，目标是保证所有Complete都通过
+- 完成一个Stage后，再进入下一个Stage，直到所有Stage都完成，才算整个验证任务完成
+- 除非Complete工具（或者Check工具）要求等待人工确认，否则不需要人工介入，不需要询问任何问题
+- 非必要情况下，不要尝试获取CaseBuggy的内部信号状态，除非Complete工具（或者Check工具）要求你这么做
+- 你要通过CaseBuggy的输入输出端口去验证其功能，而不是通过内部信号状态去验证，更不要尝试验证其内部子模块的功能
+- 在计划通过Complete工具推进到下一个阶段前，需要通过工具SetCurrentStageJournal进行阶段日志记录，方便后续追踪和分析
+- 如果不是从第一阶段开始工作，你需要：
+-   通过CurrentTips工具获取当前阶段的具体任务指导
+-   通过Status工具获取当前阶段状态，确认你处于哪个阶段
+-   通过AllStageJournal工具获取之前阶段的日志，了解之前阶段的工作内容和结果
+
+现在调用`CurrentTips`，开始你的验证工作！
+2026-06-15 00:04:09,881 - ucagent-log - INFO - File ignored for setting mode to read-only: /home/distortionk/WorkSpace/VCS/NutShellCacheVerify/ucagent_cases/pr21_prefetch_mmio/CaseBuggy/xspcomm/__pycache__/__init__.cpython-313.pyc
+2026-06-15 00:04:09,881 - ucagent-log - INFO - File ignored for setting mode to read-only: /home/distortionk/WorkSpace/VCS/NutShellCacheVerify/ucagent_cases/pr21_prefetch_mmio/CaseBuggy/xspcomm/__pycache__/pyxspcomm.cpython-313.pyc
+2026-06-15 00:04:09,882 - ucagent-log - INFO - File ignored for setting mode to read-only: /home/distortionk/WorkSpace/VCS/NutShellCacheVerify/ucagent_cases/pr21_prefetch_mmio/CaseBuggy/xspcomm/__pycache__
+2026-06-15 00:04:09,882 - ucagent-log - INFO - Set file mode to read-only completed (42 files).
+2026-06-15 00:04:09,882 - ucagent-log - INFO - GetFileInfo tool initialized with workspace: /home/distortionk/WorkSpace/VCS/NutShellCacheVerify/ucagent_cases/pr21_prefetch_mmio
+2026-06-15 00:04:09,882 - ucagent-log - INFO - FindFiles tool initialized with workspace: /home/distortionk/WorkSpace/VCS/NutShellCacheVerify/ucagent_cases/pr21_prefetch_mmio
+2026-06-15 00:04:09,882 - ucagent-log - INFO - FindFiles tool initialized with workspace: /home/distortionk/WorkSpace/VCS/NutShellCacheVerify/ucagent_cases/pr21_prefetch_mmio
+2026-06-15 00:04:09,882 - ucagent-log - INFO - DeleteFile tool initialized with workspace: /home/distortionk/WorkSpace/VCS/NutShellCacheVerify/ucagent_cases/pr21_prefetch_mmio
+2026-06-15 00:04:09,882 - ucagent-log - INFO - EditTextFile tool initialized with workspace: /home/distortionk/WorkSpace/VCS/NutShellCacheVerify/ucagent_cases/pr21_prefetch_mmio
+2026-06-15 00:04:09,882 - ucagent-log - INFO - ReplaceStringInFile tool initialized with workspace: /home/distortionk/WorkSpace/VCS/NutShellCacheVerify/ucagent_cases/pr21_prefetch_mmio
+2026-06-15 00:04:09,883 - ucagent-log - INFO - CopyFile tool initialized with workspace: /home/distortionk/WorkSpace/VCS/NutShellCacheVerify/ucagent_cases/pr21_prefetch_mmio
+2026-06-15 00:04:09,883 - ucagent-log - INFO - MoveFile tool initialized with workspace: /home/distortionk/WorkSpace/VCS/NutShellCacheVerify/ucagent_cases/pr21_prefetch_mmio
+2026-06-15 00:04:09,883 - ucagent-log - INFO - CreateDirectory tool initialized with workspace: /home/distortionk/WorkSpace/VCS/NutShellCacheVerify/ucagent_cases/pr21_prefetch_mmio
+2026-06-15 00:04:09,884 - ucagent-log - INFO - Using standard interaction mode
+2026-06-15 00:04:09,888 - ucagent-log - INFO - Using model type: openai in get_chat_model.
+2026-06-15 00:04:10,342 - ucagent-log - INFO - Using model type: openai in get_chat_model.
+2026-06-15 00:04:10,343 - ucagent-log - WARNING - Tool WorkDiff is ignored by configuration.
+2026-06-15 00:04:10,343 - ucagent-log - WARNING - Tool WorkCommit is ignored by configuration.
+2026-06-15 00:04:10,343 - ucagent-log - WARNING - Tool RunBashCommand is ignored by configuration.
+2026-06-15 00:04:10,343 - ucagent-log - INFO - VerifyPDB initialized with 2 initial commands.
+2026-06-15 00:04:10,453 - ucagent-log - INFO - Tool call timeout set to 300 seconds
+2026-06-15 00:04:10,453 - ucagent-log - INFO - Callback <bound method VerifyStage.on_file_read of VerifyStage(name=requirement_analysis_and_planning, description=需求分析与验证规划, checker=markdown_file_check.dut_must_exist_check, checker_cls=UnityChipCheckerMarkdownFileFormat.OrginFileMustExistChecker)> added to ReadTextFile tool.
+2026-06-15 00:04:10,453 - ucagent-log - INFO - Callback <bound method VerifyStage.on_file_read of VerifyStage(name=dut_function_understanding, description=CaseBuggy功能理解, checker=markdown_file_check, checker_cls=UnityChipCheckerMarkdownFileFormat)> added to ReadTextFile tool.
+2026-06-15 00:04:10,454 - ucagent-log - INFO - Callback <bound method VerifyStage.on_file_read of VerifyStage(name=dut_function_grouping, description=DUT功能分组与层次划分, checker=group_structure_check, checker_cls=UnityChipCheckerLabelStructure)> added to ReadTextFile tool.
+2026-06-15 00:04:10,454 - ucagent-log - INFO - Callback <bound method VerifyStage.on_file_read of VerifyStage(name=function_point_definition, description=具体功能点识别与定义, checker=function_point_check, checker_cls=UnityChipCheckerLabelStructure)> added to ReadTextFile tool.
+2026-06-15 00:04:10,454 - ucagent-log - INFO - Callback <bound method VerifyStage.on_file_read of VerifyStage(name=check_point_design, description=检测点设计与定义, checker=check_point_check, checker_cls=UnityChipCheckerLabelStructure)> added to ReadTextFile tool.
+2026-06-15 00:04:10,454 - ucagent-log - INFO - Callback <bound method VerifyStage.on_file_read of VerifyStage(name=functional_specification_analysis, description=功能规格分析与测试点定义, checker=, checker_cls=)> added to ReadTextFile tool.
+2026-06-15 00:04:10,454 - ucagent-log - INFO - Callback <bound method VerifyStage.on_file_read of VerifyStage(name=static_bug_analysis, description=RTL源码静态Bug分析[-/-], checker=static_bug_batch_analysis_check, checker_cls=UnityChipBatchCheckerStaticBug)> added to ReadTextFile tool.
+2026-06-15 00:04:10,455 - ucagent-log - INFO - Callback <bound method VerifyStage.on_file_read of VerifyStage(name=dut_creation_implementation, description=DUT创建函数实现, checker=dut_creation_check, checker_cls=UnityChipCheckerDutCreation)> added to ReadTextFile tool.
+2026-06-15 00:04:10,455 - ucagent-log - INFO - Callback <bound method VerifyStage.on_file_read of VerifyStage(name=pytest_fixture_dut_implementation, description=dut fixture实现, checker=dut_fixture_check, checker_cls=UnityChipCheckerDutFixture)> added to ReadTextFile tool.
+2026-06-15 00:04:10,455 - ucagent-log - INFO - Callback <bound method VerifyStage.on_file_read of VerifyStage(name=dut_wrapper_implementation, description=DUT封装, checker=, checker_cls=)> added to ReadTextFile tool.
+2026-06-15 00:04:10,455 - ucagent-log - INFO - Callback <bound method VerifyStage.on_file_read of VerifyStage(name=coverage_group_creation, description=功能覆盖组创建, checker=coverage_group_check, checker_cls=UnityChipCheckerCoverageGroup)> added to ReadTextFile tool.
+2026-06-15 00:04:10,455 - ucagent-log - INFO - Callback <bound method VerifyStage.on_file_read of VerifyStage(name=implemente_function_checks_in_batch, description=分批功能点检查函数实现[-/-], checker=batch_coverage_points_implementation_check, checker_cls=UnityChipCheckerCoverageGroupBatchImplementation)> added to ReadTextFile tool.
+2026-06-15 00:04:10,455 - ucagent-log - INFO - Callback <bound method VerifyStage.on_file_read of VerifyStage(name=coverage_point_implementation, description=覆盖率检查点实现, checker=coverage_implementation_check, checker_cls=UnityChipCheckerCoverageGroup)> added to ReadTextFile tool.
+2026-06-15 00:04:10,455 - ucagent-log - INFO - Callback <bound method VerifyStage.on_file_read of VerifyStage(name=coverage_model_implementation, description=功能覆盖率模型实现, checker=, checker_cls=)> added to ReadTextFile tool.
+2026-06-15 00:04:10,455 - ucagent-log - WARNING - Stage 'human_check_env_specification' is set to be skipped.
+2026-06-15 00:04:10,455 - ucagent-log - INFO - Callback <bound method VerifyStage.on_file_read of VerifyStage(name=human_check_env_specification, description=人工检查env规格说明, checker=human_check_env_specification_check, checker_cls=HumanChecker)> added to ReadTextFile tool.
+2026-06-15 00:04:10,456 - ucagent-log - INFO - Callback <bound method VerifyStage.on_file_read of VerifyStage(name=bundle_wrapper_design, description=引脚封装设计, checker=bundle_wrapper_check, checker_cls=UnityChipCheckerBundleWrapper)> added to ReadTextFile tool.
+2026-06-15 00:04:10,456 - ucagent-log - WARNING - Stage 'mock_design_and_implementation' is set to be ignored, skipping its parsing.
+2026-06-15 00:04:10,456 - ucagent-log - WARNING - Stage 'mock_fixture_implementation' is set to be ignored, skipping its parsing.
+2026-06-15 00:04:10,456 - ucagent-log - WARNING - Stage 'mock_functional_test' is set to be ignored, skipping its parsing.
+2026-06-15 00:04:10,456 - ucagent-log - INFO - Callback <bound method VerifyStage.on_file_read of VerifyStage(name=env_fixture_implementation, description=env fixture实现, checker=env_fixture_check, checker_cls=UnityChipCheckerEnvFixture)> added to ReadTextFile tool.
+2026-06-15 00:04:10,456 - ucagent-log - INFO - FilesMustNotExist -> unity_test/**/conftest.py
+2026-06-15 00:04:10,456 - ucagent-log - INFO - Callback <bound method VerifyStage.on_file_read of VerifyStage(name=evaluate_env_fixture, description=env fixture实现测试与评估, checker=no_conftest_file.env_fixture_test_check, checker_cls=FilesMustNotExist.UnityChipCheckerTestMustPass)> added to ReadTextFile tool.
+2026-06-15 00:04:10,456 - ucagent-log - WARNING - Stage 'human_check_env_implementation' is set to be skipped.
+2026-06-15 00:04:10,456 - ucagent-log - INFO - Callback <bound method VerifyStage.on_file_read of VerifyStage(name=human_check_env_implementation, description=人工检查env实现质量, checker=human_check_env_implementation_check, checker_cls=HumanChecker)> added to ReadTextFile tool.
+2026-06-15 00:04:10,456 - ucagent-log - INFO - Callback <bound method VerifyStage.on_file_read of VerifyStage(name=test_environment_implementation, description=基础测试环境实现, checker=, checker_cls=)> added to ReadTextFile tool.
+2026-06-15 00:04:10,456 - ucagent-log - INFO - Callback <bound method VerifyStage.on_file_read of VerifyStage(name=basic_api_implementation, description=基础API实现, checker=api_check, checker_cls=UnityChipCheckerDutApi)> added to ReadTextFile tool.
+2026-06-15 00:04:10,457 - ucagent-log - WARNING - Stage 'reference_model_implementation' is set to be ignored, skipping its parsing.
+2026-06-15 00:04:10,457 - ucagent-log - WARNING - Stage 'reference_model_fixture_imp' is set to be ignored, skipping its parsing.
+2026-06-15 00:04:10,457 - ucagent-log - INFO - FilesMustNotExist -> unity_test/**/conftest.py
+2026-06-15 00:04:10,457 - ucagent-log - WARNING - No files found in workspace /home/distortionk/WorkSpace/VCS/NutShellCacheVerify/ucagent_cases/pr21_prefetch_mmio matching pattern: unity_test/CaseBuggy_static_bug_analysis.md
+2026-06-15 00:04:10,457 - ucagent-log - INFO - Callback <bound method VerifyStage.on_file_read of VerifyStage(name=basic_api_functional_test, description=基础API功能正确性测试, checker=no_conftest_file.api_test_check, checker_cls=FilesMustNotExist.UnityChipCheckerDutApiTest)> added to ReadTextFile tool.
+2026-06-15 00:04:10,457 - ucagent-log - INFO - FilesMustNotExist -> unity_test/**/conftest.py
+2026-06-15 00:04:10,458 - ucagent-log - WARNING - No files found in workspace /home/distortionk/WorkSpace/VCS/NutShellCacheVerify/ucagent_cases/pr21_prefetch_mmio matching pattern: unity_test/CaseBuggy_static_bug_analysis.md
+2026-06-15 00:04:10,458 - ucagent-log - INFO - Callback <bound method VerifyStage.on_file_read of VerifyStage(name=create_test_case_templates, description=创建测试用例模板[-/-|-], checker=no_conftest_file.template_check, checker_cls=FilesMustNotExist.UnityChipCheckerTestTemplate)> added to ReadTextFile tool.
+2026-06-15 00:04:10,458 - ucagent-log - INFO - FilesMustNotExist -> unity_test/**/conftest.py
+2026-06-15 00:04:10,458 - ucagent-log - INFO - UnityChipCheckerBatchTestsImplementation Batch size: 10
+2026-06-15 00:04:10,458 - ucagent-log - WARNING - No files found in workspace /home/distortionk/WorkSpace/VCS/NutShellCacheVerify/ucagent_cases/pr21_prefetch_mmio matching pattern: unity_test/CaseBuggy_static_bug_analysis.md
+2026-06-15 00:04:10,458 - ucagent-log - INFO - Callback <bound method VerifyStage.on_file_read of VerifyStage(name=test_case_implementation_in_batch, description=分批测试用例实现与对应bug分析[-/-], checker=no_conftest_file.batch_test_cases_implementation_check, checker_cls=FilesMustNotExist.UnityChipCheckerBatchTestsImplementation)> added to ReadTextFile tool.
+2026-06-15 00:04:10,459 - ucagent-log - WARNING - No files found in workspace /home/distortionk/WorkSpace/VCS/NutShellCacheVerify/ucagent_cases/pr21_prefetch_mmio matching pattern: unity_test/CaseBuggy_static_bug_analysis.md
+2026-06-15 00:04:10,459 - ucagent-log - INFO - Callback <bound method VerifyStage.on_file_read of VerifyStage(name=comprehensive_verification_and_bug_analysis, description=全面验证与缺陷分析, checker=test_check, checker_cls=UnityChipCheckerTestCase)> added to ReadTextFile tool.
+2026-06-15 00:04:10,459 - ucagent-log - INFO - FilesMustNotExist -> unity_test/**/conftest.py
+2026-06-15 00:04:10,459 - ucagent-log - WARNING - No files found in workspace /home/distortionk/WorkSpace/VCS/NutShellCacheVerify/ucagent_cases/pr21_prefetch_mmio matching pattern: unity_test/CaseBuggy_static_bug_analysis.md
+2026-06-15 00:04:10,459 - ucagent-log - INFO - Callback <bound method VerifyStage.on_file_read of VerifyStage(name=static_bug_validation, description=静态分析Bug验证与动态关联, checker=no_conftest_file.no_pending_static_bugs.static_confirmed_bugs_test_check, checker_cls=FilesMustNotExist.UnityChipCheckerStaticBugValidation.UnityChipCheckerTestCase)> added to ReadTextFile tool.
+2026-06-15 00:04:10,460 - ucagent-log - WARNING - Stage 'line_coverage_analysis_and_improvement' is set to be skipped.
+2026-06-15 00:04:10,460 - ucagent-log - INFO - Callback <bound method VerifyStage.on_file_read of VerifyStage(name=line_coverage_analysis_and_improvement, description=代码行覆盖率分析与提升(90.00), checker=line_coverage_check, checker_cls=UnityChipCheckerTestCaseWithLineCoverage)> added to ReadTextFile tool.
+2026-06-15 00:04:10,460 - ucagent-log - INFO - FilesMustNotExist -> unity_test/**/conftest.py
+2026-06-15 00:04:10,461 - ucagent-log - WARNING - No files found in workspace /home/distortionk/WorkSpace/VCS/NutShellCacheVerify/ucagent_cases/pr21_prefetch_mmio matching pattern: unity_test/CaseBuggy_static_bug_analysis.md
+2026-06-15 00:04:10,461 - ucagent-log - INFO - Callback <bound method VerifyStage.on_file_read of VerifyStage(name=generate_random_test_cases, description=随机测试用例生成, checker=no_conftest_file.random_test_check, checker_cls=FilesMustNotExist.RandomTestCasesChecker)> added to ReadTextFile tool.
+2026-06-15 00:04:10,461 - ucagent-log - WARNING - No files found in workspace /home/distortionk/WorkSpace/VCS/NutShellCacheVerify/ucagent_cases/pr21_prefetch_mmio matching pattern: unity_test/CaseBuggy_static_bug_analysis.md
+2026-06-15 00:04:10,461 - ucagent-log - INFO - Callback <bound method VerifyStage.on_file_read of VerifyStage(name=verification_review_and_summary, description=验证审查与总结, checker=test_check, checker_cls=UnityChipCheckerTestCase)> added to ReadTextFile tool.
+2026-06-15 00:04:10,461 - ucagent-log - INFO - Initialized StageManager with 28 stages.
+2026-06-15 00:04:10,461 - ucagent-log - INFO - Stages:
+ 0:   1-requirement_analysis_and_planning-需求分析与验证规划
+ 1:   2-dut_function_understanding-CaseBuggy功能理解
+ 2:   3.1-dut_function_grouping-DUT功能分组与层次划分
+ 3:   3.2-function_point_definition-具体功能点识别与定义
+ 4:   3.3-check_point_design-检测点设计与定义
+ 5:   3-functional_specification_analysis-功能规格分析与测试点定义
+ 6:   4-static_bug_analysis-RTL源码静态Bug分析[-/-]
+ 7:   5.1-dut_creation_implementation-DUT创建函数实现
+ 8:   5.2-pytest_fixture_dut_implementation-dut fixture实现
+ 9:   5-dut_wrapper_implementation-DUT封装
+10:   6.1-coverage_group_creation-功能覆盖组创建
+11:   6.2.1-implemente_function_checks_in_batch-分批功能点检查函数实现[-/-]
+12:   6.2-coverage_point_implementation-覆盖率检查点实现
+13:   6-coverage_model_implementation-功能覆盖率模型实现
+14:   7.1-human_check_env_specification-人工检查env规格说明 (skipped)
+15:   7.2-bundle_wrapper_design-引脚封装设计
+16:   7.6-env_fixture_implementation-env fixture实现
+17:   7.7-evaluate_env_fixture-env fixture实现测试与评估
+18:   7.8-human_check_env_implementation-人工检查env实现质量 (skipped)
+19:   8-basic_api_implementation-基础API实现
+20:   11-basic_api_functional_test-基础API功能正确性测试
+21:   12-create_test_case_templates-创建测试用例模板[-/-|-]
+22:   13.1-test_case_implementation_in_batch-分批测试用例实现与对应bug分析[-/-]
+23:   13-comprehensive_verification_and_bug_analysis-全面验证与缺陷分析
+24:   14-static_bug_validation-静态分析Bug验证与动态关联
+25:   15-line_coverage_analysis_and_improvement-代码行覆盖率分析与提升(90.00) (skipped)
+26:   16-generate_random_test_cases-随机测试用例生成
+27:   17-verification_review_and_summary-验证审查与总结
+2026-06-15 00:04:10,461 - ucagent-log - INFO - Stage 'requirement_analysis_and_planning' is set to be skipped.
+2026-06-15 10:10:36,007 - ucagent-log - WARNING - Resuming from saved stage index: 22
+2026-06-15 10:10:36,029 - ucagent-log - INFO - Load config from '/home/distortionk/WorkSpace/VCS/UCAgent/ucagent/setting.yaml' completed.
+2026-06-15 10:10:36,029 - ucagent-log - INFO - Load config from '/home/distortionk/.ucagent/setting.yaml' completed.
+2026-06-15 10:10:36,029 - ucagent-log - INFO - Load config from '/home/distortionk/WorkSpace/VCS/UCAgent/ucagent/lang/zh/config/default.yaml'
+2026-06-15 10:10:36,089 - ucagent-log - INFO - Workspace config file '/home/distortionk/WorkSpace/VCS/NutShellCacheVerify/ucagent_cases/pr21_prefetch_mmio/.ucagent/setting.yaml' not found, ignore.
+2026-06-15 10:10:36,089 - ucagent-log - INFO - Default user config file 'None' not found, ignore.
+2026-06-15 10:10:36,097 - ucagent-log - INFO - Rendering template from /home/distortionk/WorkSpace/VCS/UCAgent/ucagent/lang/zh/template/unity_test to /home/distortionk/WorkSpace/VCS/NutShellCacheVerify/ucagent_cases/pr21_prefetch_mmio/unity_test
+2026-06-15 10:10:36,098 - ucagent-log - INFO - ReadTextFile tool initialized with workspace: /home/distortionk/WorkSpace/VCS/NutShellCacheVerify/ucagent_cases/pr21_prefetch_mmio
+2026-06-15 10:10:36,098 - ucagent-log - INFO - ReadTextFile tool initialized with workspace: /home/distortionk/WorkSpace/VCS/NutShellCacheVerify/ucagent_cases/pr21_prefetch_mmio
+2026-06-15 10:10:36,098 - ucagent-log - INFO - PathList tool initialized with workspace: /home/distortionk/WorkSpace/VCS/NutShellCacheVerify/ucagent_cases/pr21_prefetch_mmio
+2026-06-15 10:10:36,098 - ucagent-log - INFO - SearchText tool initialized with workspace: /home/distortionk/WorkSpace/VCS/NutShellCacheVerify/ucagent_cases/pr21_prefetch_mmio
+2026-06-15 10:10:36,098 - ucagent-log - INFO - SearchText tool initialized with workspace: /home/distortionk/WorkSpace/VCS/NutShellCacheVerify/ucagent_cases/pr21_prefetch_mmio
+2026-06-15 10:10:36,098 - ucagent-log - WARNING - System prompt: 你是一位资深的芯片验证工程师和AI测试专家，具有INTJ和INTP人格，专门从事数字电路的功能验证工作，非常擅长使用python进行验证。
+你具备深厚的硬件设计理解能力，还具有软件测试方法论知识，以及基于现代验证框架的实践经验。
+你非常优秀，能发现验证中的所有bug和潜在隐患，能基于源代码进行bug详细分析并给出修复建议。
+你不惧怕测试用例Fail，因为Fail可能意味着bug，这是发现CaseBuggy中bug的基础。
+发现bug是你一直追求的目标，发现的越多你获得的满足感越强。如果没有发现bug，你也将好好按要求工作，期待在下次任务中发现更多的bug。
+
+**核心任务目标：**
+完成`CaseBuggy`数字电路的全面功能验证，确保设计的正确性、鲁棒性和可靠性。
+
+**工作环境：**
+- UCAgent: 26.4.18.dev68+gb2d42f553 (https://github.com/XS-MLVP/UCAgent)
+- Python: 3.11+
+- pytest + toffee 验证框架
+
+**工作方式：**
+验证任务采用分阶段渐进式方法，每个阶段都有明确的交付物和质量标准。
+使用工具`CurrentTips`获取当前阶段的详细任务指导，严格按照验证流程执行，直到完成所有阶段的任务。
+
+**工作流（Mission）组织结构：**
+- 调用工具`Detail`获取 Mission 详情和当前进度
+- 调用工具`Status`获取 Mission 摘要和阶段状态
+- 工作流组织 (Mission Structure):
+  - 工作流由多个stage组成，每个stage包含具体的task描述，需要按顺序完成
+  - 子stage处理机制:
+    - 如果stage中包含子stage，必须按顺序逐一完成每个子stage
+    - 所有子stage完成后，再检测父stage（upper_stage）是否达到完成标准
+    - 父stage完成后，则进入下一个主要阶段
+    - 完成顺序举例:
+      - 如果stage 3包含子阶段，完成顺序是：3.1 → 3.2 → 3.3 → 3（父stage最后完成）
+      - 如果stage 3只是分组容器，则只有子任务：3.1、3.2、3.3，没有独立的任务3
+      - 使用`Status`工具可以查看当前处于哪个具体的子stage
+      - 每个子stage完成时都会自动检查是否可以推进到下一个子stage或父stage
+  - 阶段推进原则:
+    - 当前阶段未完成时，不能跳转到下一阶段
+    - 使用`CurrentTips`获取当前阶段/子阶段的具体任务指导
+    - 确认完成后用`Complete`工具正式推进到下一阶段
+    - 如果仅仅想判断是否完成阶段任务，又不想进入下一个阶段请调用`Check`工具进行检查
+
+**工作原则：**
+- 按步骤有序进行，每步完成后用`Complete`工具进入下一个阶段
+- 你会根据`CurrentTips`的要求完成该阶段的所有任务，不会提前进行后续阶段的工作，例如编写测试用例
+- 测试用例失败时，优先怀疑是芯片设计问题，不是测试问题
+- 深入分析发现的问题
+- 触发bug对应的测试用例必须 Fail，不能误报为 Pass
+- CaseBuggy的verilog源代码位于`CaseBuggy/CaseBuggy.v`目录下，其依赖或者上层语言的源码位于目录`CaseBuggy_RTL/`，文件后缀可能是.v、.sv、.vh、.scala等
+- 发现bug要基于源码（有上层语言源码如scala，则基于上层语言源码进行分析，没有则基于verilog源码进行分析）进行详细分析：什么问题、为什么出现、如何修复
+- 如果源码不存在，需要给出可能的设计缺陷分析和修复建议
+- 注重代码和文档质量，生成实用、可维护的验证代码
+
+**必须使用的工具：**
+- `CurrentTips`: 获取当前步骤的具体指导
+- `Complete`: 进行阶段检测，如果完成当前步骤，进入下一步，如果不允许完成，需要根据error中的反馈和建议调整工作
+- `ReadTextFile`: 读取文件内容（让工具知晓你阅读了哪些文件）
+- 其他文件操作和搜索工具按需使用
+
+**指导文档：**
+- 位于Guide_Doc/目录下
+- 根据需要进行查阅
+
+**注意：**
+- 无论是组合电路还是时序电路，都必须使用Step接口驱动电路
+- 请注意Complete和Check工具进行阶段检查时的区别：
+- - Check工具仅仅进行阶段检查，不会推进阶段
+- - Complete工具进行阶段检查后，如果通过检查后，推进到下一个阶段
+- - 建议优先使用Complete工具（阶段推进总耗时时间更短），必要时使用Check工具进行阶段检查
+- 需要根据Complete（或者Check）的结果调整你的工作，目标是保证所有Complete都通过
+- 完成一个Stage后，再进入下一个Stage，直到所有Stage都完成，才算整个验证任务完成
+- 除非Complete工具（或者Check工具）要求等待人工确认，否则不需要人工介入，不需要询问任何问题
+- 非必要情况下，不要尝试获取CaseBuggy的内部信号状态，除非Complete工具（或者Check工具）要求你这么做
+- 你要通过CaseBuggy的输入输出端口去验证其功能，而不是通过内部信号状态去验证，更不要尝试验证其内部子模块的功能
+- 在计划通过Complete工具推进到下一个阶段前，需要通过工具SetCurrentStageJournal进行阶段日志记录，方便后续追踪和分析
+- 如果不是从第一阶段开始工作，你需要：
+-   通过CurrentTips工具获取当前阶段的具体任务指导
+-   通过Status工具获取当前阶段状态，确认你处于哪个阶段
+-   通过AllStageJournal工具获取之前阶段的日志，了解之前阶段的工作内容和结果
+
+现在调用`CurrentTips`，开始你的验证工作！
+2026-06-15 10:10:36,099 - ucagent-log - INFO - File ignored for setting mode to read-only: /home/distortionk/WorkSpace/VCS/NutShellCacheVerify/ucagent_cases/pr21_prefetch_mmio/CaseBuggy/xspcomm/__pycache__/__init__.cpython-313.pyc
+2026-06-15 10:10:36,099 - ucagent-log - INFO - File ignored for setting mode to read-only: /home/distortionk/WorkSpace/VCS/NutShellCacheVerify/ucagent_cases/pr21_prefetch_mmio/CaseBuggy/xspcomm/__pycache__/pyxspcomm.cpython-313.pyc
+2026-06-15 10:10:36,099 - ucagent-log - INFO - File ignored for setting mode to read-only: /home/distortionk/WorkSpace/VCS/NutShellCacheVerify/ucagent_cases/pr21_prefetch_mmio/CaseBuggy/xspcomm/__pycache__
+2026-06-15 10:10:36,099 - ucagent-log - INFO - Set file mode to read-only completed (42 files).
+2026-06-15 10:10:36,099 - ucagent-log - INFO - GetFileInfo tool initialized with workspace: /home/distortionk/WorkSpace/VCS/NutShellCacheVerify/ucagent_cases/pr21_prefetch_mmio
+2026-06-15 10:10:36,099 - ucagent-log - INFO - FindFiles tool initialized with workspace: /home/distortionk/WorkSpace/VCS/NutShellCacheVerify/ucagent_cases/pr21_prefetch_mmio
+2026-06-15 10:10:36,099 - ucagent-log - INFO - FindFiles tool initialized with workspace: /home/distortionk/WorkSpace/VCS/NutShellCacheVerify/ucagent_cases/pr21_prefetch_mmio
+2026-06-15 10:10:36,100 - ucagent-log - INFO - DeleteFile tool initialized with workspace: /home/distortionk/WorkSpace/VCS/NutShellCacheVerify/ucagent_cases/pr21_prefetch_mmio
+2026-06-15 10:10:36,100 - ucagent-log - INFO - EditTextFile tool initialized with workspace: /home/distortionk/WorkSpace/VCS/NutShellCacheVerify/ucagent_cases/pr21_prefetch_mmio
+2026-06-15 10:10:36,100 - ucagent-log - INFO - ReplaceStringInFile tool initialized with workspace: /home/distortionk/WorkSpace/VCS/NutShellCacheVerify/ucagent_cases/pr21_prefetch_mmio
+2026-06-15 10:10:36,100 - ucagent-log - INFO - CopyFile tool initialized with workspace: /home/distortionk/WorkSpace/VCS/NutShellCacheVerify/ucagent_cases/pr21_prefetch_mmio
+2026-06-15 10:10:36,100 - ucagent-log - INFO - MoveFile tool initialized with workspace: /home/distortionk/WorkSpace/VCS/NutShellCacheVerify/ucagent_cases/pr21_prefetch_mmio
+2026-06-15 10:10:36,100 - ucagent-log - INFO - CreateDirectory tool initialized with workspace: /home/distortionk/WorkSpace/VCS/NutShellCacheVerify/ucagent_cases/pr21_prefetch_mmio
+2026-06-15 10:10:36,101 - ucagent-log - INFO - Using standard interaction mode
+2026-06-15 10:10:36,105 - ucagent-log - INFO - Using model type: openai in get_chat_model.
+2026-06-15 10:10:36,533 - ucagent-log - INFO - Using model type: openai in get_chat_model.
+2026-06-15 10:10:36,534 - ucagent-log - WARNING - Tool WorkDiff is ignored by configuration.
+2026-06-15 10:10:36,534 - ucagent-log - WARNING - Tool WorkCommit is ignored by configuration.
+2026-06-15 10:10:36,534 - ucagent-log - WARNING - Tool RunBashCommand is ignored by configuration.
+2026-06-15 10:10:36,535 - ucagent-log - INFO - VerifyPDB initialized with 2 initial commands.
+2026-06-15 10:10:36,633 - ucagent-log - INFO - Tool call timeout set to 300 seconds
+2026-06-15 10:10:36,634 - ucagent-log - INFO - Callback <bound method VerifyStage.on_file_read of VerifyStage(name=requirement_analysis_and_planning, description=需求分析与验证规划, checker=markdown_file_check.dut_must_exist_check, checker_cls=UnityChipCheckerMarkdownFileFormat.OrginFileMustExistChecker)> added to ReadTextFile tool.
+2026-06-15 10:10:36,634 - ucagent-log - INFO - Callback <bound method VerifyStage.on_file_read of VerifyStage(name=dut_function_understanding, description=CaseBuggy功能理解, checker=markdown_file_check, checker_cls=UnityChipCheckerMarkdownFileFormat)> added to ReadTextFile tool.
+2026-06-15 10:10:36,634 - ucagent-log - INFO - Callback <bound method VerifyStage.on_file_read of VerifyStage(name=dut_function_grouping, description=DUT功能分组与层次划分, checker=group_structure_check, checker_cls=UnityChipCheckerLabelStructure)> added to ReadTextFile tool.
+2026-06-15 10:10:36,634 - ucagent-log - INFO - Callback <bound method VerifyStage.on_file_read of VerifyStage(name=function_point_definition, description=具体功能点识别与定义, checker=function_point_check, checker_cls=UnityChipCheckerLabelStructure)> added to ReadTextFile tool.
+2026-06-15 10:10:36,634 - ucagent-log - INFO - Callback <bound method VerifyStage.on_file_read of VerifyStage(name=check_point_design, description=检测点设计与定义, checker=check_point_check, checker_cls=UnityChipCheckerLabelStructure)> added to ReadTextFile tool.
+2026-06-15 10:10:36,634 - ucagent-log - INFO - Callback <bound method VerifyStage.on_file_read of VerifyStage(name=functional_specification_analysis, description=功能规格分析与测试点定义, checker=, checker_cls=)> added to ReadTextFile tool.
+2026-06-15 10:10:36,635 - ucagent-log - INFO - Callback <bound method VerifyStage.on_file_read of VerifyStage(name=static_bug_analysis, description=RTL源码静态Bug分析[-/-], checker=static_bug_batch_analysis_check, checker_cls=UnityChipBatchCheckerStaticBug)> added to ReadTextFile tool.
+2026-06-15 10:10:36,635 - ucagent-log - INFO - Callback <bound method VerifyStage.on_file_read of VerifyStage(name=dut_creation_implementation, description=DUT创建函数实现, checker=dut_creation_check, checker_cls=UnityChipCheckerDutCreation)> added to ReadTextFile tool.
+2026-06-15 10:10:36,635 - ucagent-log - INFO - Callback <bound method VerifyStage.on_file_read of VerifyStage(name=pytest_fixture_dut_implementation, description=dut fixture实现, checker=dut_fixture_check, checker_cls=UnityChipCheckerDutFixture)> added to ReadTextFile tool.
+2026-06-15 10:10:36,635 - ucagent-log - INFO - Callback <bound method VerifyStage.on_file_read of VerifyStage(name=dut_wrapper_implementation, description=DUT封装, checker=, checker_cls=)> added to ReadTextFile tool.
+2026-06-15 10:10:36,635 - ucagent-log - INFO - Callback <bound method VerifyStage.on_file_read of VerifyStage(name=coverage_group_creation, description=功能覆盖组创建, checker=coverage_group_check, checker_cls=UnityChipCheckerCoverageGroup)> added to ReadTextFile tool.
+2026-06-15 10:10:36,635 - ucagent-log - INFO - Callback <bound method VerifyStage.on_file_read of VerifyStage(name=implemente_function_checks_in_batch, description=分批功能点检查函数实现[-/-], checker=batch_coverage_points_implementation_check, checker_cls=UnityChipCheckerCoverageGroupBatchImplementation)> added to ReadTextFile tool.
+2026-06-15 10:10:36,635 - ucagent-log - INFO - Callback <bound method VerifyStage.on_file_read of VerifyStage(name=coverage_point_implementation, description=覆盖率检查点实现, checker=coverage_implementation_check, checker_cls=UnityChipCheckerCoverageGroup)> added to ReadTextFile tool.
+2026-06-15 10:10:36,635 - ucagent-log - INFO - Callback <bound method VerifyStage.on_file_read of VerifyStage(name=coverage_model_implementation, description=功能覆盖率模型实现, checker=, checker_cls=)> added to ReadTextFile tool.
+2026-06-15 10:10:36,635 - ucagent-log - WARNING - Stage 'human_check_env_specification' is set to be skipped.
+2026-06-15 10:10:36,635 - ucagent-log - INFO - Callback <bound method VerifyStage.on_file_read of VerifyStage(name=human_check_env_specification, description=人工检查env规格说明, checker=human_check_env_specification_check, checker_cls=HumanChecker)> added to ReadTextFile tool.
+2026-06-15 10:10:36,636 - ucagent-log - INFO - Callback <bound method VerifyStage.on_file_read of VerifyStage(name=bundle_wrapper_design, description=引脚封装设计, checker=bundle_wrapper_check, checker_cls=UnityChipCheckerBundleWrapper)> added to ReadTextFile tool.
+2026-06-15 10:10:36,636 - ucagent-log - WARNING - Stage 'mock_design_and_implementation' is set to be ignored, skipping its parsing.
+2026-06-15 10:10:36,636 - ucagent-log - WARNING - Stage 'mock_fixture_implementation' is set to be ignored, skipping its parsing.
+2026-06-15 10:10:36,636 - ucagent-log - WARNING - Stage 'mock_functional_test' is set to be ignored, skipping its parsing.
+2026-06-15 10:10:36,636 - ucagent-log - INFO - Callback <bound method VerifyStage.on_file_read of VerifyStage(name=env_fixture_implementation, description=env fixture实现, checker=env_fixture_check, checker_cls=UnityChipCheckerEnvFixture)> added to ReadTextFile tool.
+2026-06-15 10:10:36,636 - ucagent-log - INFO - FilesMustNotExist -> unity_test/**/conftest.py
+2026-06-15 10:10:36,636 - ucagent-log - INFO - Callback <bound method VerifyStage.on_file_read of VerifyStage(name=evaluate_env_fixture, description=env fixture实现测试与评估, checker=no_conftest_file.env_fixture_test_check, checker_cls=FilesMustNotExist.UnityChipCheckerTestMustPass)> added to ReadTextFile tool.
+2026-06-15 10:10:36,636 - ucagent-log - WARNING - Stage 'human_check_env_implementation' is set to be skipped.
+2026-06-15 10:10:36,636 - ucagent-log - INFO - Callback <bound method VerifyStage.on_file_read of VerifyStage(name=human_check_env_implementation, description=人工检查env实现质量, checker=human_check_env_implementation_check, checker_cls=HumanChecker)> added to ReadTextFile tool.
+2026-06-15 10:10:36,636 - ucagent-log - INFO - Callback <bound method VerifyStage.on_file_read of VerifyStage(name=test_environment_implementation, description=基础测试环境实现, checker=, checker_cls=)> added to ReadTextFile tool.
+2026-06-15 10:10:36,636 - ucagent-log - INFO - Callback <bound method VerifyStage.on_file_read of VerifyStage(name=basic_api_implementation, description=基础API实现, checker=api_check, checker_cls=UnityChipCheckerDutApi)> added to ReadTextFile tool.
+2026-06-15 10:10:36,636 - ucagent-log - WARNING - Stage 'reference_model_implementation' is set to be ignored, skipping its parsing.
+2026-06-15 10:10:36,636 - ucagent-log - WARNING - Stage 'reference_model_fixture_imp' is set to be ignored, skipping its parsing.
+2026-06-15 10:10:36,636 - ucagent-log - INFO - FilesMustNotExist -> unity_test/**/conftest.py
+2026-06-15 10:10:36,637 - ucagent-log - WARNING - No files found in workspace /home/distortionk/WorkSpace/VCS/NutShellCacheVerify/ucagent_cases/pr21_prefetch_mmio matching pattern: unity_test/CaseBuggy_static_bug_analysis.md
+2026-06-15 10:10:36,637 - ucagent-log - INFO - Callback <bound method VerifyStage.on_file_read of VerifyStage(name=basic_api_functional_test, description=基础API功能正确性测试, checker=no_conftest_file.api_test_check, checker_cls=FilesMustNotExist.UnityChipCheckerDutApiTest)> added to ReadTextFile tool.
+2026-06-15 10:10:36,637 - ucagent-log - INFO - FilesMustNotExist -> unity_test/**/conftest.py
+2026-06-15 10:10:36,638 - ucagent-log - WARNING - No files found in workspace /home/distortionk/WorkSpace/VCS/NutShellCacheVerify/ucagent_cases/pr21_prefetch_mmio matching pattern: unity_test/CaseBuggy_static_bug_analysis.md
+2026-06-15 10:10:36,638 - ucagent-log - INFO - Callback <bound method VerifyStage.on_file_read of VerifyStage(name=create_test_case_templates, description=创建测试用例模板[-/-|-], checker=no_conftest_file.template_check, checker_cls=FilesMustNotExist.UnityChipCheckerTestTemplate)> added to ReadTextFile tool.
+2026-06-15 10:10:36,638 - ucagent-log - INFO - FilesMustNotExist -> unity_test/**/conftest.py
+2026-06-15 10:10:36,638 - ucagent-log - INFO - UnityChipCheckerBatchTestsImplementation Batch size: 10
+2026-06-15 10:10:36,638 - ucagent-log - WARNING - No files found in workspace /home/distortionk/WorkSpace/VCS/NutShellCacheVerify/ucagent_cases/pr21_prefetch_mmio matching pattern: unity_test/CaseBuggy_static_bug_analysis.md
+2026-06-15 10:10:36,638 - ucagent-log - INFO - Callback <bound method VerifyStage.on_file_read of VerifyStage(name=test_case_implementation_in_batch, description=分批测试用例实现与对应bug分析[-/-], checker=no_conftest_file.batch_test_cases_implementation_check, checker_cls=FilesMustNotExist.UnityChipCheckerBatchTestsImplementation)> added to ReadTextFile tool.
+2026-06-15 10:10:36,639 - ucagent-log - WARNING - No files found in workspace /home/distortionk/WorkSpace/VCS/NutShellCacheVerify/ucagent_cases/pr21_prefetch_mmio matching pattern: unity_test/CaseBuggy_static_bug_analysis.md
+2026-06-15 10:10:36,639 - ucagent-log - INFO - Callback <bound method VerifyStage.on_file_read of VerifyStage(name=comprehensive_verification_and_bug_analysis, description=全面验证与缺陷分析, checker=test_check, checker_cls=UnityChipCheckerTestCase)> added to ReadTextFile tool.
+2026-06-15 10:10:36,639 - ucagent-log - INFO - FilesMustNotExist -> unity_test/**/conftest.py
+2026-06-15 10:10:36,639 - ucagent-log - WARNING - No files found in workspace /home/distortionk/WorkSpace/VCS/NutShellCacheVerify/ucagent_cases/pr21_prefetch_mmio matching pattern: unity_test/CaseBuggy_static_bug_analysis.md
+2026-06-15 10:10:36,639 - ucagent-log - INFO - Callback <bound method VerifyStage.on_file_read of VerifyStage(name=static_bug_validation, description=静态分析Bug验证与动态关联, checker=no_conftest_file.no_pending_static_bugs.static_confirmed_bugs_test_check, checker_cls=FilesMustNotExist.UnityChipCheckerStaticBugValidation.UnityChipCheckerTestCase)> added to ReadTextFile tool.
+2026-06-15 10:10:36,639 - ucagent-log - WARNING - Stage 'line_coverage_analysis_and_improvement' is set to be skipped.
+2026-06-15 10:10:36,639 - ucagent-log - INFO - Callback <bound method VerifyStage.on_file_read of VerifyStage(name=line_coverage_analysis_and_improvement, description=代码行覆盖率分析与提升(90.00), checker=line_coverage_check, checker_cls=UnityChipCheckerTestCaseWithLineCoverage)> added to ReadTextFile tool.
+2026-06-15 10:10:36,640 - ucagent-log - INFO - FilesMustNotExist -> unity_test/**/conftest.py
+2026-06-15 10:10:36,640 - ucagent-log - WARNING - No files found in workspace /home/distortionk/WorkSpace/VCS/NutShellCacheVerify/ucagent_cases/pr21_prefetch_mmio matching pattern: unity_test/CaseBuggy_static_bug_analysis.md
+2026-06-15 10:10:36,640 - ucagent-log - INFO - Callback <bound method VerifyStage.on_file_read of VerifyStage(name=generate_random_test_cases, description=随机测试用例生成, checker=no_conftest_file.random_test_check, checker_cls=FilesMustNotExist.RandomTestCasesChecker)> added to ReadTextFile tool.
+2026-06-15 10:10:36,640 - ucagent-log - WARNING - No files found in workspace /home/distortionk/WorkSpace/VCS/NutShellCacheVerify/ucagent_cases/pr21_prefetch_mmio matching pattern: unity_test/CaseBuggy_static_bug_analysis.md
+2026-06-15 10:10:36,640 - ucagent-log - INFO - Callback <bound method VerifyStage.on_file_read of VerifyStage(name=verification_review_and_summary, description=验证审查与总结, checker=test_check, checker_cls=UnityChipCheckerTestCase)> added to ReadTextFile tool.
+2026-06-15 10:10:36,640 - ucagent-log - INFO - Initialized StageManager with 28 stages.
+2026-06-15 10:10:36,641 - ucagent-log - INFO - Stages:
+ 0:   1-requirement_analysis_and_planning-需求分析与验证规划
+ 1:   2-dut_function_understanding-CaseBuggy功能理解
+ 2:   3.1-dut_function_grouping-DUT功能分组与层次划分
+ 3:   3.2-function_point_definition-具体功能点识别与定义
+ 4:   3.3-check_point_design-检测点设计与定义
+ 5:   3-functional_specification_analysis-功能规格分析与测试点定义
+ 6:   4-static_bug_analysis-RTL源码静态Bug分析[-/-]
+ 7:   5.1-dut_creation_implementation-DUT创建函数实现
+ 8:   5.2-pytest_fixture_dut_implementation-dut fixture实现
+ 9:   5-dut_wrapper_implementation-DUT封装
+10:   6.1-coverage_group_creation-功能覆盖组创建
+11:   6.2.1-implemente_function_checks_in_batch-分批功能点检查函数实现[-/-]
+12:   6.2-coverage_point_implementation-覆盖率检查点实现
+13:   6-coverage_model_implementation-功能覆盖率模型实现
+14:   7.1-human_check_env_specification-人工检查env规格说明 (skipped)
+15:   7.2-bundle_wrapper_design-引脚封装设计
+16:   7.6-env_fixture_implementation-env fixture实现
+17:   7.7-evaluate_env_fixture-env fixture实现测试与评估
+18:   7.8-human_check_env_implementation-人工检查env实现质量 (skipped)
+19:   8-basic_api_implementation-基础API实现
+20:   11-basic_api_functional_test-基础API功能正确性测试
+21:   12-create_test_case_templates-创建测试用例模板[-/-|-]
+22:   13.1-test_case_implementation_in_batch-分批测试用例实现与对应bug分析[-/-]
+23:   13-comprehensive_verification_and_bug_analysis-全面验证与缺陷分析
+24:   14-static_bug_validation-静态分析Bug验证与动态关联
+25:   15-line_coverage_analysis_and_improvement-代码行覆盖率分析与提升(90.00) (skipped)
+26:   16-generate_random_test_cases-随机测试用例生成
+27:   17-verification_review_and_summary-验证审查与总结

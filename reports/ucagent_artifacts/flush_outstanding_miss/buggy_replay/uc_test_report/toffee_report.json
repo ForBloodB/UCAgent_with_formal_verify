@@ -1,0 +1,186 @@
+{
+    "config": "<_pytest.config.Config object at 0x741db7d41dd0>",
+    "tests": [
+        {
+            "item": "<Function test_flush_before_refill_no_early_response>",
+            "phases": [
+                {
+                    "call": "<CallInfo when='setup' result: None>",
+                    "report": "<TestReport 'tests/test_CaseFixed_flush_outstanding_miss.py::test_flush_before_refill_no_early_response' when='setup' outcome='passed'>",
+                    "log_records": [],
+                    "sections": [],
+                    "status": {
+                        "category": "",
+                        "letter": "",
+                        "word": "",
+                        "style": {}
+                    }
+                },
+                {
+                    "call": "<CallInfo when='call' excinfo=<ExceptionInfo AssertionError('flush\u671f\u95f4\u4e0d\u5e94\u63d0\u524d\u54cd\u5e94cpu_resp_valid\uff1amiss_outstanding=1, flush_valid=1, mem_resp_valid=0 \u2192 cpu_resp_valid=1, \u9884\u671f=0\\nassert 1 == 0') tblen=32>>",
+                    "report": "<TestReport 'tests/test_CaseFixed_flush_outstanding_miss.py::test_flush_before_refill_no_early_response' when='call' outcome='failed'>",
+                    "log_records": [],
+                    "sections": [],
+                    "status": {
+                        "category": "failed",
+                        "letter": "F",
+                        "word": "FAILED",
+                        "style": {}
+                    }
+                },
+                {
+                    "call": "<CallInfo when='teardown' result: None>",
+                    "report": "<TestReport 'tests/test_CaseFixed_flush_outstanding_miss.py::test_flush_before_refill_no_early_response' when='teardown' outcome='passed'>",
+                    "log_records": [],
+                    "sections": [],
+                    "status": {
+                        "category": "",
+                        "letter": "",
+                        "word": "",
+                        "style": {}
+                    }
+                }
+            ],
+            "started": 1781500099.6003165,
+            "ended": 1781500099.6343255,
+            "status": {
+                "category": "failed",
+                "letter": "F",
+                "word": "FAILED",
+                "style": {}
+            }
+        },
+        {
+            "item": "<Function test_refill_response_after_memory>",
+            "phases": [
+                {
+                    "call": "<CallInfo when='setup' result: None>",
+                    "report": "<TestReport 'tests/test_CaseFixed_flush_outstanding_miss.py::test_refill_response_after_memory' when='setup' outcome='passed'>",
+                    "log_records": [],
+                    "sections": [],
+                    "status": {
+                        "category": "",
+                        "letter": "",
+                        "word": "",
+                        "style": {}
+                    }
+                },
+                {
+                    "call": "<CallInfo when='call' excinfo=<ExceptionInfo AssertionError('refill\u5230\u8fbe\u540e\u5e94\u5141\u8bb8\u54cd\u5e94cpu_resp_valid\uff1amiss_outstanding=1, flush_valid=0, mem_resp_valid=1 \u2192 cpu_resp_valid=0, \u9884\u671f=1\\nassert 0 == 1') tblen=32>>",
+                    "report": "<TestReport 'tests/test_CaseFixed_flush_outstanding_miss.py::test_refill_response_after_memory' when='call' outcome='failed'>",
+                    "log_records": [],
+                    "sections": [],
+                    "status": {
+                        "category": "failed",
+                        "letter": "F",
+                        "word": "FAILED",
+                        "style": {}
+                    }
+                },
+                {
+                    "call": "<CallInfo when='teardown' result: None>",
+                    "report": "<TestReport 'tests/test_CaseFixed_flush_outstanding_miss.py::test_refill_response_after_memory' when='teardown' outcome='passed'>",
+                    "log_records": [],
+                    "sections": [],
+                    "status": {
+                        "category": "",
+                        "letter": "",
+                        "word": "",
+                        "style": {}
+                    }
+                }
+            ],
+            "started": 1781500099.6344757,
+            "ended": 1781500099.6398003,
+            "status": {
+                "category": "failed",
+                "letter": "F",
+                "word": "FAILED",
+                "style": {}
+            }
+        }
+    ],
+    "warnings": [],
+    "session": "<Session  exitstatus=<ExitCode.TESTS_FAILED: 1> testsfailed=2 testscollected=2>",
+    "started": 1781500099.5644193,
+    "items": {
+        "tests/test_CaseFixed_flush_outstanding_miss.py::test_flush_before_refill_no_early_response": "<Function test_flush_before_refill_no_early_response>",
+        "tests/test_CaseFixed_flush_outstanding_miss.py::test_refill_response_after_memory": "<Function test_refill_response_after_memory>"
+    },
+    "ended": 1781500099.6398602,
+    "colors": {
+        "passed": [
+            "#43A047",
+            "#FFFFFF"
+        ],
+        "failed": [
+            "#F44336",
+            "#FFFFFF"
+        ],
+        "error": [
+            "#B71C1C",
+            "#FFFFFF"
+        ],
+        "xfailed": [
+            "#EF9A9A",
+            "#222222"
+        ],
+        "xpassed": [
+            "#A5D6A7",
+            "#222222"
+        ],
+        "skipped": [
+            "#9E9E9E",
+            "#FFFFFF"
+        ],
+        "notrun": [
+            "#9E9E9E",
+            "#FFFFFF"
+        ],
+        "rerun": [
+            "#FBC02D",
+            "#222222"
+        ],
+        "warning": [
+            "#FBC02D",
+            "#222222"
+        ],
+        "green": [
+            "#43A047",
+            "#FFFFFF"
+        ],
+        "red": [
+            "#E53935",
+            "#FFFFFF"
+        ],
+        "yellow": [
+            "#FBC02D",
+            "#222222"
+        ]
+    },
+    "time_format": "%Y-%m-%d %H:%M:%S",
+    "metadata": {},
+    "user": {
+        "name": "Tofee",
+        "email": "-"
+    },
+    "title": "Toffee Test Report",
+    "coverages": {
+        "line": null,
+        "functional": {
+            "groups": [],
+            "group_num_total": 0,
+            "group_num_hints": 0,
+            "point_num_total": 0,
+            "point_num_hints": 0,
+            "bin_num_total": 0,
+            "bin_num_hints": 0,
+            "grate": 100,
+            "has_once": false
+        }
+    },
+    "test_abstract_info": {
+        "/home/distortionk/WorkSpace/VCS/NutShellCacheVerify/ucagent_cases/flush_outstanding_miss/unity_test/tests/test_CaseFixed_flush_outstanding_miss.py:18-46::test_flush_before_refill_no_early_response": "FAILED",
+        "/home/distortionk/WorkSpace/VCS/NutShellCacheVerify/ucagent_cases/flush_outstanding_miss/unity_test/tests/test_CaseFixed_flush_outstanding_miss.py:49-77::test_refill_response_after_memory": "FAILED"
+    }
+}

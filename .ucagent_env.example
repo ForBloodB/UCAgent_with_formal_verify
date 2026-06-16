@@ -1,0 +1,9 @@
+# Source this file before running scripts/30_run_ucagent_three_cases.sh.
+# Fill these values with your OpenAI-compatible endpoint.
+export OPENAI_API_BASE="https://your-openai-compatible-endpoint/v1"
+export OPENAI_API_KEY="replace-me"
+export OPENAI_MODEL="replace-me"
+
+# Optional knobs.
+export UCAGENT_BACKEND="langchain"
+export UCAGENT_TIMEOUT="900"

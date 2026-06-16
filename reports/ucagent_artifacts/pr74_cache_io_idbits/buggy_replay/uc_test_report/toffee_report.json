@@ -1,0 +1,186 @@
+{
+    "config": "<_pytest.config.Config object at 0x78e51e87de50>",
+    "tests": [
+        {
+            "item": "<Function test_nonzero_request_id_preserved>",
+            "phases": [
+                {
+                    "call": "<CallInfo when='setup' result: None>",
+                    "report": "<TestReport 'tests/test_CaseFixed_pr74_cache_io_idbits.py::test_nonzero_request_id_preserved' when='setup' outcome='passed'>",
+                    "log_records": [],
+                    "sections": [],
+                    "status": {
+                        "category": "",
+                        "letter": "",
+                        "word": "",
+                        "style": {}
+                    }
+                },
+                {
+                    "call": "<CallInfo when='call' excinfo=<ExceptionInfo AssertionError('\u975e\u96f6req_id=0xa \u7684resp_id=0x0\u4e0d\u5339\u914d\uff0c\u671f\u671bresp_id=0xa\\nassert 0 == 10') tblen=32>>",
+                    "report": "<TestReport 'tests/test_CaseFixed_pr74_cache_io_idbits.py::test_nonzero_request_id_preserved' when='call' outcome='failed'>",
+                    "log_records": [],
+                    "sections": [],
+                    "status": {
+                        "category": "failed",
+                        "letter": "F",
+                        "word": "FAILED",
+                        "style": {}
+                    }
+                },
+                {
+                    "call": "<CallInfo when='teardown' result: None>",
+                    "report": "<TestReport 'tests/test_CaseFixed_pr74_cache_io_idbits.py::test_nonzero_request_id_preserved' when='teardown' outcome='passed'>",
+                    "log_records": [],
+                    "sections": [],
+                    "status": {
+                        "category": "",
+                        "letter": "",
+                        "word": "",
+                        "style": {}
+                    }
+                }
+            ],
+            "started": 1781499831.1375837,
+            "ended": 1781499831.187012,
+            "status": {
+                "category": "failed",
+                "letter": "F",
+                "word": "FAILED",
+                "style": {}
+            }
+        },
+        {
+            "item": "<Function test_multiple_request_ids_preserved>",
+            "phases": [
+                {
+                    "call": "<CallInfo when='setup' result: None>",
+                    "report": "<TestReport 'tests/test_CaseFixed_pr74_cache_io_idbits.py::test_multiple_request_ids_preserved' when='setup' outcome='passed'>",
+                    "log_records": [],
+                    "sections": [],
+                    "status": {
+                        "category": "",
+                        "letter": "",
+                        "word": "",
+                        "style": {}
+                    }
+                },
+                {
+                    "call": "<CallInfo when='call' excinfo=<ExceptionInfo AssertionError('\u975e\u96f6req_id=0x1 \u7684resp_id=0x0\u4e0d\u5339\u914d\uff0c\u671f\u671bresp_id=0x1\\nassert 0 == 1') tblen=32>>",
+                    "report": "<TestReport 'tests/test_CaseFixed_pr74_cache_io_idbits.py::test_multiple_request_ids_preserved' when='call' outcome='failed'>",
+                    "log_records": [],
+                    "sections": [],
+                    "status": {
+                        "category": "failed",
+                        "letter": "F",
+                        "word": "FAILED",
+                        "style": {}
+                    }
+                },
+                {
+                    "call": "<CallInfo when='teardown' result: None>",
+                    "report": "<TestReport 'tests/test_CaseFixed_pr74_cache_io_idbits.py::test_multiple_request_ids_preserved' when='teardown' outcome='passed'>",
+                    "log_records": [],
+                    "sections": [],
+                    "status": {
+                        "category": "",
+                        "letter": "",
+                        "word": "",
+                        "style": {}
+                    }
+                }
+            ],
+            "started": 1781499831.1872413,
+            "ended": 1781499831.1948164,
+            "status": {
+                "category": "failed",
+                "letter": "F",
+                "word": "FAILED",
+                "style": {}
+            }
+        }
+    ],
+    "warnings": [],
+    "session": "<Session  exitstatus=<ExitCode.TESTS_FAILED: 1> testsfailed=2 testscollected=2>",
+    "started": 1781499831.1107202,
+    "items": {
+        "tests/test_CaseFixed_pr74_cache_io_idbits.py::test_nonzero_request_id_preserved": "<Function test_nonzero_request_id_preserved>",
+        "tests/test_CaseFixed_pr74_cache_io_idbits.py::test_multiple_request_ids_preserved": "<Function test_multiple_request_ids_preserved>"
+    },
+    "ended": 1781499831.1949258,
+    "colors": {
+        "passed": [
+            "#43A047",
+            "#FFFFFF"
+        ],
+        "failed": [
+            "#F44336",
+            "#FFFFFF"
+        ],
+        "error": [
+            "#B71C1C",
+            "#FFFFFF"
+        ],
+        "xfailed": [
+            "#EF9A9A",
+            "#222222"
+        ],
+        "xpassed": [
+            "#A5D6A7",
+            "#222222"
+        ],
+        "skipped": [
+            "#9E9E9E",
+            "#FFFFFF"
+        ],
+        "notrun": [
+            "#9E9E9E",
+            "#FFFFFF"
+        ],
+        "rerun": [
+            "#FBC02D",
+            "#222222"
+        ],
+        "warning": [
+            "#FBC02D",
+            "#222222"
+        ],
+        "green": [
+            "#43A047",
+            "#FFFFFF"
+        ],
+        "red": [
+            "#E53935",
+            "#FFFFFF"
+        ],
+        "yellow": [
+            "#FBC02D",
+            "#222222"
+        ]
+    },
+    "time_format": "%Y-%m-%d %H:%M:%S",
+    "metadata": {},
+    "user": {
+        "name": "Tofee",
+        "email": "-"
+    },
+    "title": "Toffee Test Report",
+    "coverages": {
+        "line": null,
+        "functional": {
+            "groups": [],
+            "group_num_total": 0,
+            "group_num_hints": 0,
+            "point_num_total": 0,
+            "point_num_hints": 0,
+            "bin_num_total": 0,
+            "bin_num_hints": 0,
+            "grate": 100,
+            "has_once": false
+        }
+    },
+    "test_abstract_info": {
+        "/home/distortionk/WorkSpace/VCS/NutShellCacheVerify/ucagent_cases/pr74_cache_io_idbits/unity_test/tests/test_CaseFixed_pr74_cache_io_idbits.py:18-40::test_nonzero_request_id_preserved": "FAILED",
+        "/home/distortionk/WorkSpace/VCS/NutShellCacheVerify/ucagent_cases/pr74_cache_io_idbits/unity_test/tests/test_CaseFixed_pr74_cache_io_idbits.py:43-69::test_multiple_request_ids_preserved": "FAILED"
+    }
+}

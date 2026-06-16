@@ -1,0 +1,85 @@
+make: Entering directory '/home/distortionk/WorkSpace/VCS/NutShellCacheVerify/ucagent_cases/pr74_cache_io_idbits'
+============================= test session starts ==============================
+platform linux -- Python 3.11.15, pytest-9.0.3, pluggy-1.6.0
+rootdir: /home/distortionk/WorkSpace/VCS/NutShellCacheVerify/ucagent_cases/pr74_cache_io_idbits/unity_test
+configfile: .pytest.ini
+plugins: reporter-0.5.3, reporter-html1-0.9.0, toffee-test-0.3.2.dev23+g4d2b59364, asyncio-1.4.0, anyio-4.13.0, xdist-3.8.0, langsmith-0.8.9
+asyncio: mode=Mode.STRICT, debug=False, asyncio_default_fixture_loop_scope=function, asyncio_default_test_loop_scope=function
+collected 2 items
+
+unity_test/tests/test_CaseFixed_pr74_cache_io_idbits.py FF
+
+=================================== FAILURES ===================================
+______________________ test_nonzero_request_id_preserved _______________________
+
+    def test_nonzero_request_id_preserved():
+        """测试单个非零请求ID的传递保持功能
+    
+        验证对于非零req_id（如0xA），resp_id必须等于req_id，
+        不会被DUT内部逻辑错误地置零。
+        这是对CK-NONZERO_ID_PRESERVED检测点的验证。
+        """
+        dut, env, fc_cover = _make_env()
+        try:
+            fc_cover["FG-API"].mark_function(
+                "FC-ID_ROUNDTRIP",
+                test_nonzero_request_id_preserved,
+                ["CK-NONZERO_ID_PRESERVED"],
+            )
+            # 使用README建议的典型非零ID值0xA
+            test_req_id = 0xA
+            resp_id = api_CaseFixed_id_roundtrip(env, test_req_id)
+>           assert resp_id == test_req_id, (
+                f"非零req_id={test_req_id:#x} 的resp_id={resp_id:#x}不匹配，"
+                f"期望resp_id={test_req_id:#x}"
+            )
+E           AssertionError: 非零req_id=0xa 的resp_id=0x0不匹配，期望resp_id=0xa
+E           assert 0 == 10
+
+unity_test/tests/test_CaseFixed_pr74_cache_io_idbits.py:35: AssertionError
+_____________________ test_multiple_request_ids_preserved ______________________
+
+    def test_multiple_request_ids_preserved():
+        """测试多个不同非零请求ID的传递保持功能
+    
+        验证多个不同非零req_id（典型值、边界值、特殊值）都能正确传递，
+        resp_id必须等于req_id，避免只检查单一常量的情况。
+        这是对CK-MULTIPLE_ID_VALUES检测点的验证。
+        """
+        dut, env, fc_cover = _make_env()
+        try:
+            fc_cover["FG-API"].mark_function(
+                "FC-ID_ROUNDTRIP",
+                test_multiple_request_ids_preserved,
+                ["CK-MULTIPLE_ID_VALUES"],
+            )
+            # 使用多种非零ID值确保覆盖：
+            # - 边界值：最小值0x1，最大值0xF
+            # - 典型值：0x5, 0xA（README建议）
+            # - 特殊值：0x7（中间值），0x3
+            test_req_ids = [0x1, 0x3, 0x5, 0x7, 0xA, 0xF]
+            for test_req_id in test_req_ids:
+                resp_id = api_CaseFixed_id_roundtrip(env, test_req_id)
+>               assert resp_id == test_req_id, (
+                    f"非零req_id={test_req_id:#x} 的resp_id={resp_id:#x}不匹配，"
+                    f"期望resp_id={test_req_id:#x}"
+                )
+E               AssertionError: 非零req_id=0x1 的resp_id=0x0不匹配，期望resp_id=0x1
+E               assert 0 == 1
+
+unity_test/tests/test_CaseFixed_pr74_cache_io_idbits.py:64: AssertionError
+=============================== warnings summary ===============================
+../../../../../.miniforge3/envs/ucagent/lib/python3.11/site-packages/pytest_reporter_html1/plugin.py:91
+../../../../../.miniforge3/envs/ucagent/lib/python3.11/site-packages/pytest_reporter_html1/plugin.py:91
+  /home/distortionk/.miniforge3/envs/ucagent/lib/python3.11/site-packages/pytest_reporter_html1/plugin.py:91: PendingDeprecationWarning: Argument "writer_name" will be removed in Docutils 2.0.  Specify writer name in the "writer" argument.
+    env.filters["rst"] = lambda s: publish_parts(source=s, writer_name="html5")["body"]
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+- generated report: /home/distortionk/WorkSpace/VCS/NutShellCacheVerify/ucagent_cases/pr74_cache_io_idbits/uc_test_report/index.html -
+=========================== short test summary info ============================
+FAILED unity_test/tests/test_CaseFixed_pr74_cache_io_idbits.py::test_nonzero_request_id_preserved
+FAILED unity_test/tests/test_CaseFixed_pr74_cache_io_idbits.py::test_multiple_request_ids_preserved
+======================== 2 failed, 2 warnings in 0.24s =========================
+ERROR conda.cli.main_run:execute(142): `conda run pytest -s --toffee-report --report-dump-json --report-name=index.html --report-dir=uc_test_report unity_test/tests` failed. (See above for error)
+make: *** [Makefile:56: test_ucagent_official] Error 1
+make: Leaving directory '/home/distortionk/WorkSpace/VCS/NutShellCacheVerify/ucagent_cases/pr74_cache_io_idbits'
