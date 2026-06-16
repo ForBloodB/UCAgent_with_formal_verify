@@ -48,6 +48,65 @@ verilator --version
 
 ## 2. 复现 Formal
 
+### 2.1 PR #21 真实 NutShell Cache Wrapper Formal
+
+这条 flow 是 PR #21 的严格复现路径：DUT 不是 compact litmus，而是从 NutShell 上游精确 commit 生成的真实 `nutcore.Cache`。
+
+使用文件：
+
+```text
+formal/nutshell_pr21_real/Pr21CacheFormalDut.scala
+formal/nutshell_pr21_real/pr21_nutshell_cache_mmio_prefetch_formal.sv
+formal/nutshell_pr21_real/nutshell_pr21_real_cache_pre.sby
+formal/nutshell_pr21_real/nutshell_pr21_real_cache_fixed.sby
+scripts/40_prepare_pr21_real_nutshell_cache.sh
+scripts/41_run_pr21_real_nutshell_cache_formal.sh
+```
+
+生成真实 NutShell Cache DUT：
+
+```bash
+bash scripts/40_prepare_pr21_real_nutshell_cache.sh all
+```
+
+这个脚本会：
+
+- 下载 PR #21 合入前父提交 `bd425deedff4e896fca59895b34d778f2c8724d9`。
+- 下载 PR #21 修复分支提交 `f0d7c49411197047dc8464addfacc0fcba5b9e45`。
+- 在下载到 `third_party/nutshell_pr21_real/*` 的上游源码副本中插入 `BoringUtils` probe。
+- 运行上游 Chisel/Mill flow，生成：
+
+```text
+formal/nutshell_pr21_real/generated/pre/Pr21CacheFormalDut.v
+formal/nutshell_pr21_real/generated/fixed/Pr21CacheFormalDut.v
+```
+
+运行 formal：
+
+```bash
+docker run --rm --user "$(id -u):$(id -g)" -v "$PWD:/work" -w /work \
+  nutshell-cache-formal:latest bash scripts/41_run_pr21_real_nutshell_cache_formal.sh
+```
+
+期望报告：
+
+```text
+reports/pr21_real_nutshell_cache_formal.md
+```
+
+接受标准：
+
+```text
+pr21_real_nutshell_cache_pre:   FAIL
+pr21_real_nutshell_cache_fixed: PASS
+```
+
+当前已复现成功：pre-PR 真实 Cache 在 BMC step 10 失败，fixed 真实 Cache 在 depth 16 内通过。
+
+### 2.2 三案例 Compact Formal
+
+下面这条 flow 运行三个 compact executable litmus。它适合快速解释 bug 语义，但 PR #21 的核心证据以上面的真实 Cache wrapper flow 为准。
+
 本地有 SymbiYosys/Yosys/Z3 时：
 
 ```bash
@@ -137,4 +196,3 @@ UCAgent case 分类：
 ## 当前结论
 
 Formal 和手写 directed 已经完整覆盖三案例，均证明验证意图有效。UCAgent 在 PR #74 和 flush case 上把验证意图转成了可维护动态回归；PR #21 当前是 UCAgent 生成流程在 900 秒内没有完成 pytest 模板编辑，因此记录为 `INFRA_FAIL`。这正好体现互补性：formal 可以稳定给出短反例，UCAgent 更适合沉淀动态回归，但会受到模型路径探索和工具调用稳定性的影响。
-

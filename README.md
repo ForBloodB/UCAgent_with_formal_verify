@@ -9,8 +9,10 @@ cases:
 | NutShell PR #74 `cache: fix cache io` | Real historical fix | A nonzero out-of-order request ID must be preserved on the response path. |
 | `flush_outstanding_miss` | Injected formal-advantage case | A flush during an outstanding miss must not create an early CPU response before refill. |
 
-The two NutShell cases are compact executable litmus tests derived from public
-upstream fixes, not a full SoC replay. Each case has buggy/fixed variants.
+PR #21 now also has a real NutShell `nutcore.Cache` wrapper formal flow that
+generates the DUT from the exact pre-PR and fixed upstream commits. The compact
+litmus tests are kept as fast explanatory checks. Each case has buggy/fixed
+variants.
 
 ## Layout
 
@@ -26,6 +28,7 @@ docker/              Optional formal and UCAgent Docker environments
 
 - `reports/file_inventory.md`: source files, generated artifacts, and script roles.
 - `reports/reproduction_guide.md`: exact reproduction flow and result interpretation.
+- `reports/pr21_real_nutshell_cache_formal.md`: PR #21 reproduced on the real NutShell Cache DUT.
 - `reports/ucagent_token_usage.md`: observable UCAgent token/context statistics.
 - `reports/formal_vs_ucagent_comparison.md`: final complementary verification reading.
 
@@ -51,6 +54,22 @@ reports/formal_batch/three_case_formal.md
 ```
 
 Expected result: all buggy variants fail, all fixed variants pass.
+
+For the stricter PR #21 real NutShell Cache wrapper flow:
+
+```bash
+bash scripts/40_prepare_pr21_real_nutshell_cache.sh all
+docker run --rm --user "$(id -u):$(id -g)" -v "$PWD:/work" -w /work \
+  nutshell-cache-formal:latest bash scripts/41_run_pr21_real_nutshell_cache_formal.sh
+```
+
+Report:
+
+```text
+reports/pr21_real_nutshell_cache_formal.md
+```
+
+Expected result: pre-PR real Cache fails, fixed real Cache passes.
 
 ## Directed Dynamic Tests
 

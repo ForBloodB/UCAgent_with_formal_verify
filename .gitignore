@@ -26,3 +26,4 @@ ucagent_cases/*/build_CaseFixed/
 
 # SymbiYosys generated run directories.
 formal/historical/*/
+formal/nutshell_pr21_real/nutshell_pr21_real_cache_*/
