@@ -15,3 +15,5 @@ third_party/
 # SymbiYosys generated run directories.
 formal/nutshell_pr21_real/nutshell_pr21_real_cache_*/
 formal/nutshell_pr74_real/nutshell_pr74_real_cache_*/
+examples/*/formal/*/
+examples/*/formal/*.sby

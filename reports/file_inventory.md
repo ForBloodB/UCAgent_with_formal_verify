@@ -42,6 +42,16 @@ PR #74 pre 版本没有生成 Verilog；失败点就是真实 Cache elaboration 
 | --- | --- |
 | `reports/pr21_real_nutshell_cache_formal.md` | PR #21 真实 Cache pre/fixed formal 矩阵。 |
 | `reports/pr74_real_nutshell_cache_formal.md` | PR #74 真实 CacheIO elaboration/formal 矩阵。 |
+| `reports/generic_formal/counter_minimal.md` | 通用 UCAgent formal skill 的最小 counter smoke 结果；不是 NutShell Cache case。 |
 | `reports/ucagent_real_case_status.md` | UCAgent 结果边界：旧 compact/artificial 产物已删除，不声明为真实 Cache 证据。 |
 | `reports/toolchain_sources.md` | 官方 UCAgent / Example-NutShellCache / picker commit 记录。 |
 | `reports/formal_batch/logs/` | PR21/PR74 真实验证日志。 |
+
+## Generic Formal Skill Smoke
+
+| 路径 | 用途 |
+| --- | --- |
+| `ucagent_skills/generic-formal/SKILL.md` | 可通过 `--use-skill --extra-skill-path ./ucagent_skills` 加载的通用 formal skill。 |
+| `ucagent_skills/generic-formal/scripts/run_formal.py` | 从 YAML case 生成 SBY、运行 SymbiYosys/Docker、分类 PASS/FAIL。 |
+| `examples/counter_formal/` | 最小 A/B smoke：buggy counter `+2` 应 FAIL，fixed counter `+1` 应 PASS。 |
+| `scripts/50_run_generic_formal_skill_smoke.sh` | 一键运行最小闭环。 |

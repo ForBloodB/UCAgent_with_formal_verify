@@ -1,0 +1,25 @@
+{
+  "name": "counter_fixed",
+  "expected": "PASS",
+  "actual": "PASS",
+  "verdict": "OK",
+  "depth": 8,
+  "log": "reports/generic_formal/logs/counter_fixed.log",
+  "sby": "examples/counter_formal/formal/counter_fixed.sby",
+  "timestamp": "2026-06-21T03:23:39.972832+00:00",
+  "command": [
+    "docker",
+    "run",
+    "--rm",
+    "--user",
+    "1000:1000",
+    "-v",
+    "/home/distortionk/WorkSpace/VCS/NutShellCacheVerify:/work",
+    "-w",
+    "/work",
+    "nutshell-cache-formal:latest",
+    "sby",
+    "-f",
+    "examples/counter_formal/formal/counter_fixed.sby"
+  ]
+}

@@ -1,0 +1,39 @@
+$ docker run --rm --user 1000:1000 -v /home/distortionk/WorkSpace/VCS/NutShellCacheVerify:/work -w /work nutshell-cache-formal:latest sby -f examples/counter_formal/formal/counter_buggy.sby
+
+SBY  3:23:39 [examples/counter_formal/formal/counter_buggy] Removing directory '/work/examples/counter_formal/formal/counter_buggy'.
+SBY  3:23:39 [examples/counter_formal/formal/counter_buggy] Copy '/work/examples/counter_formal/rtl/counter_buggy.sv' to '/work/examples/counter_formal/formal/counter_buggy/src/counter_buggy.sv'.
+SBY  3:23:39 [examples/counter_formal/formal/counter_buggy] Copy '/work/examples/counter_formal/formal/counter_formal.sv' to '/work/examples/counter_formal/formal/counter_buggy/src/counter_formal.sv'.
+SBY  3:23:39 [examples/counter_formal/formal/counter_buggy] engine_0: smtbmc z3
+SBY  3:23:39 [examples/counter_formal/formal/counter_buggy] base: starting process "cd examples/counter_formal/formal/counter_buggy/src; yosys -ql ../model/design.log ../model/design.ys"
+SBY  3:23:39 [examples/counter_formal/formal/counter_buggy] base: Warning: Wire counter_formal.\clk is used but has no driver.
+SBY  3:23:39 [examples/counter_formal/formal/counter_buggy] base: finished (returncode=0)
+SBY  3:23:39 [examples/counter_formal/formal/counter_buggy] prep: starting process "cd examples/counter_formal/formal/counter_buggy/model; yosys -ql design_prep.log design_prep.ys"
+SBY  3:23:39 [examples/counter_formal/formal/counter_buggy] prep: Warning: Wire counter_formal.\clk is used but has no driver.
+SBY  3:23:39 [examples/counter_formal/formal/counter_buggy] prep: finished (returncode=0)
+SBY  3:23:39 [examples/counter_formal/formal/counter_buggy] smt2: starting process "cd examples/counter_formal/formal/counter_buggy/model; yosys -ql design_smt2.log design_smt2.ys"
+SBY  3:23:39 [examples/counter_formal/formal/counter_buggy] smt2: finished (returncode=0)
+SBY  3:23:39 [examples/counter_formal/formal/counter_buggy] engine_0: starting process "cd examples/counter_formal/formal/counter_buggy; yosys-smtbmc -s z3 --presat --noprogress -t 8  --append 0 --dump-vcd engine_0/trace.vcd --dump-yw engine_0/trace.yw --dump-vlogtb engine_0/trace_tb.v --dump-smtc engine_0/trace.smtc model/design_smt2.smt2"
+SBY  3:23:39 [examples/counter_formal/formal/counter_buggy] engine_0: ##   0:00:00  Solver: z3
+SBY  3:23:39 [examples/counter_formal/formal/counter_buggy] engine_0: ##   0:00:00  Checking assumptions in step 0..
+SBY  3:23:39 [examples/counter_formal/formal/counter_buggy] engine_0: ##   0:00:00  Checking assertions in step 0..
+SBY  3:23:39 [examples/counter_formal/formal/counter_buggy] engine_0: ##   0:00:00  Checking assumptions in step 1..
+SBY  3:23:39 [examples/counter_formal/formal/counter_buggy] engine_0: ##   0:00:00  Checking assertions in step 1..
+SBY  3:23:39 [examples/counter_formal/formal/counter_buggy] engine_0: ##   0:00:00  Checking assumptions in step 2..
+SBY  3:23:39 [examples/counter_formal/formal/counter_buggy] engine_0: ##   0:00:00  Checking assertions in step 2..
+SBY  3:23:39 [examples/counter_formal/formal/counter_buggy] engine_0: ##   0:00:00  Checking assumptions in step 3..
+SBY  3:23:39 [examples/counter_formal/formal/counter_buggy] engine_0: ##   0:00:00  Checking assertions in step 3..
+SBY  3:23:39 [examples/counter_formal/formal/counter_buggy] engine_0: ##   0:00:00  BMC failed!
+SBY  3:23:39 [examples/counter_formal/formal/counter_buggy] engine_0: ##   0:00:00  Assert failed in counter_formal: counter_formal.sv:31.36-32.45 ($assert$counter_formal.sv:31$40)
+SBY  3:23:39 [examples/counter_formal/formal/counter_buggy] engine_0: ##   0:00:00  Writing trace to VCD file: engine_0/trace.vcd
+SBY  3:23:39 [examples/counter_formal/formal/counter_buggy] engine_0: ##   0:00:00  Writing trace to Verilog testbench: engine_0/trace_tb.v
+SBY  3:23:39 [examples/counter_formal/formal/counter_buggy] engine_0: ##   0:00:00  Writing trace to constraints file: engine_0/trace.smtc
+SBY  3:23:39 [examples/counter_formal/formal/counter_buggy] engine_0: ##   0:00:00  Writing trace to Yosys witness file: engine_0/trace.yw
+SBY  3:23:39 [examples/counter_formal/formal/counter_buggy] engine_0: ##   0:00:00  Status: failed
+SBY  3:23:39 [examples/counter_formal/formal/counter_buggy] engine_0: finished (returncode=1)
+SBY  3:23:39 [examples/counter_formal/formal/counter_buggy] engine_0: Status returned by engine: FAIL
+SBY  3:23:39 [examples/counter_formal/formal/counter_buggy] summary: Elapsed clock time [H:MM:SS (secs)]: 0:00:00 (0)
+SBY  3:23:39 [examples/counter_formal/formal/counter_buggy] summary: Elapsed process time [H:MM:SS (secs)]: 0:00:00 (0)
+SBY  3:23:39 [examples/counter_formal/formal/counter_buggy] summary: engine_0 (smtbmc z3) returned FAIL
+SBY  3:23:39 [examples/counter_formal/formal/counter_buggy] summary: counterexample trace: examples/counter_formal/formal/counter_buggy/engine_0/trace.vcd
+SBY  3:23:39 [examples/counter_formal/formal/counter_buggy] summary:   failed assertion counter_formal.$assert$counter_formal.sv:31$40 at counter_formal.sv:31.36-32.45 step 3
+SBY  3:23:39 [examples/counter_formal/formal/counter_buggy] DONE (FAIL, rc=2)

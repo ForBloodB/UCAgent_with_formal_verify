@@ -1,0 +1,40 @@
+$ docker run --rm --user 1000:1000 -v /home/distortionk/WorkSpace/VCS/NutShellCacheVerify:/work -w /work nutshell-cache-formal:latest sby -f examples/counter_formal/formal/counter_fixed.sby
+
+SBY  3:23:39 [examples/counter_formal/formal/counter_fixed] Removing directory '/work/examples/counter_formal/formal/counter_fixed'.
+SBY  3:23:39 [examples/counter_formal/formal/counter_fixed] Copy '/work/examples/counter_formal/rtl/counter_fixed.sv' to '/work/examples/counter_formal/formal/counter_fixed/src/counter_fixed.sv'.
+SBY  3:23:39 [examples/counter_formal/formal/counter_fixed] Copy '/work/examples/counter_formal/formal/counter_formal.sv' to '/work/examples/counter_formal/formal/counter_fixed/src/counter_formal.sv'.
+SBY  3:23:39 [examples/counter_formal/formal/counter_fixed] engine_0: smtbmc z3
+SBY  3:23:39 [examples/counter_formal/formal/counter_fixed] base: starting process "cd examples/counter_formal/formal/counter_fixed/src; yosys -ql ../model/design.log ../model/design.ys"
+SBY  3:23:39 [examples/counter_formal/formal/counter_fixed] base: Warning: Wire counter_formal.\clk is used but has no driver.
+SBY  3:23:39 [examples/counter_formal/formal/counter_fixed] base: finished (returncode=0)
+SBY  3:23:39 [examples/counter_formal/formal/counter_fixed] prep: starting process "cd examples/counter_formal/formal/counter_fixed/model; yosys -ql design_prep.log design_prep.ys"
+SBY  3:23:39 [examples/counter_formal/formal/counter_fixed] prep: Warning: Wire counter_formal.\clk is used but has no driver.
+SBY  3:23:39 [examples/counter_formal/formal/counter_fixed] prep: finished (returncode=0)
+SBY  3:23:39 [examples/counter_formal/formal/counter_fixed] smt2: starting process "cd examples/counter_formal/formal/counter_fixed/model; yosys -ql design_smt2.log design_smt2.ys"
+SBY  3:23:39 [examples/counter_formal/formal/counter_fixed] smt2: finished (returncode=0)
+SBY  3:23:39 [examples/counter_formal/formal/counter_fixed] engine_0: starting process "cd examples/counter_formal/formal/counter_fixed; yosys-smtbmc -s z3 --presat --noprogress -t 8  --append 0 --dump-vcd engine_0/trace.vcd --dump-yw engine_0/trace.yw --dump-vlogtb engine_0/trace_tb.v --dump-smtc engine_0/trace.smtc model/design_smt2.smt2"
+SBY  3:23:39 [examples/counter_formal/formal/counter_fixed] engine_0: ##   0:00:00  Solver: z3
+SBY  3:23:39 [examples/counter_formal/formal/counter_fixed] engine_0: ##   0:00:00  Checking assumptions in step 0..
+SBY  3:23:39 [examples/counter_formal/formal/counter_fixed] engine_0: ##   0:00:00  Checking assertions in step 0..
+SBY  3:23:39 [examples/counter_formal/formal/counter_fixed] engine_0: ##   0:00:00  Checking assumptions in step 1..
+SBY  3:23:39 [examples/counter_formal/formal/counter_fixed] engine_0: ##   0:00:00  Checking assertions in step 1..
+SBY  3:23:39 [examples/counter_formal/formal/counter_fixed] engine_0: ##   0:00:00  Checking assumptions in step 2..
+SBY  3:23:39 [examples/counter_formal/formal/counter_fixed] engine_0: ##   0:00:00  Checking assertions in step 2..
+SBY  3:23:39 [examples/counter_formal/formal/counter_fixed] engine_0: ##   0:00:00  Checking assumptions in step 3..
+SBY  3:23:39 [examples/counter_formal/formal/counter_fixed] engine_0: ##   0:00:00  Checking assertions in step 3..
+SBY  3:23:39 [examples/counter_formal/formal/counter_fixed] engine_0: ##   0:00:00  Checking assumptions in step 4..
+SBY  3:23:39 [examples/counter_formal/formal/counter_fixed] engine_0: ##   0:00:00  Checking assertions in step 4..
+SBY  3:23:39 [examples/counter_formal/formal/counter_fixed] engine_0: ##   0:00:00  Checking assumptions in step 5..
+SBY  3:23:39 [examples/counter_formal/formal/counter_fixed] engine_0: ##   0:00:00  Checking assertions in step 5..
+SBY  3:23:39 [examples/counter_formal/formal/counter_fixed] engine_0: ##   0:00:00  Checking assumptions in step 6..
+SBY  3:23:39 [examples/counter_formal/formal/counter_fixed] engine_0: ##   0:00:00  Checking assertions in step 6..
+SBY  3:23:39 [examples/counter_formal/formal/counter_fixed] engine_0: ##   0:00:00  Checking assumptions in step 7..
+SBY  3:23:39 [examples/counter_formal/formal/counter_fixed] engine_0: ##   0:00:00  Checking assertions in step 7..
+SBY  3:23:39 [examples/counter_formal/formal/counter_fixed] engine_0: ##   0:00:00  Status: passed
+SBY  3:23:39 [examples/counter_formal/formal/counter_fixed] engine_0: finished (returncode=0)
+SBY  3:23:39 [examples/counter_formal/formal/counter_fixed] engine_0: Status returned by engine: pass
+SBY  3:23:39 [examples/counter_formal/formal/counter_fixed] summary: Elapsed clock time [H:MM:SS (secs)]: 0:00:00 (0)
+SBY  3:23:39 [examples/counter_formal/formal/counter_fixed] summary: Elapsed process time [H:MM:SS (secs)]: 0:00:00 (0)
+SBY  3:23:39 [examples/counter_formal/formal/counter_fixed] summary: engine_0 (smtbmc z3) returned pass
+SBY  3:23:39 [examples/counter_formal/formal/counter_fixed] summary: engine_0 did not produce any traces
+SBY  3:23:39 [examples/counter_formal/formal/counter_fixed] DONE (PASS, rc=0)

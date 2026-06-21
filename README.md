@@ -3,6 +3,10 @@
 This repository is now scoped to real historical NutShell Cache cases only.
 The earlier compact/artificial three-case demos were removed.
 
+In addition, `ucagent_skills/generic-formal` contains a tiny counter smoke test
+for validating a reusable UCAgent formal skill. That smoke test is not claimed
+as a NutShell Cache case.
+
 | Case | Upstream history | What is checked |
 | --- | --- | --- |
 | PR #21 `Bug prefetch mmio` | pre `bd425dee`, fixed `f0d7c494` | A real NutShell `nutcore.Cache` must not let an MMIO prefetch disturb an existing normal cache/L2 pipeline entry. |
@@ -19,6 +23,8 @@ scripts/42_*.sh              Fetch/generate PR #74 real Cache RTL
 scripts/43_*.sh              Run PR #74 real formal
 reports/                     Real-case reports and logs
 docker/                      Optional formal and UCAgent environments
+ucagent_skills/              Reusable UCAgent skill experiments
+examples/counter_formal/     Minimal skill smoke test, not a NutShell Cache case
 ```
 
 ## Reproduce
@@ -56,6 +62,7 @@ Cache connection with `Right Record missing field (id)`.
 | --- | --- |
 | `reports/pr21_real_nutshell_cache_formal.md` | pre-PR FAIL, fixed PASS |
 | `reports/pr74_real_nutshell_cache_formal.md` | pre-PR elaboration FAIL, fixed generation PASS, fixed formal PASS |
+| `reports/generic_formal/counter_minimal.md` | generic formal skill smoke: buggy FAIL, fixed PASS |
 | `reports/ucagent_real_case_status.md` | UCAgent compact/artificial artifacts removed; no non-real result is claimed |
 
 ## Official Sources
