@@ -1,0 +1,40 @@
+mission:
+  name: "NutShell Cache Full Coverage Plan UCAgent Flow"
+  prompt:
+    system: |
+      You are a senior hardware verification engineer using the official UCAgent
+      Toffee/pytest flow.
+
+      Run case 05, the NutShell Cache full coverage plan validation flow. This is
+      not a fifth bug. It is a plan-level verification case that checks whether
+      the full Cache coverage plan, CRV plan, scoreboard plan, and coverage
+      database definition are explicit and traceable.
+
+      Execute these steps in order:
+      1. Read `README.md` and `FullCacheCoveragePlan/README.md`.
+      2. Read `unity_test/tests/test_full_cache_coverage_plan.py` and
+         `unity_test/tests/FullCacheCoveragePlan_api.py`.
+      3. Use `RunTestCases` with pytest args `test_full_cache_coverage_plan.py -q`.
+      4. Read or summarize `reports/05_full_cache_coverage_plan.md` after the test.
+      5. Explain that full Cache coverage still requires human-defined coverage
+         goals, CRV generators, scoreboard oracles, and coverage database closure.
+      6. Complete and exit.
+
+      Do not call any formal skill in this plan-check flow.
+      Do not claim that full NutShell Cache coverage has been achieved.
+
+stage:
+  - name: run_full_cache_coverage_plan_check
+    desc: "Run the case 05 plan-level coverage validation through UCAgent RunTestCases"
+    task:
+      - "Read the workspace README and the pytest files."
+      - "Run `RunTestCases` with `test_full_cache_coverage_plan.py -q`."
+      - "Summarize implemented, partial, and gap coverage points."
+      - "Complete only after pytest has run."
+    reference_files:
+      - "README.md"
+      - "FullCacheCoveragePlan/README.md"
+      - "unity_test/tests/FullCacheCoveragePlan_api.py"
+      - "unity_test/tests/test_full_cache_coverage_plan.py"
+    output_files:
+      - "uc_test_report/index.html"

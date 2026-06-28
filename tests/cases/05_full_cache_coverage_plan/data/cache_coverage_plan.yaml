@@ -1,0 +1,249 @@
+schema_version: 1
+case_id: "05_full_cache_coverage_plan"
+title: "NutShell Cache full coverage plan scaffold"
+scope: "Plan-level coverage for NutShell Cache verification, not a claim of full RTL coverage."
+owner_notes:
+  - "This file is intentionally human-authored. UCAgent may extend it, but a human verifier owns final sign-off."
+  - "A coverage point is counted as implemented only when it has a stimulus source, checker/scoreboard, and evidence artifact."
+
+references:
+  design_docs:
+    - "NutShell-doc/功能部件/cache.md"
+    - "NutShell-doc/系统/bus.md"
+  source_files:
+    - "src/main/scala/nutcore/mem/Cache.scala"
+    - "src/main/scala/bus/simplebus/SimpleBus.scala"
+
+roles:
+  human:
+    - "Define legal stimulus space and environment assumptions."
+    - "Define scoreboard oracle and decide whether a protocol observation is a bug or an assumed contract."
+    - "Review UCAgent-generated Toffee/formal drafts before accepting coverage closure."
+  ucagent:
+    - "Read this plan and generate Toffee/formal test drafts."
+    - "Run official RunTestCases for executable Toffee tests."
+    - "Summarize coverage holes and propose next tests."
+  picker:
+    - "Export Chisel/Verilog Cache wrappers to Python DUT packages."
+    - "Enable waveform and Verilator line/toggle/branch/FSM coverage where supported."
+  toffee:
+    - "Drive CRV/directed sequences through public DUT ports."
+    - "Collect functional coverage and feed scoreboard observations into reports."
+  formal_skill:
+    - "Run bounded protocol and corner-case assertions through generic-formal."
+    - "Produce short counterexamples for narrow timing windows."
+
+environment_assumptions:
+  reset:
+    description: "Reset must be held long enough to clear generated wrapper state."
+    owner: "human"
+    status: "defined"
+  simplebus_decoupled:
+    description: "SimpleBusUC uses Decoupled req/resp handshakes."
+    owner: "human"
+    status: "defined"
+  l1_resp_ready_policy:
+    description: "Whether L1 must keep resp.ready high/eager-ready for Cache responses."
+    owner: "human"
+    status: "open_question"
+    evidence: "No explicit eager-ready requirement has been found in public Cache/SimpleBus docs for Cache io.in.resp."
+  memory_model:
+    description: "Memory accepts requests with bounded latency and returns ordered burst responses."
+    owner: "human"
+    status: "partial"
+  mmio_model:
+    description: "MMIO accepts non-burst requests and returns one response per request."
+    owner: "human"
+    status: "partial"
+  coherence_model:
+    description: "Coherence/probe source can issue legal probe requests and observe probe responses."
+    owner: "human"
+    status: "gap"
+
+coverage_points:
+  - id: "CP_READ_HIT"
+    group: "read"
+    description: "CPU/L1 read hits an already valid clean line."
+    stimulus: "CRV read after refill or directed line preload."
+    checker: "Scoreboard compares returned data with reference memory."
+    target: "dynamic"
+    status: "partial"
+    evidence:
+      - "reports/04_l2_readburst_toffee_coverage.md"
+
+  - id: "CP_READ_MISS_REFILL"
+    group: "read"
+    description: "Read miss sends memory readBurst and refills a cache line."
+    stimulus: "Read/readBurst to absent line."
+    checker: "Reference memory observes readBurst and response data."
+    target: "dynamic"
+    status: "partial"
+    evidence:
+      - "reports/04_l2_readburst_toffee_coverage.md"
+
+  - id: "CP_READBURST_HIT_BACKPRESSURE"
+    group: "readburst"
+    description: "L2 readBurst hit while L1 resp.ready is low."
+    stimulus: "Same-address readBurst miss/refill followed by hit with resp_ready=0."
+    checker: "Ready/valid scoreboard and formal assertion."
+    target: "formal_and_dynamic"
+    status: "implemented"
+    evidence:
+      - "reports/04_l2_readburst.md"
+      - "reports/04_l2_readburst_toffee_coverage.md"
+
+  - id: "CP_MMIO_PREFETCH_PIPELINE_INTERFERENCE"
+    group: "mmio"
+    description: "MMIO prefetch must not drop an existing normal cache pipeline request."
+    stimulus: "PR21 historical replay."
+    checker: "Pipeline preservation assertion and directed replay scoreboard."
+    target: "formal_and_dynamic"
+    status: "implemented"
+    evidence:
+      - "reports/02_pr21.md"
+      - "reports/02_pr21_toffee_coverage.md"
+
+  - id: "CP_CACHE_IO_IDBITS"
+    group: "interface"
+    description: "CacheIO with idBits must expose and preserve request/response id fields."
+    stimulus: "PR74 historical fixed-DUT ID replay."
+    checker: "Elaboration check and response ID scoreboard."
+    target: "formal_and_dynamic"
+    status: "implemented"
+    evidence:
+      - "reports/03_pr74.md"
+      - "reports/03_pr74_toffee_coverage.md"
+
+  - id: "CP_WRITE_HIT_FULL_MASK"
+    group: "write"
+    description: "Full-mask write hit updates one word and marks the line dirty."
+    stimulus: "CRV write to valid line."
+    checker: "Reference memory/cache model observes later readback."
+    target: "dynamic"
+    status: "gap"
+
+  - id: "CP_WRITE_HIT_PARTIAL_MASK"
+    group: "write"
+    description: "Partial-mask write hit merges bytes correctly."
+    stimulus: "CRV writes with randomized byte masks."
+    checker: "Byte-level reference model checks merged data."
+    target: "dynamic"
+    status: "gap"
+
+  - id: "CP_WRITE_MISS_REFILL"
+    group: "write"
+    description: "Write miss refills victim line and applies write data/mask correctly."
+    stimulus: "CRV write to absent line."
+    checker: "Reference model checks refill data and final cache-visible data."
+    target: "dynamic"
+    status: "gap"
+
+  - id: "CP_DIRTY_EVICTION_WRITEBACK"
+    group: "replacement"
+    description: "Dirty victim line is written back before replacement."
+    stimulus: "Fill set, dirty one way, force conflict miss."
+    checker: "Memory model observes writeBurst/writeLast before readBurst refill."
+    target: "dynamic_or_formal"
+    status: "gap"
+
+  - id: "CP_CLEAN_EVICTION_NO_WRITEBACK"
+    group: "replacement"
+    description: "Clean victim line does not issue writeback."
+    stimulus: "Fill set with clean lines, force replacement."
+    checker: "Memory monitor sees read refill without dirty writeback."
+    target: "dynamic"
+    status: "gap"
+
+  - id: "CP_FLUSH_DURING_OUTSTANDING_MISS"
+    group: "flush"
+    description: "Flush during outstanding miss must not produce stale CPU response."
+    stimulus: "Read miss, hold memory response, assert flush."
+    checker: "Scoreboard and formal no-early-response assertion."
+    target: "formal_and_dynamic"
+    status: "gap"
+
+  - id: "CP_COHERENCE_PROBE_HIT"
+    group: "coherence"
+    description: "Probe to cached line returns probeHit/release data as required."
+    stimulus: "Coherence agent issues probe to valid line."
+    checker: "Coherence scoreboard checks response command/data."
+    target: "dynamic_or_formal"
+    status: "gap"
+
+  - id: "CP_COHERENCE_PROBE_MISS"
+    group: "coherence"
+    description: "Probe to absent line returns probeMiss and does not corrupt state."
+    stimulus: "Probe uncached address."
+    checker: "Coherence scoreboard checks probeMiss and no data mutation."
+    target: "dynamic_or_formal"
+    status: "gap"
+
+  - id: "CP_READY_VALID_REQ_STABILITY"
+    group: "protocol"
+    description: "Request bits remain stable while req.valid is high and req.ready is low."
+    stimulus: "Random backpressure on req.ready."
+    checker: "Protocol monitor or formal assertion."
+    target: "formal_and_dynamic"
+    status: "gap"
+
+  - id: "CP_READY_VALID_RESP_STABILITY"
+    group: "protocol"
+    description: "Response bits remain stable while resp.valid is high and resp.ready is low."
+    stimulus: "Random backpressure on resp.ready."
+    checker: "Protocol monitor or formal assertion."
+    target: "formal_and_dynamic"
+    status: "partial"
+    evidence:
+      - "reports/04_l2_readburst.md"
+
+crv_scenarios:
+  - id: "CRV_BASIC_READ_WRITE"
+    description: "Random read/write single-beat accesses to cacheable memory."
+    owner: "human_seeded_ucagent_extended"
+    status: "gap"
+  - id: "CRV_MASK_STRESS"
+    description: "Random byte masks, unaligned-safe sizes as allowed by SimpleBus environment."
+    owner: "human_seeded_ucagent_extended"
+    status: "gap"
+  - id: "CRV_REPLACEMENT_STRESS"
+    description: "Conflict addresses targeting the same set to force replacement."
+    owner: "human_seeded_ucagent_extended"
+    status: "gap"
+  - id: "CRV_BACKPRESSURE_STRESS"
+    description: "Random low-ready windows on CPU, memory, MMIO, and coherence responses."
+    owner: "human_seeded_ucagent_extended"
+    status: "partial"
+  - id: "CRV_FLUSH_STRESS"
+    description: "Flush at legal and adversarial points around outstanding transactions."
+    owner: "human_seeded_ucagent_extended"
+    status: "gap"
+  - id: "CRV_COHERENCE_STRESS"
+    description: "Probe hit/miss/release interleavings with L1/L2 traffic."
+    owner: "human_seeded_ucagent_extended"
+    status: "gap"
+
+scoreboard_plan:
+  reference_memory:
+    description: "Byte-addressable memory model with cache-line readBurst/writeBurst support."
+    status: "gap"
+  outstanding_tracker:
+    description: "Track accepted requests, response order, ids, user fields, and flush cancellation rules."
+    status: "partial"
+  protocol_monitor:
+    description: "Check Decoupled valid/ready stability and no-valid-without-data rules."
+    status: "partial"
+  cache_state_shadow:
+    description: "Optional abstract cache state for replacement/dirty/coherence expected behavior."
+    status: "gap"
+
+coverage_database:
+  format: "JSON summary plus Toffee HTML reports; future UCIS merge may be added."
+  scenario_reports:
+    - "reports/02_pr21_toffee_coverage.md"
+    - "reports/03_pr74_toffee_coverage.md"
+    - "reports/04_l2_readburst_toffee_coverage.md"
+  target_report: "reports/05_full_cache_coverage_plan.md"
+  closure_policy:
+    - "Implemented means status=implemented and all evidence files exist."
+    - "Partial means at least one related scenario exists but the full behavior family is not covered."
+    - "Gap means no executable test/checker is currently accepted."

@@ -1,6 +1,6 @@
 # NutShell Cache Verify
 
-一个面向 Verilog/SystemVerilog 的轻量验证工程。项目提供通用 formal 验证入口、UCAgent `generic-formal` skill，以及四个可复现案例。
+一个面向 Verilog/SystemVerilog 的轻量验证工程。项目提供通用 formal 验证入口、UCAgent `generic-formal` skill，以及五个可复现案例。
 
 ## Features
 
@@ -14,7 +14,7 @@
 
 ```text
 src/                         通用验证工具、UCAgent skill、runner helper
-tests/cases/                 四个可复现案例与 Toffee/formal 资产
+tests/cases/                 五个可复现案例与 Toffee/formal 资产
 tests/ucagent_workspaces/    UCAgent 官方 workspace
 scripts/                     公开入口脚本
 scripts/internal/            案例内部复现脚本
@@ -98,7 +98,7 @@ bash scripts/run_cases.sh --case 04 --with-formal
 参数：
 
 ```text
---case all|01|02|03|04
+--case all|01|02|03|04|05
 --with-formal    默认，运行 formal/skill 路径
 --no-formal      运行动态 Toffee 路径
 --smoke          不调用 LLM/API
@@ -112,11 +112,13 @@ bash scripts/run_cases.sh --case 04 --with-formal
 | 02 | NutShell PR21 历史 bug | pre `FAIL`，fixed `PASS` |
 | 03 | NutShell PR74 历史接口 bug | pre `ELAB_FAIL`，fixed `PASS` |
 | 04 | latest L2 readBurst candidate bug | formal assert `FAIL`，cover `PASS`，dynamic `DYNAMIC_REPRODUCED` |
+| 05 | 全 Cache coverage plan 验证闭环 | coverage plan 可执行检查通过；明确 implemented/partial/gap |
 
 报告入口：
 
 - `docs/submission_report.md`
 - `docs/adding_new_verilog_module.md`
+- `docs/full_cache_coverage_plan.md`
 - `docs/reports.md`
 - `reports/00_overview.md`
 - `reports/91_ucagent_skill_evidence.md`

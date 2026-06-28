@@ -72,6 +72,12 @@ reports/artifacts/04_l2_readburst/*
 !reports/artifacts/04_l2_readburst/toffee/
 reports/artifacts/04_l2_readburst/toffee/*
 !reports/artifacts/04_l2_readburst/toffee/coverage_summary.json
+!reports/artifacts/05_full_cache_coverage_plan/
+reports/artifacts/05_full_cache_coverage_plan/*
+!reports/artifacts/05_full_cache_coverage_plan/coverage_plan_summary.json
+!reports/artifacts/05_full_cache_coverage_plan/toffee_ucagent/
+reports/artifacts/05_full_cache_coverage_plan/toffee_ucagent/*
+!reports/artifacts/05_full_cache_coverage_plan/toffee_ucagent/token_usage.md
 
 # Generic user-run Verilog verification outputs. Keep Markdown summaries only.
 reports/generic_verilog/**

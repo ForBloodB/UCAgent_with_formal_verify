@@ -11,7 +11,7 @@ smoke=0
 usage() {
   cat <<'EOF'
 Usage:
-  bash scripts/run_cases.sh [--case all|01|02|03|04] [--with-formal|--no-formal] [--smoke]
+  bash scripts/run_cases.sh [--case all|01|02|03|04|05] [--with-formal|--no-formal] [--smoke]
 
 Modes:
   --with-formal  Run formal-oriented flows. This is the default.
@@ -51,9 +51,9 @@ while [[ $# -gt 0 ]]; do
 done
 
 case "$case_id" in
-  all|01|02|03|04) ;;
+  all|01|02|03|04|05) ;;
   *)
-    echo "--case must be one of all|01|02|03|04" >&2
+    echo "--case must be one of all|01|02|03|04|05" >&2
     exit 2
     ;;
 esac
@@ -148,6 +148,15 @@ run_case_04() {
   fi
 }
 
+run_case_05() {
+  echo "[05] full Cache coverage plan UCAgent/Toffee flow"
+  if [[ "$smoke" == "1" ]]; then
+    bash scripts/internal/50_run_full_cache_coverage_plan.sh --smoke
+  else
+    bash scripts/internal/50_run_full_cache_coverage_plan.sh
+  fi
+}
+
 if [[ "$smoke" != "1" ]]; then
   require_api
 fi
@@ -158,11 +167,12 @@ run_selected() {
     02) run_case_02 ;;
     03) run_case_03 ;;
     04) run_case_04 ;;
+    05) run_case_05 ;;
   esac
 }
 
 if [[ "$case_id" == "all" ]]; then
-  for c in 01 02 03 04; do
+  for c in 01 02 03 04 05; do
     run_selected "$c"
   done
 else

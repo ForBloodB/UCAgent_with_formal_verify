@@ -2,7 +2,7 @@
 
 ## 1. 项目定位
 
-本项目围绕 NutShell Cache 构建了四个可复现验证案例：
+本项目围绕 NutShell Cache 构建了五个可复现验证案例：
 
 | 编号 | 案例 | 性质 | 当前结论 |
 | --- | --- | --- | --- |
@@ -10,6 +10,7 @@
 | 02 | `pr21_mmio_prefetch` | 真实 NutShell PR #21 历史 bug | pre-PR `FAIL`，fixed `PASS` |
 | 03 | `pr74_cache_io_idbits` | 真实 NutShell PR #74 历史接口 bug | pre-PR `ELAB_FAIL`，fixed formal `PASS` |
 | 04 | `l2_readburst_hit_ready_valid_deadlock` | latest upstream 候选 ready/valid bug | formal assert `FAIL`，cover `PASS`，Toffee coverage `100%`，动态复现 `DYNAMIC_REPRODUCED` |
+| 05 | `full_cache_coverage_plan` | 全 Cache 覆盖计划闭环 | UCAgent `RunTestCases` 通过；15 个 coverage points：3 implemented、3 partial、9 gap |
 
 核心目标不是用 AI 直接“刷”测试，而是把形式验证变成 UCAgent 可调用的工具能力，让 agent 在验证过程中拥有更强的分析和搜索手段。04 的推荐演示采用 formal-first 流程：UCAgent 先调用 `generic-formal` 做前置诊断；如果发现反例，先写出复现方式；随后仍继续原本官方 Toffee/pytest `RunTestCases` 流程，形成“发现问题 -> 动态复现/回归”的闭环。
 
@@ -30,7 +31,7 @@
 | 03 PR74 | Toffee 场景 coverage `5/5 = 100%`，UCAgent report check points `5/5` 命中 | pre-PR elaboration 失败；fixed Picker DUT 动态回归保持 response ID；fixed formal depth=24 PASS | 覆盖目标是 `idBits=4` 时 CacheIO 必须暴露并保持 ID。pre-PR 不是可运行动态 DUT，而是接口/elaboration 失败。 |
 | 04 L2 readBurst | 04 场景 setup coverage `5/5 = 100%` | Picker 导出真实 Python DUT；Toffee/pytest 命中 miss/refill/same-address hit/ready-low 全部 setup bins，并命中 bug observation bin | 覆盖目标是 `readBurst hit + resp_ready=0` 的 ready/valid 窄窗口，不代表全 Cache coverage。 |
 
-结论：当前提交证明了四个高价值场景的 formal/directed 覆盖闭环，并且 04 已补齐 Picker/Toffee 场景级 functional coverage。项目仍不声称完成全 Cache functional coverage；后续若冲击完整 90% Cache coverage，需要继续扩展 CRV generator、scoreboard 和 covergroup，覆盖 write/mask/replacement/flush/coherence。
+结论：当前提交证明了四个高价值场景的 formal/directed 覆盖闭环，并且 04 已补齐 Picker/Toffee 场景级 functional coverage。05 进一步把完整 Cache coverage plan、CRV、scoreboard 和 coverage database 定义为可执行检查。项目仍不声称完成全 Cache functional coverage；后续若冲击完整 90% Cache coverage，需要把 05 中的 gap 继续实现为 CRV generator、scoreboard 和 covergroup，覆盖 write/mask/replacement/flush/coherence。
 
 ## 3. 每个复现脚本的作用
 
@@ -60,6 +61,7 @@
 | `scripts/internal/44_run_l2_readburst_ucagent_toffee.sh` | 启动 UCAgent 官方 `unity_test/tests` flow，运行同一套人工校正后的 Toffee 测试并归档日志。 |
 | `scripts/internal/45_run_l2_readburst_ucagent_full_demo.sh` | 启动 UCAgent formal-first 完整演示：先调用 `generic-formal`，发现问题后写复现方式，再继续官方 `RunTestCases` Toffee 流程。 |
 | `scripts/internal/46_run_three_case_ucagent_original_no_formal.sh` | 使用真实 API 对 02、03、04 运行无 formal skill 的 UCAgent Toffee 动态后端对照。 |
+| `scripts/internal/50_run_full_cache_coverage_plan.sh` | 运行 05 全 Cache coverage plan 检查；`--smoke` 本地 pytest，严格模式调用 UCAgent `RunTestCases`。 |
 | `scripts/internal/90_run_all_kept_cases.sh` | 一键串行运行保留案例；设置 `RUN_UCAGENT_FULL_DEMO=1`、`RUN_UCAGENT_SKILL_EXTENDED=1`、`RUN_UCAGENT_ORIGINAL_COMPARE=1` 可打开更多 UCAgent 流程。 |
 
 ## 4. 04 动态仿真波形位置

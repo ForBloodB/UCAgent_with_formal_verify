@@ -2,13 +2,14 @@
 
 ## 摘要
 
-本仓库整理为四案例 NutShell Cache 验证交付，用于展示：
+本仓库整理为五个验证交付案例，用于展示：
 
 - 形式验证可以发现真实历史 bug 或人工注入 bug。
 - `generic-formal` 是一个可复用 UCAgent skill，可以运行任意 YAML/`sby` formal case。
 - 02/03/04 都支持无 formal skill 的 UCAgent Toffee 动态后端：UCAgent 先生成/承载 `unity_test/tests` 草稿结构，人工完善 Picker DUT、scoreboard 与 coverage，再由真实 API 调 `RunTestCases` 执行。
 - 04 案例进一步支持 UCAgent formal-first 完整流程：先通过官方 skill flow 做形式诊断，再继续官方 Toffee/pytest 流程。
 - 02/03/04 均提供了 Toffee dynamic backend 证据；04 ready/valid 场景还提供 directed dynamic replay 与 formal counterexample。
+- 05 进一步把完整 Cache coverage plan、CRV、scoreboard、coverage database 定义成可执行检查，说明如何从场景级验证扩展到工业级覆盖闭环。
 
 当前自评：这是一个有竞争力的参赛提交形态，尤其在“人工深度介入、真实 bug 复现、UCAgent skill 集成、04 Picker/Toffee 覆盖率闭环”上证据清楚；同时报告中明确保留了与完整工业级全 Cache CRV 环境之间的差距。
 
@@ -16,7 +17,7 @@
 
 | 维度 | 权重 | 当前证据 | 自评 |
 | --- | ---: | --- | --- |
-| 完备性 | 40% | 四个编号案例；两个真实 NutShell 历史 bug；一个 latest L2 ready/valid 候选 bug；一个人工 skill smoke。 | bug 展示完整；完整 Cache read/write/replacement 覆盖仍是后续工作。 |
+| 完备性 | 40% | 五个编号案例；两个真实 NutShell 历史 bug；一个 latest L2 ready/valid 候选 bug；一个人工 skill smoke；一个完整 Cache coverage plan 验证闭环。 | bug 展示完整；全 Cache coverage 已有计划级闭环，具体 CRV/scoreboard 实现仍是后续工作。 |
 | 技术深度 | 30% | 真实 NutShell commit checkout/generation、Chisel wrapper、SymbiYosys proof、public-IO 动态复现、04 Picker/Toffee functional coverage。 | formal 与 04 场景动态深度较强；全 Cache CRV 仍需补强。 |
 | AI 使用效能 | 20% | UCAgent 通过 `ListSkill`、`RunSkillScript` 调用 `generic-formal`；也能在无 formal skill 时通过 `RunTestCases` 跑 02/03/04 的 Toffee dynamic backend。 | formal-first full demo、skill 集成、Toffee flow 和日志证据清楚。 |
 | 工程质量 | 10% | 编号脚本、报告、`_Trash` 归档、Apache 2.0 license、复现指南。 | 结构清晰，可复现；大体积 artifact 放在 `reports/artifacts`。 |
@@ -37,6 +38,7 @@
 | 04 L2 readBurst formal-first full demo | `source .ucagent_env && bash scripts/run_cases.sh --case 04 --with-formal` | 先 formal assert `FAIL`/cover `PASS`，再 Toffee `RunTestCases` 通过 | `reports/04_l2_readburst_ucagent_full_demo.md` |
 | 04 L2 readBurst local smoke | `bash scripts/run_cases.sh --case 04 --with-formal --smoke` | assert `FAIL`、cover `PASS`，dynamic `DYNAMIC_REPRODUCED`，Toffee coverage `5/5` | `reports/04_l2_readburst.md`、`reports/04_l2_readburst_toffee_coverage.md` |
 | 04 UCAgent Toffee no-formal | `source .ucagent_env && bash scripts/run_cases.sh --case 04 --no-formal` | `RunTestCases` 1 passed，6/6 check points hit | `reports/04_l2_readburst_toffee_ucagent.md` |
+| 05 全 Cache coverage plan | `bash scripts/run_cases.sh --case 05 --smoke` 或 `source .ucagent_env && bash scripts/run_cases.sh --case 05` | coverage plan 可执行检查通过，明确 implemented/partial/gap | `reports/05_full_cache_coverage_plan.md` |
 
 ## 04 动态复现触发条件
 
@@ -73,6 +75,17 @@ UCAgent 用于执行可复用 skill flow、继续官方 Toffee/pytest flow，并
 | 04 readBurst | formal-first full demo 中先 `RunSkillScript`，再 `RunTestCases`。 | 由于已有人工校正 Toffee 环境，no-formal flow 可通过 `RunTestCases` 完成动态复现。 |
 
 该对照说明：UCAgent 原始流程擅长组织、读取和执行已有动态测试；一旦人工补齐 Picker/Toffee harness，no-formal UCAgent 可以完整跑动态后端。形式验证 skill 则进一步为 agent 增加了可执行的 counterexample 搜索后端，尤其适合先定位窄时序窗口，再把结果转为 directed dynamic regression。
+
+## 场景 5：全 Cache 覆盖闭环计划
+
+05 不是第五个 bug，而是面向完整工业级验证的计划级闭环。它回答“为什么当前没有全 Cache 覆盖率，以及如何得到全 Cache 覆盖率”：
+
+- 人工定义 coverage plan、CRV 场景族、scoreboard oracle 和 coverage database。
+- UCAgent 读取计划并通过官方 `RunTestCases` 执行计划自检。
+- Picker/Toffee 在后续实现阶段负责真实 DUT 导出、动态激励、scoreboard 与 coverage 采集。
+- `generic-formal` skill 继续承担 ready/valid、flush、dirty eviction 等窄窗口性质搜索。
+
+详细步骤和分工见 `docs/full_cache_coverage_plan.md`。
 
 ## 推荐复现入口
 

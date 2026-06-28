@@ -36,6 +36,18 @@ public-IO 仿真复现了 ready/valid deadlock 风险：同地址 L2 readBurst h
 
 当前 VCD 覆盖首次 bug marker 后至少 `23` 个周期；其中 cycle 45 到 cycle 54 是“触发之后 10 个循环”的核心观察窗口。
 
+## 协议结论
+
+在标准 Decoupled ready/valid 语义下，当前情况是一个很强的 candidate bug；但如果 NutShell 设计者额外规定 L1 必须一直 ready，则需要在设计文档中明确写出这个环境假设。
+
+当前公开设计文档能确认 `SimpleBusUC` 使用 Decoupled 方式握手，但尚未找到对 Cache `io.in.resp.ready` 的 eager-ready 约束。因此本报告保持谨慎表述：这是 latest upstream candidate bug，不写成 upstream 已确认 bug。
+
+## 波形证据
+
+![04 L2 readBurst ready/valid waveform](assets/04_l2_readburst_ready_valid_waveform.png)
+
+波形中的关键组合是：`freshS3InValid=1`、`freshS3InHit=1`、`freshS3InReadBurst=1`，说明 L2 Cache 内部已经处于 readBurst hit 响应窗口；与此同时 `io_cpu_resp_ready=0` 且 `io_cpu_resp_valid=0`，说明 response valid 被 ready-low 反压压低，存在 producer 与 consumer 互等的 deadlock 风险。
+
 ## Toffee 动态覆盖闭环
 
 - 报告：`reports/04_l2_readburst_toffee_coverage.md`

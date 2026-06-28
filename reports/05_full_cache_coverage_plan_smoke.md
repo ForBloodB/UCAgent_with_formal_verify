@@ -1,0 +1,7 @@
+# 05 全 Cache Coverage Plan UCAgent 流程
+
+- 分类：`SMOKE_LOCAL_PYTEST_COMPLETED`
+- 本地报告：`reports/05_full_cache_coverage_plan.md`
+- Summary JSON：`reports/artifacts/05_full_cache_coverage_plan/coverage_plan_summary.json`
+
+本次运行使用 `--smoke`，不调用 UCAgent API。它验证 coverage plan、CRV plan、scoreboard plan 和 evidence 映射是可执行检查的。

@@ -173,3 +173,30 @@ bash scripts/run_cases.sh --case all --no-formal
 - 02 通过 `RunTestCases` 跑 2 个 Toffee tests。
 - 03 通过 `RunTestCases` 跑 1 个 Toffee test。
 - 04 通过 `RunTestCases` 完成 Toffee directed dynamic replay。
+
+## 05 Full Cache Coverage Plan
+
+关键文件：
+
+- `tests/cases/05_full_cache_coverage_plan/data/cache_coverage_plan.yaml`
+- `tests/cases/05_full_cache_coverage_plan/toffee/FullCacheCoveragePlan_api.py`
+- `tests/cases/05_full_cache_coverage_plan/toffee/test_full_cache_coverage_plan.py`
+- `tests/ucagent_workspaces/05_full_cache_coverage_plan/config_toffee.yaml`
+- `scripts/internal/50_run_full_cache_coverage_plan.sh`
+
+本地 smoke，不调用 API：
+
+```bash
+bash scripts/run_cases.sh --case 05 --smoke
+```
+
+预期：2 个 pytest 通过，生成 `reports/05_full_cache_coverage_plan.md`，报告中记录 15 个 coverage points：3 implemented、3 partial、9 gap。
+
+真实 UCAgent `RunTestCases`：
+
+```bash
+source .ucagent_env
+bash scripts/run_cases.sh --case 05
+```
+
+预期：消息日志包含真实 `RunTestCases`，不包含真实 `RunSkillScript`；2 个 pytest 通过，并生成 `reports/05_full_cache_coverage_plan_ucagent.md`。

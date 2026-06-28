@@ -1,0 +1,17 @@
+{
+  "counts": {
+    "total": 15,
+    "implemented": 3,
+    "partial": 3,
+    "gap": 9
+  },
+  "missing_evidence": [],
+  "crv_total": 6,
+  "crv_gap": 5,
+  "scoreboard_items": 4,
+  "scoreboard_gap": 2,
+  "open_environment_assumptions": [
+    "l1_resp_ready_policy",
+    "coherence_model"
+  ]
+}

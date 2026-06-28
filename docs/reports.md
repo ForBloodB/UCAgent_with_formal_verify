@@ -20,6 +20,8 @@
 - `reports/04_l2_readburst_toffee_coverage.md`
 - `reports/04_l2_readburst_toffee_ucagent.md`
 - `reports/04_l2_readburst_ucagent_full_demo.md`
+- `reports/05_full_cache_coverage_plan.md`
+- `reports/05_full_cache_coverage_plan_ucagent.md`
 - `reports/05_ucagent_original_no_formal_comparison.md`
 - `reports/90_reproduction.md`
 - `reports/91_ucagent_skill_evidence.md`
