@@ -45,6 +45,14 @@ else
   conclusion="动态仿真没有以可识别的 result marker 结束。"
 fi
 
+first_bug_cycle="$(awk '/DYNAMIC_BUG_REPRODUCED/ { for (i = 1; i <= NF; i++) if ($i == "cycle") print $(i + 1) }' "${LOG}" | head -n 1)"
+last_bug_cycle="$(awk '/DYNAMIC_BUG_REPRODUCED/ { for (i = 1; i <= NF; i++) if ($i == "cycle") print $(i + 1) }' "${LOG}" | tail -n 1)"
+last_logged_cycle="$(awk '/^C[0-9]+ / { cycle = $1; sub(/^C/, "", cycle); print cycle }' "${LOG}" | tail -n 1)"
+post_trigger_cycles="n/a"
+if [[ -n "${first_bug_cycle}" && -n "${last_logged_cycle}" ]]; then
+  post_trigger_cycles="$((last_logged_cycle - first_bug_cycle))"
+fi
+
 cat > "${REPORT}" <<EOF_REPORT
 # L2 ReadBurst Ready/Valid 动态仿真
 
@@ -53,6 +61,10 @@ cat > "${REPORT}" <<EOF_REPORT
 - Testbench: \`${TB#${ROOT_DIR}/}\`
 - 日志：\`${LOG#${ROOT_DIR}/}\`
 - VCD: \`reports/artifacts/04_l2_readburst/artifacts/dynamic_readburst_ready_deadlock.vcd\`
+- 首次 bug marker cycle：\`${first_bug_cycle:-n/a}\`
+- 最后一次 bug marker cycle：\`${last_bug_cycle:-n/a}\`
+- 最后记录 cycle：\`${last_logged_cycle:-n/a}\`
+- bug 触发后继续记录周期数：\`${post_trigger_cycles}\`
 
 ## 场景
 
@@ -66,14 +78,31 @@ cat > "${REPORT}" <<EOF_REPORT
 
 ${conclusion}
 
+当前 VCD 覆盖首次 bug marker 后至少 \`${post_trigger_cycles}\` 个周期；其中 cycle 45 到 cycle 54 是“触发之后 10 个循环”的核心观察窗口。
+
 这是 directed dynamic replay，只使用 wrapper public ports。它不会初始化或 force Cache 内部状态。
 EOF_REPORT
 
 if [[ -f "${MAIN_REPORT}" ]]; then
-  tmp_report="$(mktemp)"
-  awk 'BEGIN { stop = 0 } /^## (Dynamic Replay|动态复现)$/ { stop = 1 } stop == 0 { print }' "${MAIN_REPORT}" > "${tmp_report}"
-  mv "${tmp_report}" "${MAIN_REPORT}"
-  cat >> "${MAIN_REPORT}" <<EOF_MAIN
+  head_report="$(mktemp)"
+  tail_report="$(mktemp)"
+  awk 'BEGIN { stop = 0 } /^## (Dynamic Replay|动态复现)$/ { stop = 1 } /^## Toffee 动态覆盖闭环$/ { stop = 1 } stop == 0 { print }' "${MAIN_REPORT}" > "${head_report}"
+  awk 'BEGIN { keep = 0 } /^## Toffee 动态覆盖闭环$/ { keep = 1 } keep == 1 { print }' "${MAIN_REPORT}" > "${tail_report}"
+  if [[ ! -s "${tail_report}" ]]; then
+    cat > "${tail_report}" <<'EOF_TAIL'
+## Toffee 动态覆盖闭环
+
+- 报告：`reports/04_l2_readburst_toffee_coverage.md`
+- Toffee/pytest HTML：`reports/artifacts/04_l2_readburst/toffee/pytest_report/index.html`
+- Toffee waveform：`reports/artifacts/04_l2_readburst/toffee/l2_readburst_ready_deadlock.fst`
+- Coverage JSON：`reports/artifacts/04_l2_readburst/toffee/coverage_summary.json`
+
+该闭环使用 Picker 导出的 Python DUT、Toffee/pytest env、scoreboard 和场景级 coverage。Coverage 口径只覆盖 04 场景本身，不声明覆盖整个 NutShell Cache。
+EOF_TAIL
+  fi
+  {
+    cat "${head_report}"
+    cat <<EOF_MAIN
 
 ## 动态复现
 
@@ -81,9 +110,19 @@ if [[ -f "${MAIN_REPORT}" ]]; then
 - 报告：\`${REPORT#${ROOT_DIR}/}\`
 - 日志：\`${LOG#${ROOT_DIR}/}\`
 - VCD: \`reports/artifacts/04_l2_readburst/artifacts/dynamic_readburst_ready_deadlock.vcd\`
+- 首次 bug marker cycle：\`${first_bug_cycle:-n/a}\`
+- 最后一次 bug marker cycle：\`${last_bug_cycle:-n/a}\`
+- 最后记录 cycle：\`${last_logged_cycle:-n/a}\`
+- bug 触发后继续记录周期数：\`${post_trigger_cycles}\`
 
 ${conclusion}
+
+当前 VCD 覆盖首次 bug marker 后至少 \`${post_trigger_cycles}\` 个周期；其中 cycle 45 到 cycle 54 是“触发之后 10 个循环”的核心观察窗口。
 EOF_MAIN
+    echo
+    cat "${tail_report}"
+  } > "${MAIN_REPORT}"
+  rm -f "${head_report}" "${tail_report}"
   workspace_mirror="${ROOT_DIR}/tests/ucagent_workspaces/04_l2_readburst_deadlock/reports/04_l2_readburst.md"
   if [[ -d "$(dirname "${workspace_mirror}")" ]]; then
     cp "${MAIN_REPORT}" "${workspace_mirror}"

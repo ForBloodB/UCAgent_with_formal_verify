@@ -5,6 +5,10 @@
 - Testbench: `tests/cases/04_l2_readburst_hit_ready_valid_deadlock/sim/readburst_ready_deadlock_tb.sv`
 - 日志：`reports/artifacts/04_l2_readburst/artifacts/dynamic_readburst_ready_deadlock.log`
 - VCD: `reports/artifacts/04_l2_readburst/artifacts/dynamic_readburst_ready_deadlock.vcd`
+- 首次 bug marker cycle：`44`
+- 最后一次 bug marker cycle：`59`
+- 最后记录 cycle：`67`
+- bug 触发后继续记录周期数：`23`
 
 ## 场景
 
@@ -17,5 +21,7 @@
 ## 结果
 
 public-IO 仿真复现了 ready/valid deadlock 风险：同地址 L2 readBurst hit 停留在 S3 且 L1 侧 `resp_ready=0` 时，`io_cpu_resp_valid` 也保持为低。
+
+当前 VCD 覆盖首次 bug marker 后至少 `23` 个周期；其中 cycle 45 到 cycle 54 是“触发之后 10 个循环”的核心观察窗口。
 
 这是 directed dynamic replay，只使用 wrapper public ports。它不会初始化或 force Cache 内部状态。
