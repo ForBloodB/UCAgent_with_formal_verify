@@ -1,8 +1,8 @@
-# 05 Full Cache Coverage Plan
+# 05 Declared Functional Coverage Closure
 
-This workspace demonstrates a UCAgent-driven coverage-plan validation flow.
+This workspace demonstrates a UCAgent-driven declared functional coverage
+closure flow.
 
-It does not claim full NutShell Cache coverage. Instead, it checks that the
-human-authored full-cache verification plan is explicit, traceable, and honest
-about implemented, partial, and missing coverage points.
-
+It closes the 15 functional coverage points declared by this repository,
+including the PR21, PR74, and L2 readBurst bug points. It does not claim full
+NutShell SoC or RTL line/toggle coverage.

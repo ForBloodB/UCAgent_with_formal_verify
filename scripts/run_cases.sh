@@ -150,10 +150,14 @@ run_case_04() {
 
 run_case_05() {
   echo "[05] full Cache coverage plan UCAgent/Toffee flow"
+  local mode_arg="--with-formal"
+  if [[ "$mode" == "no-formal" ]]; then
+    mode_arg="--no-formal"
+  fi
   if [[ "$smoke" == "1" ]]; then
-    bash scripts/internal/50_run_full_cache_coverage_plan.sh --smoke
+    bash scripts/internal/50_run_full_cache_coverage_plan.sh "$mode_arg" --smoke
   else
-    bash scripts/internal/50_run_full_cache_coverage_plan.sh
+    bash scripts/internal/50_run_full_cache_coverage_plan.sh "$mode_arg"
   fi
 }
 

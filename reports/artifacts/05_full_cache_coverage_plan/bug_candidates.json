@@ -1,0 +1,95 @@
+{
+  "confirmed_or_candidate_bug_points": [
+    {
+      "id": "BUG_PR21_MMIO_PREFETCH_PIPELINE",
+      "title": "PR21 MMIO prefetch pipeline interference",
+      "classification": [
+        "historical_real_bug",
+        "formal_detected",
+        "dynamic_reproduced",
+        "human_refined"
+      ],
+      "trigger": "An existing normal cache pipeline request reaches the later stage while an MMIO prefetch appears in the front stage.",
+      "verification": "Real NutShell PR21 pre/fixed formal wrapper plus UCAgent/Toffee replay.",
+      "evidence": [
+        "reports/02_pr21.md",
+        "reports/02_pr21_ucagent_formal_skill.md",
+        "reports/02_pr21_toffee_coverage.md"
+      ]
+    },
+    {
+      "id": "BUG_PR74_CACHE_IO_IDBITS",
+      "title": "PR74 CacheIO idBits elaboration/interface regression",
+      "classification": [
+        "historical_real_bug",
+        "formal_detected",
+        "human_refined"
+      ],
+      "trigger": "OOO-style Cache configuration requires request/response id fields, but pre-PR CacheIO omitted idBits.",
+      "verification": "Real NutShell PR74 pre elaboration failure plus fixed response-ID regression.",
+      "evidence": [
+        "reports/03_pr74.md",
+        "reports/03_pr74_ucagent_formal_skill.md",
+        "reports/03_pr74_toffee_coverage.md"
+      ]
+    },
+    {
+      "id": "BUG_04_L2_READBURST_READY_VALID",
+      "title": "L2 readBurst hit ready/valid deadlock candidate",
+      "classification": [
+        "UCAgent_suggested",
+        "human_refined",
+        "formal_detected",
+        "dynamic_reproduced"
+      ],
+      "trigger": "Same-address readBurst miss/refill followed by readBurst hit while L1 resp_ready is low.",
+      "verification": "Latest-upstream formal assert/cover plus public-IO dynamic replay and Toffee coverage.",
+      "evidence": [
+        "reports/04_l2_readburst.md",
+        "reports/04_l2_readburst_ucagent_full_demo.md",
+        "reports/04_l2_readburst_toffee_coverage.md"
+      ]
+    }
+  ],
+  "ucagent_suggested_hypotheses": [
+    {
+      "id": "HYP_FLUSH_OUTSTANDING_MISS",
+      "title": "Flush while a miss is outstanding may expose stale-response bugs",
+      "classification": [
+        "UCAgent_suggested",
+        "human_refined"
+      ],
+      "trigger": "Issue a read miss, hold memory response, assert flush, then release memory response.",
+      "verification": "05 declared closure uses an outstanding tracker; a future real-DUT formal property should be added if the public Cache flush contract is clarified.",
+      "evidence": [
+        "reports/05_full_cache_coverage_plan.md"
+      ]
+    },
+    {
+      "id": "HYP_DIRTY_EVICTION_ORDER",
+      "title": "Dirty eviction writeback/refill ordering is a high-risk replacement corner",
+      "classification": [
+        "UCAgent_suggested",
+        "human_refined"
+      ],
+      "trigger": "Dirty a line, force conflict replacement, and observe whether writeback precedes refill.",
+      "verification": "05 reference model closes the declared coverage bin; future work can bind the same oracle to a wider randomized real-DUT regression.",
+      "evidence": [
+        "reports/05_full_cache_coverage_plan.md"
+      ]
+    },
+    {
+      "id": "HYP_PARTIAL_MASK_MERGE",
+      "title": "Partial write masks can corrupt untouched bytes",
+      "classification": [
+        "UCAgent_suggested",
+        "human_refined"
+      ],
+      "trigger": "Write alternating byte masks to a cached word and read back the untouched lanes.",
+      "verification": "05 byte-level scoreboard closes the declared partial-mask bin.",
+      "evidence": [
+        "reports/05_full_cache_coverage_plan.md"
+      ]
+    }
+  ]
+}

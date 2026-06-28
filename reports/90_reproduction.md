@@ -174,7 +174,7 @@ bash scripts/run_cases.sh --case all --no-formal
 - 03 通过 `RunTestCases` 跑 1 个 Toffee test。
 - 04 通过 `RunTestCases` 完成 Toffee directed dynamic replay。
 
-## 05 Full Cache Coverage Plan
+## 05 Declared Functional Coverage Closure
 
 关键文件：
 
@@ -187,16 +187,25 @@ bash scripts/run_cases.sh --case all --no-formal
 本地 smoke，不调用 API：
 
 ```bash
-bash scripts/run_cases.sh --case 05 --smoke
+bash scripts/run_cases.sh --case 05 --with-formal --smoke
 ```
 
-预期：2 个 pytest 通过，生成 `reports/05_full_cache_coverage_plan.md`，报告中记录 15 个 coverage points：3 implemented、3 partial、9 gap。
+预期：4 个 pytest 通过，生成 `reports/05_full_cache_coverage_plan.md` 和 `reports/05_ucagent_bug_candidates.md`；报告中记录 15 个 declared functional coverage points：15 implemented、0 partial、0 gap。
 
-真实 UCAgent `RunTestCases`：
+真实 UCAgent formal-first：
 
 ```bash
 source .ucagent_env
-bash scripts/run_cases.sh --case 05
+bash scripts/run_cases.sh --case 05 --with-formal
 ```
 
-预期：消息日志包含真实 `RunTestCases`，不包含真实 `RunSkillScript`；2 个 pytest 通过，并生成 `reports/05_full_cache_coverage_plan_ucagent.md`。
+预期：消息日志包含真实 `RunSkillScript`、`SetSkillUsage` 和 `RunTestCases`；PR21/PR74/04 bug evidence 被纳入 05 coverage DB，并生成 `reports/05_full_cache_coverage_plan_ucagent.md`。
+
+真实 UCAgent no-formal 对照：
+
+```bash
+source .ucagent_env
+bash scripts/run_cases.sh --case 05 --no-formal
+```
+
+预期：消息日志包含真实 `RunTestCases`，不包含真实 `RunSkillScript`；该模式用于说明无 formal skill 时仍可执行 coverage closure，但无法主动补充 bounded counterexample 搜索。

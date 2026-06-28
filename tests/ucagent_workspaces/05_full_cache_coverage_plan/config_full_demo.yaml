@@ -1,0 +1,75 @@
+skill:
+  use_skill: true
+  general_skill_list:
+    - "generic-formal"
+
+mission:
+  name: "NutShell Cache 05 Formal-First Coverage Closure"
+  prompt:
+    system: |
+      You are a senior hardware verification engineer. Run the case 05 full demo:
+      first use the reusable `generic-formal` skill for historical/candidate bug
+      evidence, then continue with the official UCAgent Toffee/pytest
+      `RunTestCases` flow.
+
+      Stage A - formal skill evidence:
+      1. Call `ListSkill` and confirm that `generic-formal` is available.
+      2. Call `ReadTextFile` to read `.ucagent/skills/generic-formal/SKILL.md`.
+      3. Call `RunSkillScript` for these six formal cases. Use the current
+         four-element command form `[runner, skill_name, script, args]`:
+         - `["python3", "generic-formal", "run_formal.py", "--workspace ../../.. --case tests/cases/02_pr21_mmio_prefetch/formal/pr21_pre.yaml --timeout 1200"]`
+         - `["python3", "generic-formal", "run_formal.py", "--workspace ../../.. --case tests/cases/02_pr21_mmio_prefetch/formal/pr21_fixed.yaml --timeout 1200"]`
+         - `["python3", "generic-formal", "run_formal.py", "--workspace ../../.. --case tests/cases/03_pr74_cache_io_idbits/formal/pr74_pre_elab.yaml --timeout 1200"]`
+         - `["python3", "generic-formal", "run_formal.py", "--workspace ../../.. --case tests/cases/03_pr74_cache_io_idbits/formal/pr74_fixed.yaml --timeout 1200"]`
+         - `["python3", "generic-formal", "run_formal.py", "--workspace ../../.. --case tests/cases/04_l2_readburst_hit_ready_valid_deadlock/formal/l2_readburst_assert.yaml --timeout 1200"]`
+         - `["python3", "generic-formal", "run_formal.py", "--workspace ../../.. --case tests/cases/04_l2_readburst_hit_ready_valid_deadlock/formal/l2_readburst_cover.yaml --timeout 1200"]`
+      4. Summarize PR21, PR74, and L2 readBurst results as bug evidence.
+      5. Call `SetSkillUsage` and mark `generic-formal` as listed, read, and used.
+
+      Stage B - official Toffee/pytest flow:
+      1. Continue even if formal found a counterexample or elaboration failure.
+      2. Read `unity_test/tests/FullCacheCoveragePlan_api.py` and
+         `unity_test/tests/test_full_cache_coverage_plan.py`.
+      3. Use `RunTestCases` with pytest args `test_full_cache_coverage_plan.py -q`.
+      4. Read or summarize `reports/05_full_cache_coverage_plan.md` and
+         `reports/05_ucagent_bug_candidates.md`.
+      5. State clearly that 15/15 means declared functional coverage closure, not
+         full NutShell SoC or RTL line/toggle coverage.
+
+      Do not create a compact replacement DUT.
+      Do not describe the 04 latest-upstream candidate as upstream-confirmed.
+      Do not call `Complete` until both Stage A and Stage B have been executed.
+      {skill_system}
+    skill_system: |
+      **Available skills:**
+      {general_skill_list}
+
+stage:
+  - name: run_generic_formal_bug_evidence
+    desc: "Run PR21, PR74, and 04 evidence through the reusable generic-formal skill"
+    skill_list:
+      - "generic-formal"
+    force_use_skill: true
+    task:
+      - "List available skills and read `generic-formal` SKILL.md."
+      - "RunSkillScript for PR21 pre/fixed, PR74 pre/fixed, and L2 readBurst assert/cover."
+      - "Summarize the historical and candidate bug evidence."
+      - "Use SetSkillUsage before leaving this stage."
+    output_files:
+      - "reports/02_pr21_ucagent_formal_skill.md"
+      - "reports/03_pr74_ucagent_formal_skill.md"
+      - "reports/04_l2_readburst.md"
+  - name: run_declared_coverage_closure
+    desc: "Run the 05 declared functional coverage closure through RunTestCases"
+    task:
+      - "Read the human-curated pytest files under `unity_test/tests`."
+      - "Run `RunTestCases` with `test_full_cache_coverage_plan.py -q`."
+      - "Summarize the 15/15 coverage closure and bug candidate report."
+      - "Complete only after the Toffee/pytest test has run."
+    reference_files:
+      - "README.md"
+      - "FullCacheCoveragePlan/README.md"
+      - "unity_test/tests/FullCacheCoveragePlan_api.py"
+      - "unity_test/tests/test_full_cache_coverage_plan.py"
+    output_files:
+      - "uc_test_report/index.html"

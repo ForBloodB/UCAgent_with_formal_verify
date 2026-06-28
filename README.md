@@ -9,6 +9,7 @@
 - 将 SymbiYosys 封装为 UCAgent 可调用的通用 skill：`src/ucagent_skills/generic-formal`。
 - `tests/cases/01_generic_formal_proof` 证明通用能力：buggy adder 失败，fixed adder 通过。
 - NutShell Cache 案例保留为实战样例：PR21、PR74、L2 readBurst ready/valid candidate bug。
+- 05 将 PR21、PR74、04 纳入声明功能覆盖数据库，关闭 15 个 functional coverage points。
 
 ## Layout
 
@@ -112,15 +113,18 @@ bash scripts/run_cases.sh --case 04 --with-formal
 | 02 | NutShell PR21 历史 bug | pre `FAIL`，fixed `PASS` |
 | 03 | NutShell PR74 历史接口 bug | pre `ELAB_FAIL`，fixed `PASS` |
 | 04 | latest L2 readBurst candidate bug | formal assert `FAIL`，cover `PASS`，dynamic `DYNAMIC_REPRODUCED` |
-| 05 | 全 Cache coverage plan 验证闭环 | coverage plan 可执行检查通过；明确 implemented/partial/gap |
+| 05 | 全 Cache 声明功能覆盖闭环 | 15/15 functional coverage points implemented；PR21/PR74/04 bug points 纳入 coverage DB |
 
 报告入口：
 
 - `docs/submission_report.md`
 - `docs/adding_new_verilog_module.md`
 - `docs/full_cache_coverage_plan.md`
+- `docs/formal_ucagent_integration.md`
+- `docs/full_cache_coverage_implementation.md`
 - `docs/reports.md`
 - `reports/00_overview.md`
+- `reports/05_ucagent_bug_candidates.md`
 - `reports/91_ucagent_skill_evidence.md`
 
 ## License

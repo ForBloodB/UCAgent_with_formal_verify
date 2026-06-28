@@ -12,7 +12,7 @@
 | 02 PR21 MMIO prefetch | NutShell PR21 parent/fixed commit | MMIO prefetch 不能破坏已有 normal cache pipeline entry | `reports/02_pr21.md` |
 | 03 PR74 CacheIO idBits | NutShell PR74 parent/fixed commit | OOO 配置下 `CacheIO.in` 缺少 `idBits`，pre-PR elaboration/interface failure | `reports/03_pr74.md` |
 | 04 L2 readBurst ready/valid | latest upstream NutShell Cache wrapper | 同地址 `readBurst` miss/refill 后再次 hit，`resp_ready=0` 时 `resp_valid` 不主动拉高，存在 ready/valid deadlock 风险 | `reports/04_l2_readburst.md` |
-| 05 full Cache coverage plan | 人工定义 + UCAgent `RunTestCases` 检查 | 定义完整 Cache coverage plan、CRV、scoreboard、coverage DB，并明确 gap | `reports/05_full_cache_coverage_plan.md` |
+| 05 declared functional coverage closure | 人工定义 + UCAgent `RunTestCases` 检查 | 15 个声明 functional coverage points 全部 implemented，并纳入 PR21/PR74/04 bug points | `reports/05_full_cache_coverage_plan.md` |
 
 04 仍表述为 latest upstream candidate bug，不写成 upstream 已确认公开 bug。
 
@@ -24,7 +24,7 @@
 | 任意 RTL 接入 | 可辅助生成 formal harness 草稿 | 人工确认 top、clock/reset、property 语义 |
 | 02/03 动态后端 | 运行官方 `RunTestCases` | 接入 Picker DUT、memory mock、scoreboard、coverage |
 | 04 candidate bug | 调用 formal-first flow 并继续 Toffee 回归 | 设计 ready/valid property、public-IO replay、覆盖点 |
-| 05 coverage plan | 调用官方 `RunTestCases` 检查计划自洽性 | 人工定义覆盖目标、CRV、scoreboard oracle、gap 关闭策略 |
+| 05 coverage closure | 调用官方 `RunTestCases` 检查 15/15 coverage DB 与 bug candidates | 人工定义覆盖目标、CRV、scoreboard oracle、候选 bug 签核策略 |
 
 ## 评分标准映射
 
@@ -32,7 +32,7 @@
 | --- | ---: | --- |
 | 基础环境构建 | 20 | `scripts/verify_verilog.sh`、`scripts/run_cases.sh`、Picker/Toffee/UCAgent workspace、Docker fallback |
 | 人工干预与优化 | 25 | 真实 NutShell commit wrapper、formal property、scoreboard、coverage、AI 草稿修正 |
-| 验证覆盖率达标 | 15 | 04 场景 setup coverage `5/5 = 100%`；02/03 场景 coverage `5/5 = 100%`；05 定义 15 个全 Cache coverage points 并明确 3 implemented、3 partial、9 gap；不声称全 Cache 90% |
+| 验证覆盖率达标 | 15 | 04 场景 setup coverage `5/5 = 100%`；02/03 场景 coverage `5/5 = 100%`；05 对声明的 15 个 functional coverage points 达成 `15/15 = 100%`；不声称 RTL line/toggle 90% |
 | 协同过程记录 | 20 | `docs/ai_human_collaboration.md`、`reports/91_ucagent_skill_evidence.md` |
 | 工程规范与复现 | 20 | `src/tests/docs` 结构、Apache 2.0、`.gitignore` 忽略大产物、公开入口脚本 |
 
