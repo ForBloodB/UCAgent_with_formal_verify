@@ -1,74 +1,126 @@
-# NutShell Cache Real PR Formal Verification
+# NutShell Cache Verify
 
-This repository is now scoped to real historical NutShell Cache cases only.
-The earlier compact/artificial three-case demos were removed.
+一个面向 Verilog/SystemVerilog 的轻量验证工程。项目提供通用 formal 验证入口、UCAgent `generic-formal` skill，以及四个可复现案例。
 
-In addition, `ucagent_skills/generic-formal` contains a tiny counter smoke test
-for validating a reusable UCAgent formal skill. That smoke test is not claimed
-as a NutShell Cache case.
+## Features
 
-| Case | Upstream history | What is checked |
-| --- | --- | --- |
-| PR #21 `Bug prefetch mmio` | pre `bd425dee`, fixed `f0d7c494` | A real NutShell `nutcore.Cache` must not let an MMIO prefetch disturb an existing normal cache/L2 pipeline entry. |
-| PR #74 `cache: fix cache io` | pre `4b656f32`, fixed `287c5e02` | A real NutShell `nutcore.Cache` with `idBits=4` must expose and preserve the SimpleBus request/response ID field. |
+- 对任意可被 Yosys/Verilator 解析的 RTL 运行 lint/elaboration/basic formal smoke。
+- 支持用户提供 SVA/formal harness 后运行真正功能性质验证。
+- 将 SymbiYosys 封装为 UCAgent 可调用的通用 skill：`src/ucagent_skills/generic-formal`。
+- `tests/cases/01_generic_formal_proof` 证明通用能力：buggy adder 失败，fixed adder 通过。
+- NutShell Cache 案例保留为实战样例：PR21、PR74、L2 readBurst ready/valid candidate bug。
 
 ## Layout
 
 ```text
-formal/nutshell_pr21_real/   Real NutShell PR #21 wrapper, generated RTL, and SBY configs
-formal/nutshell_pr74_real/   Real NutShell PR #74 wrapper, generated RTL, and SBY config
-scripts/40_*.sh              Fetch/generate PR #21 real Cache RTL
-scripts/41_*.sh              Run PR #21 real formal
-scripts/42_*.sh              Fetch/generate PR #74 real Cache RTL
-scripts/43_*.sh              Run PR #74 real formal
-reports/                     Real-case reports and logs
-docker/                      Optional formal and UCAgent environments
-ucagent_skills/              Reusable UCAgent skill experiments
-examples/counter_formal/     Minimal skill smoke test, not a NutShell Cache case
+src/                         通用验证工具、UCAgent skill、runner helper
+tests/cases/                 四个可复现案例与 Toffee/formal 资产
+tests/ucagent_workspaces/    UCAgent 官方 workspace
+scripts/                     公开入口脚本
+scripts/internal/            案例内部复现脚本
+docs/                        用户文档与比赛报告
+reports/                     本地复现结果与轻量报告
+docker/                      formal/UCAgent Dockerfile
 ```
 
-## Reproduce
+## Setup
 
-Formal runs use the existing `nutshell-cache-formal:latest` Docker image:
+准备官方依赖源码：
 
 ```bash
-docker run --rm --user "$(id -u):$(id -g)" -v "$PWD:/work" -w /work \
-  nutshell-cache-formal:latest bash scripts/41_run_pr21_real_nutshell_cache_formal.sh
-
-docker run --rm --user "$(id -u):$(id -g)" -v "$PWD:/work" -w /work \
-  nutshell-cache-formal:latest bash scripts/43_run_pr74_real_nutshell_cache_formal.sh
+bash scripts/setup_sources.sh
 ```
 
-If generated RTL is missing, prepare it first on the host:
+配置 UCAgent API：
 
 ```bash
-bash scripts/40_prepare_pr21_real_nutshell_cache.sh all
-bash scripts/42_prepare_pr74_real_nutshell_cache.sh fixed
+cp .ucagent_env.example .ucagent_env
+vim .ucagent_env
+source .ucagent_env
 ```
 
-PR #74 pre-PR generation is expected to fail:
+检查本地工具：
 
 ```bash
-bash scripts/42_prepare_pr74_real_nutshell_cache.sh pre
+yosys -V
+verilator --version
+conda run -n ucagent python -c "import ucagent, toffee, toffee_test"
 ```
 
-That failure is the real bug trigger: the parent commit builds `CacheIO.in`
-without `idBits`, so a `CacheConfig(idBits = 4)` wrapper fails at the real
-Cache connection with `Right Record missing field (id)`.
+如需 formal Docker fallback：
 
-## Current Results
+```bash
+docker build -f docker/formal.Dockerfile -t nutshell-cache-formal:latest .
+```
 
-| Report | Expected result |
-| --- | --- |
-| `reports/pr21_real_nutshell_cache_formal.md` | pre-PR FAIL, fixed PASS |
-| `reports/pr74_real_nutshell_cache_formal.md` | pre-PR elaboration FAIL, fixed generation PASS, fixed formal PASS |
-| `reports/generic_formal/counter_minimal.md` | generic formal skill smoke: buggy FAIL, fixed PASS |
-| `reports/ucagent_real_case_status.md` | UCAgent compact/artificial artifacts removed; no non-real result is claimed |
+## Verify Any Verilog Module
 
-## Official Sources
+Basic smoke，不调用 API：
 
-- UCAgent: https://github.com/XS-MLVP/UCAgent
-- Example-NutShellCache: https://github.com/XS-MLVP/Example-NutShellCache
-- picker: https://github.com/XS-MLVP/picker
-- NutShell PR #21: https://github.com/OSCPU/NutShell/pull/21
-- NutShell PR #74: https://github.com/OSCPU/NutShell/pull/74
+```bash
+bash scripts/verify_verilog.sh \
+  --rtl path/to/dut.sv \
+  --top MyDut \
+  --depth 8 \
+  --smoke
+```
+
+带用户提供的 formal harness/property：
+
+```bash
+bash scripts/verify_verilog.sh \
+  --rtl path/to/dut.sv \
+  --property path/to/my_property.sv \
+  --top my_formal_top \
+  --define OPTIONAL_MACRO \
+  --depth 32 \
+  --smoke
+```
+
+说明：basic smoke 只证明 RTL 能进入验证工具链；功能正确性需要 property、reference model 或人工确认后的 harness。去掉 `--smoke` 后，脚本会先跑本地验证，再调用真实 UCAgent API 读取 `generic-formal` skill、复跑同一个 YAML case，并给出后续性质建议。
+
+## Run Included Cases
+
+本地 smoke，不调用 API：
+
+```bash
+bash scripts/run_cases.sh --case all --with-formal --smoke
+bash scripts/run_cases.sh --case all --no-formal --smoke
+```
+
+严格模式会调用真实 UCAgent API：
+
+```bash
+source .ucagent_env
+bash scripts/run_cases.sh --case 04 --with-formal
+```
+
+参数：
+
+```text
+--case all|01|02|03|04
+--with-formal    默认，运行 formal/skill 路径
+--no-formal      运行动态 Toffee 路径
+--smoke          不调用 LLM/API
+```
+
+## Local Results
+
+| Case | Role | Local result |
+| --- | --- | --- |
+| 01 | 通用 formal 能力证明 | buggy `FAIL`，fixed `PASS` |
+| 02 | NutShell PR21 历史 bug | pre `FAIL`，fixed `PASS` |
+| 03 | NutShell PR74 历史接口 bug | pre `ELAB_FAIL`，fixed `PASS` |
+| 04 | latest L2 readBurst candidate bug | formal assert `FAIL`，cover `PASS`，dynamic `DYNAMIC_REPRODUCED` |
+
+报告入口：
+
+- `docs/submission_report.md`
+- `docs/adding_new_verilog_module.md`
+- `docs/reports.md`
+- `reports/00_overview.md`
+- `reports/91_ucagent_skill_evidence.md`
+
+## License
+
+Apache 2.0. See `LICENSE`.

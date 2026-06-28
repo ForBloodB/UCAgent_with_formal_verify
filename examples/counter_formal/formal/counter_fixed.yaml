@@ -1,8 +1,0 @@
-name: counter_fixed
-top: counter_formal
-files:
-  - examples/counter_formal/rtl/counter_fixed.sv
-  - examples/counter_formal/formal/counter_formal.sv
-depth: 8
-expected: PASS
-report: reports/generic_formal/counter_minimal.md

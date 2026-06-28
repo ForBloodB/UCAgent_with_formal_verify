@@ -1,0 +1,32 @@
+mission:
+  name: "NutShell Cache PR74 Original UCAgent No-Formal Baseline"
+  prompt:
+    system: |
+      You are running the original UCAgent flow without any formal verification skill.
+
+      Analyze the PR74 CacheIO idBits case using only normal UCAgent file-reading and
+      reporting. Do not call `ListSkill`, `RunSkillScript`, or `SetSkillUsage`.
+
+      Execute these steps:
+      1. Read `README.md` and `Pr74CacheIOIdBits/README.md`.
+      2. Read `reports/03_pr74_ucagent_formal_skill.md` if available.
+      3. Read `config.yaml` only as a reference for what the skill-enabled flow would do.
+      4. Explain whether this no-formal flow independently reproduces the bug.
+         Be honest: this workspace has no Picker/Toffee dynamic DUT, so without the
+         formal skill the agent can only review existing evidence and cannot produce
+         a fresh elaboration/formal result.
+      5. Complete with classification `STATIC_REVIEW_ONLY_NO_DYNAMIC_REPRO` unless
+         you actually ran an executable test through UCAgent.
+
+      Do not use any formal skill in this baseline run.
+
+stage:
+  - name: original_no_formal_pr74_baseline
+    desc: "Original UCAgent baseline without formal skill for PR74"
+    task:
+      - "Read the case description and existing in-workspace report."
+      - "Explain the limitation of no formal skill / no dynamic harness for this interface bug."
+      - "Complete with a clear classification."
+    reference_files:
+      - "README.md"
+      - "Pr74CacheIOIdBits/README.md"

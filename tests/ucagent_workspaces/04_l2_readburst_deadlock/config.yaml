@@ -1,0 +1,43 @@
+skill:
+  use_skill: true
+  general_skill_list:
+    - "generic-formal"
+
+mission:
+  name: "NutShell Cache L2 ReadBurst Generic Formal Skill Run"
+  prompt:
+    system: |
+      You are a hardware formal verification engineer. Your task is to use the official UCAgent skill flow to call the reusable `generic-formal` skill and run the latest-upstream NutShell Cache `l2_readburst_hit_ready_valid_deadlock` case.
+
+      Execute the following steps in order:
+      1. Call `ListSkill` and confirm that `generic-formal` is available.
+      2. Call `ReadTextFile` to read `.ucagent/skills/generic-formal/SKILL.md`.
+      3. Call `RunSkillScript` for the two formal cases. The current UCAgent tool expects four-element commands in the form `[runner, skill_name, script, args]`:
+         - `["python3", "generic-formal", "run_formal.py", "--workspace ../../.. --case tests/cases/04_l2_readburst_hit_ready_valid_deadlock/formal/l2_readburst_assert.yaml --timeout 1200"]`
+         - `["python3", "generic-formal", "run_formal.py", "--workspace ../../.. --case tests/cases/04_l2_readburst_hit_ready_valid_deadlock/formal/l2_readburst_cover.yaml --timeout 1200"]`
+      4. Call `ReadTextFile` to read `reports/04_l2_readburst.md` inside the workspace.
+      5. Summarize the result clearly: expected `FAIL` for the assert case means formal found a ready/valid counterexample; expected `PASS` for the cover case means the target window is reachable.
+      6. Before completion, call `SetSkillUsage` and mark `generic-formal` as listed, read, and used.
+
+      Do not run or summarize PR21, PR74, MMIO prefetch, idBits, or any other non-04 scenario. Do not describe this candidate issue as an upstream-confirmed bug.
+      {skill_system}
+    skill_system: |
+      **Available skills:**
+      {general_skill_list}
+
+stage:
+  - name: run_l2_readburst_with_generic_formal
+    desc: "Run the latest NutShell Cache L2 readBurst ready/valid case through the generic-formal skill"
+    skill_list:
+      - "generic-formal"
+    force_use_skill: true
+    task:
+      - "List available skills and read the `generic-formal` SKILL.md."
+      - "Use `RunSkillScript` to run `l2_readburst_assert.yaml` and `l2_readburst_cover.yaml`."
+      - "Read and summarize `reports/04_l2_readburst.md` inside the workspace."
+      - "Before completion, use `SetSkillUsage` to mark `generic-formal` as listed, read, and used."
+    reference_files:
+      - "README.md"
+      - "L2ReadBurstDeadlock/README.md"
+    output_files:
+      - "reports/04_l2_readburst.md"

@@ -1,0 +1,12 @@
+name: adder_fixed
+top: adder_formal
+files:
+  - tests/cases/01_generic_formal_proof/rtl/adder_fixed.sv
+  - tests/cases/01_generic_formal_proof/formal/adder_formal.sv
+depth: 2
+expected: PASS
+report: reports/01_adder.md
+log_dir: reports/artifacts/01_adder/logs
+result_dir: reports/artifacts/01_adder/results
+defines:
+  - ADDER_FIXED

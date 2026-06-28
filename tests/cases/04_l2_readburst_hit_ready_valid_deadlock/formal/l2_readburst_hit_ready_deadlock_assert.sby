@@ -1,0 +1,17 @@
+[options]
+mode bmc
+depth 96
+timeout 240
+append 0
+
+[engines]
+smtbmc --nopresat --unroll z3
+
+[script]
+read_verilog -formal -sv -DSYNTHESIS FreshCacheFormalDut.sv
+read_verilog -formal -sv fresh_l2_readburst_hit_ready_deadlock_formal.sv
+prep -top fresh_l2_readburst_hit_ready_deadlock_formal
+
+[files]
+tests/cases/04_l2_readburst_hit_ready_valid_deadlock/formal/generated/latest/FreshCacheFormalDut.sv
+tests/cases/04_l2_readburst_hit_ready_valid_deadlock/formal/fresh_l2_readburst_hit_ready_deadlock_formal.sv

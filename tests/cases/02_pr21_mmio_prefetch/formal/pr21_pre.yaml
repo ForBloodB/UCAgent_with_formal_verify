@@ -1,0 +1,11 @@
+name: pr21_real_nutshell_cache_pre
+sby: tests/cases/02_pr21_mmio_prefetch/formal/nutshell_pr21_real_cache_pre.sby
+depth: 24
+expected: FAIL
+prepare:
+  - bash scripts/internal/20_prepare_pr21_real_cache.sh all
+report: reports/02_pr21_ucagent_formal_skill.md
+log_dir: reports/artifacts/02_pr21/ucagent_formal/logs
+result_dir: reports/artifacts/02_pr21/ucagent_formal/results
+mirror_report:
+  - tests/ucagent_workspaces/02_pr21_mmio_prefetch/reports/02_pr21_ucagent_formal_skill.md

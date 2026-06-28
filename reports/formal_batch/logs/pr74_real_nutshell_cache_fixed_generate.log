@@ -1,8 +1,0 @@
-[pr74-real] generating fixed from NutShell 287c5e02490aca73055211bd04908917d71deaf7
-[1/63] chiselModule.resources
-[1A[2K[9999D[3/63] mill.scalalib.ZincWorkerModule.worker
-[1A[2K[9999D[5/63] difftest.sources
-[1A[2K[9999D[10/63] difftest.resources
-[1A[2K[9999D[29/63] chiselModule.sources.overriden.mill.scalalib.SbtModule.sources
-[1A[2K[9999D[30/63] chiselModule.sources
-[1A[2K[9999D[63/63] chiselModule.runMain

@@ -1,0 +1,11 @@
+name: l2_readburst_hit_ready_deadlock_cover
+sby: tests/cases/04_l2_readburst_hit_ready_valid_deadlock/formal/l2_readburst_hit_ready_deadlock_cover.sby
+depth: 96
+expected: PASS
+prepare:
+  - python3 tests/cases/04_l2_readburst_hit_ready_valid_deadlock/scripts/prepare_latest_l2_readburst.py --repo-root . --timeout 1200
+report: reports/04_l2_readburst.md
+log_dir: reports/artifacts/04_l2_readburst/logs
+result_dir: reports/artifacts/04_l2_readburst/results
+mirror_report:
+  - tests/ucagent_workspaces/04_l2_readburst_deadlock/reports/04_l2_readburst.md

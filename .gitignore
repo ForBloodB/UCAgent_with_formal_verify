@@ -5,15 +5,75 @@
 *.vcd
 *.yw
 build/
+out/
 __pycache__/
 .pytest_cache/
 .ucagent_env
 .venv-ucagent/
 log/
 third_party/
+_Trash/
 
-# SymbiYosys generated run directories.
-formal/nutshell_pr21_real/nutshell_pr21_real_cache_*/
-formal/nutshell_pr74_real/nutshell_pr74_real_cache_*/
-examples/*/formal/*/
-examples/*/formal/*.sby
+# SymbiYosys generated run directories and generated SBYs.
+tests/cases/*/formal/*_assert/
+tests/cases/*/formal/*_cover/
+tests/cases/*/formal/*_pre/
+tests/cases/*/formal/*_fixed/
+tests/cases/*/formal/*_buggy/
+tests/cases/*/formal/adder_buggy/
+tests/cases/*/formal/adder_fixed/
+tests/cases/*/formal/adder_*.sby
+
+# Case-local generated RTL caches. Recreate with the numbered prepare scripts.
+tests/cases/*/formal/generated/
+
+# UCAgent workspace caches and generated dynamic test reports.
+tests/ucagent_workspaces/*/.ucagent/
+tests/ucagent_workspaces/*/unity_test/
+tests/ucagent_workspaces/*/uc_test_report/
+tests/ucagent_workspaces/*/AGENTS.md
+tests/ucagent_workspaces/*/Guide_Doc/
+tests/ucagent_workspaces/*/reports/
+
+# Large or reproducible run artifacts. Keep lightweight evidence summaries.
+reports/artifacts/*
+!reports/artifacts/02_pr21/
+reports/artifacts/02_pr21/*
+!reports/artifacts/02_pr21/original_no_formal/
+reports/artifacts/02_pr21/original_no_formal/*
+!reports/artifacts/02_pr21/original_no_formal/token_usage.md
+!reports/artifacts/02_pr21/toffee/
+reports/artifacts/02_pr21/toffee/*
+!reports/artifacts/02_pr21/toffee/coverage_summary.json
+!reports/artifacts/02_pr21/toffee_ucagent/
+reports/artifacts/02_pr21/toffee_ucagent/*
+!reports/artifacts/02_pr21/toffee_ucagent/token_usage.md
+!reports/artifacts/02_pr21/ucagent_formal/
+reports/artifacts/02_pr21/ucagent_formal/*
+!reports/artifacts/02_pr21/ucagent_formal/token_usage.md
+!reports/artifacts/03_pr74/
+reports/artifacts/03_pr74/*
+!reports/artifacts/03_pr74/original_no_formal/
+reports/artifacts/03_pr74/original_no_formal/*
+!reports/artifacts/03_pr74/original_no_formal/token_usage.md
+!reports/artifacts/03_pr74/toffee/
+reports/artifacts/03_pr74/toffee/*
+!reports/artifacts/03_pr74/toffee/coverage_summary.json
+!reports/artifacts/03_pr74/toffee_ucagent/
+reports/artifacts/03_pr74/toffee_ucagent/*
+!reports/artifacts/03_pr74/toffee_ucagent/token_usage.md
+!reports/artifacts/03_pr74/ucagent_formal/
+reports/artifacts/03_pr74/ucagent_formal/*
+!reports/artifacts/03_pr74/ucagent_formal/token_usage.md
+!reports/artifacts/04_l2_readburst/
+reports/artifacts/04_l2_readburst/*
+!reports/artifacts/04_l2_readburst/dynamic_readburst_ready_deadlock.md
+!reports/artifacts/04_l2_readburst/*token_usage.md
+!reports/artifacts/04_l2_readburst/toffee/
+reports/artifacts/04_l2_readburst/toffee/*
+!reports/artifacts/04_l2_readburst/toffee/coverage_summary.json
+
+# Generic user-run Verilog verification outputs. Keep Markdown summaries only.
+reports/generic_verilog/**
+!reports/generic_verilog/**/
+!reports/generic_verilog/**/README.md

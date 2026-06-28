@@ -1,0 +1,14 @@
+{
+  "fixed": {
+    "request_issued_with_id": true,
+    "request_accepted": true,
+    "memory_response_issued": true,
+    "cpu_response_seen": true,
+    "response_id_matched": true,
+    "setup_hit": 5,
+    "setup_total": 5,
+    "setup_percent": 100.0
+  },
+  "classification": "FIXED_DYNAMIC_PASS",
+  "source": "human-refined Toffee replay from UCAgent draft"
+}

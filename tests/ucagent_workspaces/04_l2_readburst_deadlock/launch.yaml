@@ -1,0 +1,9 @@
+# Launch manifest for the generic-formal UCAgent skill readBurst demo.
+
+task_name: L2ReadBurstDeadlock
+dut: L2ReadBurstDeadlock
+module: L2ReadBurstDeadlock
+output: unity_test
+
+files:
+  requirement: README.md

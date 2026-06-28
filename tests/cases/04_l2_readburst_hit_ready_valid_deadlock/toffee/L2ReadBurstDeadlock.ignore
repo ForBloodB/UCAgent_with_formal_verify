@@ -1,0 +1,4 @@
+# The generated NutShell Cache wrapper is large; this case reports scenario
+# functional coverage. Verilator line coverage data is still passed through
+# to toffee-test when available.
+*

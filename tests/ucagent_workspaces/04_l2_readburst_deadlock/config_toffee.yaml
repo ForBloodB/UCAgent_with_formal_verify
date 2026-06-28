@@ -1,0 +1,36 @@
+mission:
+  name: "NutShell Cache L2 ReadBurst Toffee Dynamic Run"
+  prompt:
+    system: |
+      You are a hardware verification engineer using the official UCAgent Toffee/pytest flow.
+
+      Your task is to run the latest-upstream NutShell Cache `l2_readburst_hit_ready_valid_deadlock`
+      dynamic verification case through the existing `unity_test/tests` workspace.
+
+      Execute the following steps in order:
+      1. Read `README.md` and `L2ReadBurstDeadlock/README.md`.
+      2. Read `unity_test/tests/L2ReadBurstDeadlock_api.py` and `unity_test/tests/test_l2_readburst_ready_valid.py`.
+      3. Use `RunTestCases` with pytest args `test_l2_readburst_ready_valid.py -q`.
+      4. Read or summarize the generated Toffee report and the file `reports/04_l2_readburst_toffee_coverage.md` if it exists.
+      5. Record that this coverage is only for the 04 ready/valid scenario, not full NutShell Cache functional coverage.
+      6. Complete and exit.
+
+      Do not run PR21, PR74, MMIO prefetch, idBits, or any non-04 scenario.
+      Do not call `generic-formal` in this Toffee run.
+      Do not describe this candidate issue as an upstream-confirmed bug.
+
+stage:
+  - name: run_l2_readburst_toffee_directed
+    desc: "Run the 04 NutShell Cache L2 readBurst ready/valid case with Toffee/pytest"
+    task:
+      - "Read the workspace README and the human-curated Toffee test files."
+      - "Run `RunTestCases` with `test_l2_readburst_ready_valid.py -q`."
+      - "Summarize the Toffee functional coverage and generated report artifacts."
+      - "Complete the stage only after the Toffee test has run."
+    reference_files:
+      - "README.md"
+      - "L2ReadBurstDeadlock/README.md"
+      - "unity_test/tests/L2ReadBurstDeadlock_api.py"
+      - "unity_test/tests/test_l2_readburst_ready_valid.py"
+    output_files:
+      - "uc_test_report/index.html"

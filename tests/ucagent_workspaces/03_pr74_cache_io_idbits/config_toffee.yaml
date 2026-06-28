@@ -1,0 +1,36 @@
+mission:
+  name: "NutShell Cache PR74 Toffee Dynamic Backend"
+  prompt:
+    system: |
+      You are using the official UCAgent Toffee/pytest workflow.
+
+      Run case 03 PR74 CacheIO idBits through the dynamic backend only. Do not use
+      any formal verification skill or formal script in this mission.
+
+      Execute these steps:
+      1. Read `README.md` and `Pr74CacheIOIdBits/README.md`.
+      2. Read `unity_test/tests/Pr74CacheIOIdBits_api.py` and
+         `unity_test/tests/test_pr74_cache_io_idbits.py`.
+      3. Use `RunTestCases` with pytest args `test_pr74_cache_io_idbits.py -q`.
+      4. Summarize the fixed-DUT Toffee functional coverage and mention that the
+         pre-PR historical failure is an interface/elaboration failure captured by
+         the prepare log, not a runnable dynamic DUT.
+      5. Complete and exit.
+
+      Do not call `ListSkill`, `RunSkillScript`, or `SetSkillUsage`.
+
+stage:
+  - name: run_pr74_toffee_dynamic
+    desc: "Run PR74 through the UCAgent Toffee dynamic backend without formal skill"
+    task:
+      - "Read the workspace description and human-refined Toffee test files."
+      - "Run `RunTestCases` with `test_pr74_cache_io_idbits.py -q`."
+      - "Summarize the generated report artifacts."
+      - "Complete the stage only after the Toffee test has run."
+    reference_files:
+      - "README.md"
+      - "Pr74CacheIOIdBits/README.md"
+      - "unity_test/tests/Pr74CacheIOIdBits_api.py"
+      - "unity_test/tests/test_pr74_cache_io_idbits.py"
+    output_files:
+      - "uc_test_report/index.html"

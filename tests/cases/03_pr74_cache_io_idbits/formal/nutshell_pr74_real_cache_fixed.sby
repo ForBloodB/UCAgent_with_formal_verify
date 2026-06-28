@@ -1,0 +1,16 @@
+[options]
+mode bmc
+depth 24
+append 0
+
+[engines]
+smtbmc --nopresat --unroll z3
+
+[script]
+read_verilog -formal -DSYNTHESIS Pr74CacheIOFormalDut.v
+read_verilog -formal -sv pr74_nutshell_cache_io_idbits_formal.sv
+prep -top pr74_nutshell_cache_io_idbits_formal
+
+[files]
+tests/cases/03_pr74_cache_io_idbits/formal/generated/fixed/Pr74CacheIOFormalDut.v
+tests/cases/03_pr74_cache_io_idbits/formal/pr74_nutshell_cache_io_idbits_formal.sv

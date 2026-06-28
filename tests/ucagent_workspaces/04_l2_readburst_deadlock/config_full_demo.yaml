@@ -1,0 +1,78 @@
+skill:
+  use_skill: true
+  general_skill_list:
+    - "generic-formal"
+
+mission:
+  name: "NutShell Cache 04 Full Demo: Formal-First Diagnosis + Toffee Flow"
+  prompt:
+    system: |
+      You are a hardware verification engineer demonstrating one complete UCAgent run for the latest-upstream NutShell Cache `l2_readburst_hit_ready_valid_deadlock` case.
+
+      This is a two-stage mission. You must complete both stages in one UCAgent run:
+
+      Stage A - reusable formal verification skill flow, as a pre-diagnosis step:
+      1. Call `ListSkill` and confirm that `generic-formal` is available.
+      2. Call `ReadTextFile` to read `.ucagent/skills/generic-formal/SKILL.md`.
+      3. Call `RunSkillScript` for the two formal cases. The current UCAgent tool expects four-element commands in the form `[runner, skill_name, script, args]`:
+         - `["python3", "generic-formal", "run_formal.py", "--workspace ../../.. --case tests/cases/04_l2_readburst_hit_ready_valid_deadlock/formal/l2_readburst_assert.yaml --timeout 1200"]`
+         - `["python3", "generic-formal", "run_formal.py", "--workspace ../../.. --case tests/cases/04_l2_readburst_hit_ready_valid_deadlock/formal/l2_readburst_cover.yaml --timeout 1200"]`
+      4. Call `ReadTextFile` to read `reports/04_l2_readburst.md` inside the workspace.
+      5. Summarize the result clearly:
+         - If the assert case reports expected `FAIL` and actual `FAIL`, classify it as `COUNTEREXAMPLE_FOUND`.
+         - If the cover case reports expected `PASS` and actual `PASS`, state that the target window is reachable.
+         - If no counterexample is found, classify it as `NO_COUNTEREXAMPLE_IN_BOUND`.
+      6. If a counterexample is found, explicitly write the bug reproduction idea before moving on:
+         first issue a same-address L2 `readBurst` miss/refill, then issue a second same-address `readBurst` hit, hold `resp_ready=0`, and observe whether `resp_valid` is incorrectly held low. Mention `reports/04_l2_readburst.md` as the formal report and the formal log paths listed inside it.
+      7. Call `SetSkillUsage` and mark `generic-formal` as listed, read, and used before leaving this formal stage.
+
+      Stage B - original official UCAgent Toffee/pytest flow:
+      1. Continue to this stage regardless of whether Stage A found a counterexample.
+      2. Read `unity_test/tests/L2ReadBurstDeadlock_api.py` and `unity_test/tests/test_l2_readburst_ready_valid.py`.
+      3. Use `RunTestCases` with pytest args `test_l2_readburst_ready_valid.py -q`.
+      4. Read or summarize the generated Toffee report and `reports/04_l2_readburst_toffee_coverage.md` if it exists.
+      5. Interpret the result correctly: this is a reproduction-style dynamic test. A pytest PASS means the directed replay successfully reproduced the formal observation and hit `resp_valid_low_during_ready_low_hit`; it does not mean the design has no bug.
+      6. State that this is scenario-level 04 coverage, not full NutShell Cache coverage.
+      7. Summarize the full loop as formal diagnosis followed by the original UCAgent Toffee dynamic regression.
+
+      Do not run PR21, PR74, MMIO prefetch, idBits, or any non-04 scenario.
+      Do not create a compact replacement DUT.
+      Do not describe this candidate issue as an upstream-confirmed bug.
+      Do not call `Complete` until both Stage A and Stage B have been executed.
+      {skill_system}
+    skill_system: |
+      **Available skills:**
+      {general_skill_list}
+
+stage:
+  - name: run_generic_formal_skill_flow
+    desc: "Run the 04 case through the reusable generic-formal UCAgent skill as a pre-diagnosis step"
+    skill_list:
+      - "generic-formal"
+    force_use_skill: true
+    task:
+      - "List available skills and read the `generic-formal` SKILL.md."
+      - "Use `RunSkillScript` to run `l2_readburst_assert.yaml` and `l2_readburst_cover.yaml`."
+      - "Read and summarize `reports/04_l2_readburst.md` inside the workspace."
+      - "If a counterexample is found, write the reproduction idea before continuing to dynamic verification."
+      - "Use `SetSkillUsage` to mark `generic-formal` as listed, read, and used before leaving this stage."
+    reference_files:
+      - "README.md"
+      - "L2ReadBurstDeadlock/README.md"
+    output_files:
+      - "reports/04_l2_readburst.md"
+  - name: run_official_toffee_dynamic_flow
+    desc: "Continue with the official UCAgent Toffee/pytest dynamic flow for 04"
+    task:
+      - "Read the human-curated Toffee files under `unity_test/tests`."
+      - "Run `RunTestCases` with `test_l2_readburst_ready_valid.py -q` even if formal found a counterexample."
+      - "Treat pytest PASS as successful bug reproduction for this directed replay, not as proof that the DUT is bug-free."
+      - "Summarize the Toffee functional coverage and generated report artifacts."
+      - "Complete only after the Toffee test has run."
+    reference_files:
+      - "README.md"
+      - "L2ReadBurstDeadlock/README.md"
+      - "unity_test/tests/L2ReadBurstDeadlock_api.py"
+      - "unity_test/tests/test_l2_readburst_ready_valid.py"
+    output_files:
+      - "uc_test_report/index.html"

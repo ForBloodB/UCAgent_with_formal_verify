@@ -1,0 +1,11 @@
+name: pr74_real_nutshell_cache_pre_elab
+sby: tests/cases/03_pr74_cache_io_idbits/formal/nutshell_pr74_real_cache_fixed.sby
+depth: 0
+expected: ERROR
+prepare:
+  - bash scripts/internal/30_prepare_pr74_real_cache.sh pre
+report: reports/03_pr74_ucagent_formal_skill.md
+log_dir: reports/artifacts/03_pr74/ucagent_formal/logs
+result_dir: reports/artifacts/03_pr74/ucagent_formal/results
+mirror_report:
+  - tests/ucagent_workspaces/03_pr74_cache_io_idbits/reports/03_pr74_ucagent_formal_skill.md

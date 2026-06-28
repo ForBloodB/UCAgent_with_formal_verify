@@ -1,0 +1,47 @@
+skill:
+  use_skill: true
+  general_skill_list:
+    - "generic-formal"
+
+mission:
+  name: "NutShell Cache PR74 Generic Formal Skill Run"
+  prompt:
+    system: |
+      You are a hardware verification engineer. Use the reusable `generic-formal`
+      skill to run the real NutShell Cache PR #74 CacheIO idBits historical case.
+
+      Execute these steps in order:
+      1. Call `ListSkill` and confirm that `generic-formal` is available.
+      2. Call `ReadTextFile` to read `.ucagent/skills/generic-formal/SKILL.md`.
+      3. Call `RunSkillScript` for both formal cases:
+         - `["python3", "generic-formal", "run_formal.py", "--workspace ../../.. --case tests/cases/03_pr74_cache_io_idbits/formal/pr74_pre_elab.yaml --timeout 1200"]`
+         - `["python3", "generic-formal", "run_formal.py", "--workspace ../../.. --case tests/cases/03_pr74_cache_io_idbits/formal/pr74_fixed.yaml --timeout 1200"]`
+      4. Call `ReadTextFile` to read `reports/03_pr74_ucagent_formal_skill.md`.
+      5. Summarize the result: pre-PR expected `ERROR` means the historical
+         interface/elaboration regression was caught; fixed expected `PASS` means
+         the fixed CacheIO ID property is stable.
+      6. Call `SetSkillUsage` and mark `generic-formal` as listed, read, and used.
+
+      Do not run PR21, l2 readBurst, or any non-03 scenario.
+      Do not create a compact replacement DUT.
+      {skill_system}
+    skill_system: |
+      **Available skills:**
+      {general_skill_list}
+
+stage:
+  - name: run_pr74_with_generic_formal
+    desc: "Run PR74 pre/fixed real NutShell Cache cases through generic-formal"
+    skill_list:
+      - "generic-formal"
+    force_use_skill: true
+    task:
+      - "List available skills and read `generic-formal` SKILL.md."
+      - "Use `RunSkillScript` for `pr74_pre_elab.yaml` and `pr74_fixed.yaml`."
+      - "Read and summarize `reports/03_pr74_ucagent_formal_skill.md`."
+      - "Use `SetSkillUsage` before completion."
+    reference_files:
+      - "README.md"
+      - "Pr74CacheIOIdBits/README.md"
+    output_files:
+      - "reports/03_pr74_ucagent_formal_skill.md"

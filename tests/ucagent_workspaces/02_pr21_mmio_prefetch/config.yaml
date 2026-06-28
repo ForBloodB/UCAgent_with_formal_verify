@@ -1,0 +1,48 @@
+skill:
+  use_skill: true
+  general_skill_list:
+    - "generic-formal"
+
+mission:
+  name: "NutShell Cache PR21 Generic Formal Skill Run"
+  prompt:
+    system: |
+      You are a hardware verification engineer. Use the reusable `generic-formal`
+      skill to run the real NutShell Cache PR #21 MMIO prefetch historical case.
+
+      Execute these steps in order:
+      1. Call `ListSkill` and confirm that `generic-formal` is available.
+      2. Call `ReadTextFile` to read `.ucagent/skills/generic-formal/SKILL.md`.
+      3. Call `RunSkillScript` for both formal cases. The UCAgent tool expects
+         four-element commands in the form `[runner, skill_name, script, args]`:
+         - `["python3", "generic-formal", "run_formal.py", "--workspace ../../.. --case tests/cases/02_pr21_mmio_prefetch/formal/pr21_pre.yaml --timeout 1200"]`
+         - `["python3", "generic-formal", "run_formal.py", "--workspace ../../.. --case tests/cases/02_pr21_mmio_prefetch/formal/pr21_fixed.yaml --timeout 1200"]`
+      4. Call `ReadTextFile` to read `reports/02_pr21_ucagent_formal_skill.md`.
+      5. Summarize the result: pre-PR expected `FAIL` means the formal skill found
+         the historical counterexample; fixed expected `PASS` means the wrapper is
+         not producing a false positive after the PR21 fix.
+      6. Call `SetSkillUsage` and mark `generic-formal` as listed, read, and used.
+
+      Do not run PR74, l2 readBurst, or any non-02 scenario.
+      Do not create a compact replacement DUT.
+      {skill_system}
+    skill_system: |
+      **Available skills:**
+      {general_skill_list}
+
+stage:
+  - name: run_pr21_with_generic_formal
+    desc: "Run PR21 pre/fixed real NutShell Cache cases through generic-formal"
+    skill_list:
+      - "generic-formal"
+    force_use_skill: true
+    task:
+      - "List available skills and read `generic-formal` SKILL.md."
+      - "Use `RunSkillScript` for `pr21_pre.yaml` and `pr21_fixed.yaml`."
+      - "Read and summarize `reports/02_pr21_ucagent_formal_skill.md`."
+      - "Use `SetSkillUsage` before completion."
+    reference_files:
+      - "README.md"
+      - "Pr21MmioPrefetch/README.md"
+    output_files:
+      - "reports/02_pr21_ucagent_formal_skill.md"

@@ -1,0 +1,35 @@
+mission:
+  name: "NutShell Cache PR21 Toffee Dynamic Backend"
+  prompt:
+    system: |
+      You are using the official UCAgent Toffee/pytest workflow.
+
+      Run case 02 PR21 MMIO prefetch through the dynamic backend only. Do not use
+      any formal verification skill or formal script in this mission.
+
+      Execute these steps:
+      1. Read `README.md` and `Pr21MmioPrefetch/README.md`.
+      2. Read `unity_test/tests/Pr21MmioPrefetch_api.py` and
+         `unity_test/tests/test_pr21_mmio_prefetch.py`.
+      3. Use `RunTestCases` with pytest args `test_pr21_mmio_prefetch.py -q`.
+      4. Summarize the Toffee functional coverage and explain that the tests are
+         human-refined from UCAgent-generated Toffee drafts.
+      5. Complete and exit.
+
+      Do not call `ListSkill`, `RunSkillScript`, or `SetSkillUsage`.
+
+stage:
+  - name: run_pr21_toffee_dynamic
+    desc: "Run PR21 through the UCAgent Toffee dynamic backend without formal skill"
+    task:
+      - "Read the workspace description and human-refined Toffee test files."
+      - "Run `RunTestCases` with `test_pr21_mmio_prefetch.py -q`."
+      - "Summarize the generated report artifacts."
+      - "Complete the stage only after the Toffee test has run."
+    reference_files:
+      - "README.md"
+      - "Pr21MmioPrefetch/README.md"
+      - "unity_test/tests/Pr21MmioPrefetch_api.py"
+      - "unity_test/tests/test_pr21_mmio_prefetch.py"
+    output_files:
+      - "uc_test_report/index.html"

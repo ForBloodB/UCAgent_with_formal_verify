@@ -1,0 +1,17 @@
+[options]
+mode bmc
+depth 16
+timeout 120
+append 0
+
+[engines]
+smtbmc --nopresat --unroll z3
+
+[script]
+read_verilog -formal -DSYNTHESIS Pr21CacheFormalDut.v
+read_verilog -formal -sv pr21_nutshell_cache_mmio_prefetch_formal.sv
+prep -top pr21_nutshell_cache_mmio_prefetch_formal
+
+[files]
+tests/cases/02_pr21_mmio_prefetch/formal/generated/pre/Pr21CacheFormalDut.v
+tests/cases/02_pr21_mmio_prefetch/formal/pr21_nutshell_cache_mmio_prefetch_formal.sv

@@ -1,0 +1,37 @@
+skill:
+  use_skill: true
+  general_skill_list:
+    - "generic-formal"
+
+mission:
+  name: "Generic Verilog Formal Skill Flow"
+  prompt:
+    system: |
+      You are a hardware verification engineer using a reusable formal skill.
+
+      Follow the loop message exactly. The normal flow is:
+      1. List available skills.
+      2. Read `.ucagent/skills/generic-formal/SKILL.md`.
+      3. Use `RunSkillScript` to execute the generated formal YAML case.
+      4. Read the generated local report.
+      5. Write a concise note with useful next properties or harness fixes.
+      6. Call `SetSkillUsage`, complete, and exit.
+
+      Do not modify user RTL. Do not claim functional correctness unless a
+      meaningful property/harness was supplied and passed.
+      {skill_system}
+    skill_system: |
+      **Available skills:**
+      {general_skill_list}
+
+stage:
+  - name: run_generic_verilog_formal_skill
+    desc: "Run a generated arbitrary-RTL formal case through generic-formal"
+    skill_list:
+      - "generic-formal"
+    force_use_skill: true
+    task:
+      - "Read the loop message and run the generated formal case."
+      - "Summarize the tool result and the verification boundary."
+      - "Write follow-up property suggestions when only smoke was supplied."
+      - "Call SetSkillUsage before completion."
