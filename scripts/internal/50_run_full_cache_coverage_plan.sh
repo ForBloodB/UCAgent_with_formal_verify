@@ -3,6 +3,7 @@ set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 CASE_TOFFEE="$ROOT/tests/cases/05_full_cache_coverage_plan/toffee"
+CASE_MANUAL="$ROOT/tests/cases/05_full_cache_coverage_plan/manual"
 WORKSPACE="$ROOT/tests/ucagent_workspaces/05_full_cache_coverage_plan"
 DUT="FullCacheCoveragePlan"
 WORK_TESTS="$WORKSPACE/unity_test/tests"
@@ -80,8 +81,10 @@ export NUTSHELL_CACHE_VERIFY_ROOT="$ROOT"
 export PYTHONPATH="$WORK_TESTS:${PYTHONPATH:-}"
 
 python3 -m pytest -q -c /dev/null "$WORK_TESTS/test_full_cache_coverage_plan.py"
+bash "$CASE_MANUAL/run_manual_verilog.sh"
 cp "$ROOT/reports/05_full_cache_coverage_plan.md" "$WORKSPACE/reports/05_full_cache_coverage_plan.md"
 cp "$ROOT/reports/05_ucagent_bug_candidates.md" "$WORKSPACE/reports/05_ucagent_bug_candidates.md"
+cp "$ROOT/reports/05_manual_verilog_validation.md" "$WORKSPACE/reports/05_manual_verilog_validation.md"
 
 if [[ "$SMOKE" == "1" ]]; then
   cat > "$SMOKE_REPORT" <<EOF
@@ -91,8 +94,9 @@ if [[ "$SMOKE" == "1" ]]; then
 - 本地报告：\`reports/05_full_cache_coverage_plan.md\`
 - Bug candidate report：\`reports/05_ucagent_bug_candidates.md\`
 - Summary JSON：\`reports/artifacts/05_full_cache_coverage_plan/coverage_plan_summary.json\`
+- Manual Verilog validation：\`reports/05_manual_verilog_validation.md\`
 
-本次运行使用 \`--smoke\`，不调用 UCAgent API。它验证 05 latest 声明的 15 个 functional coverage points、scoreboard、candidate report 和 evidence 映射是可执行检查的。
+本次运行使用 \`--smoke\`，不调用 UCAgent API。它验证 05 latest 声明的 15 个 functional coverage points、scoreboard、candidate report 和 evidence 映射是可执行检查的，并用人工 Verilog testbench/VCD 复查三个 UCAgent hypothesis。
 EOF
   echo "[50] wrote reports/05_full_cache_coverage_plan.md"
   echo "[50] wrote reports/05_full_cache_coverage_plan_smoke.md"
@@ -200,6 +204,7 @@ fi
 
 cp "$ROOT/reports/05_full_cache_coverage_plan.md" "$WORKSPACE/reports/05_full_cache_coverage_plan.md"
 cp "$ROOT/reports/05_ucagent_bug_candidates.md" "$WORKSPACE/reports/05_ucagent_bug_candidates.md"
+cp "$ROOT/reports/05_manual_verilog_validation.md" "$WORKSPACE/reports/05_manual_verilog_validation.md"
 
 cat > "$MODE_REPORT" <<EOF
 # 05 全 Cache 声明功能覆盖闭环 UCAgent 流程
@@ -212,9 +217,10 @@ cat > "$MODE_REPORT" <<EOF
 - Plan report：\`reports/05_full_cache_coverage_plan.md\`
 - Bug candidate report：\`reports/05_ucagent_bug_candidates.md\`
 - Summary JSON：\`reports/artifacts/05_full_cache_coverage_plan/coverage_plan_summary.json\`
+- Manual Verilog validation：\`reports/05_manual_verilog_validation.md\`
 - Token report：\`${TOKEN_REPORT#${ROOT}/}\`
 
-本次运行是 05 唯一正式流程：UCAgent 先调用 \`generic-formal\` skill 运行 latest Cache formal diagnosis，再继续 \`RunTestCases\`。这里的 100% 只表示 05 latest 声明功能覆盖闭环，不代表完整 RTL line/toggle 覆盖率。
+本次运行是 05 唯一正式流程：UCAgent 先调用 \`generic-formal\` skill 运行 latest Cache formal diagnosis，再继续 \`RunTestCases\`。随后人工 Verilog testbench 复查 UCAgent 给出的三个 hypothesis。这里的 100% 只表示 05 latest 声明功能覆盖闭环，不代表完整 RTL line/toggle 覆盖率。
 EOF
 
 cp "$MODE_REPORT" "$REPORT"

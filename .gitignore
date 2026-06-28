@@ -58,6 +58,8 @@ reports/artifacts/04_l2_readburst/toffee/*
 reports/artifacts/05_full_cache_coverage_plan/*
 !reports/artifacts/05_full_cache_coverage_plan/coverage_plan_summary.json
 !reports/artifacts/05_full_cache_coverage_plan/bug_candidates.json
+!reports/artifacts/05_full_cache_coverage_plan/manual_hypothesis_probe.log
+!reports/artifacts/05_full_cache_coverage_plan/manual_hypothesis_probe.vcd
 !reports/artifacts/05_full_cache_coverage_plan/toffee_ucagent/
 reports/artifacts/05_full_cache_coverage_plan/toffee_ucagent/*
 !reports/artifacts/05_full_cache_coverage_plan/toffee_ucagent/token_usage.md

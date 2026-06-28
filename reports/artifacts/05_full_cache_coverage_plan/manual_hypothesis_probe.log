@@ -1,0 +1,41 @@
+VCD info: dumpfile reports/artifacts/05_full_cache_coverage_plan/manual_hypothesis_probe.vcd opened for output.
+C0 phase flush_miss out=x cancelled=x cpu_resp=x alloc_after_flush=x dirty_evict dirty=x wb=x refill=x partial_word=xxxxxxxx
+C1 phase flush_miss out=0 cancelled=0 cpu_resp=0 alloc_after_flush=0 dirty_evict dirty=0 wb=0 refill=0 partial_word=44332211
+C2 phase flush_miss out=0 cancelled=0 cpu_resp=0 alloc_after_flush=0 dirty_evict dirty=0 wb=0 refill=0 partial_word=44332211
+C3 phase flush_miss out=0 cancelled=0 cpu_resp=0 alloc_after_flush=0 dirty_evict dirty=0 wb=0 refill=0 partial_word=44332211
+C4 phase flush_miss out=0 cancelled=0 cpu_resp=0 alloc_after_flush=0 dirty_evict dirty=0 wb=0 refill=0 partial_word=44332211
+C5 phase flush_miss out=0 cancelled=0 cpu_resp=0 alloc_after_flush=0 dirty_evict dirty=0 wb=0 refill=0 partial_word=44332211
+MANUAL_EVENT: HYP_FLUSH_OUTSTANDING_MISS start
+C6 phase flush_miss out=0 cancelled=0 cpu_resp=0 alloc_after_flush=0 dirty_evict dirty=0 wb=0 refill=0 partial_word=44332211
+C7 phase flush_miss out=1 cancelled=0 cpu_resp=0 alloc_after_flush=0 dirty_evict dirty=0 wb=0 refill=0 partial_word=44332211
+C8 phase flush_miss out=1 cancelled=0 cpu_resp=0 alloc_after_flush=0 dirty_evict dirty=0 wb=0 refill=0 partial_word=44332211
+C9 phase flush_miss out=1 cancelled=1 cpu_resp=0 alloc_after_flush=0 dirty_evict dirty=0 wb=0 refill=0 partial_word=44332211
+C10 phase flush_miss out=1 cancelled=1 cpu_resp=0 alloc_after_flush=0 dirty_evict dirty=0 wb=0 refill=0 partial_word=44332211
+MANUAL_PASS: HYP_FLUSH_OUTSTANDING_MISS not reproduced; cancelled response was dropped
+C11 phase flush_miss out=0 cancelled=1 cpu_resp=0 alloc_after_flush=0 dirty_evict dirty=0 wb=0 refill=0 partial_word=44332211
+C12 phase flush_miss out=0 cancelled=1 cpu_resp=0 alloc_after_flush=0 dirty_evict dirty=0 wb=0 refill=0 partial_word=44332211
+MANUAL_EVENT: HYP_DIRTY_EVICTION_ORDER start
+C13 phase flush_miss out=0 cancelled=1 cpu_resp=0 alloc_after_flush=0 dirty_evict dirty=0 wb=0 refill=0 partial_word=44332211
+C14 phase flush_miss out=0 cancelled=1 cpu_resp=0 alloc_after_flush=0 dirty_evict dirty=0 wb=0 refill=0 partial_word=44332211
+C15 phase flush_miss out=0 cancelled=1 cpu_resp=0 alloc_after_flush=0 dirty_evict dirty=0 wb=0 refill=0 partial_word=44332211
+C16 phase flush_miss out=0 cancelled=1 cpu_resp=0 alloc_after_flush=0 dirty_evict dirty=0 wb=0 refill=0 partial_word=44332211
+C17 phase flush_miss out=0 cancelled=1 cpu_resp=0 alloc_after_flush=0 dirty_evict dirty=1 wb=0 refill=0 partial_word=44332211
+C18 phase flush_miss out=0 cancelled=1 cpu_resp=0 alloc_after_flush=0 dirty_evict dirty=1 wb=0 refill=0 partial_word=44332211
+C19 phase flush_miss out=0 cancelled=1 cpu_resp=0 alloc_after_flush=0 dirty_evict dirty=0 wb=1 refill=1 partial_word=44332211
+C20 phase flush_miss out=0 cancelled=1 cpu_resp=0 alloc_after_flush=0 dirty_evict dirty=0 wb=0 refill=0 partial_word=44332211
+MANUAL_PASS: HYP_DIRTY_EVICTION_ORDER not reproduced; writeback is visible with replacement refill
+C21 phase flush_miss out=0 cancelled=1 cpu_resp=0 alloc_after_flush=0 dirty_evict dirty=0 wb=0 refill=0 partial_word=44332211
+C22 phase flush_miss out=0 cancelled=1 cpu_resp=0 alloc_after_flush=0 dirty_evict dirty=0 wb=0 refill=0 partial_word=44332211
+MANUAL_EVENT: HYP_PARTIAL_MASK_MERGE start
+C23 phase flush_miss out=0 cancelled=1 cpu_resp=0 alloc_after_flush=0 dirty_evict dirty=0 wb=0 refill=0 partial_word=44332211
+C24 phase flush_miss out=0 cancelled=1 cpu_resp=0 alloc_after_flush=0 dirty_evict dirty=0 wb=0 refill=0 partial_word=44332211
+C25 phase flush_miss out=0 cancelled=1 cpu_resp=0 alloc_after_flush=0 dirty_evict dirty=0 wb=0 refill=0 partial_word=44332211
+MANUAL_PASS: HYP_PARTIAL_MASK_MERGE not reproduced; untouched lanes are preserved
+C26 phase flush_miss out=0 cancelled=1 cpu_resp=0 alloc_after_flush=0 dirty_evict dirty=0 wb=0 refill=0 partial_word=44cc22aa
+C27 phase flush_miss out=0 cancelled=1 cpu_resp=0 alloc_after_flush=0 dirty_evict dirty=0 wb=0 refill=0 partial_word=44cc22aa
+C28 phase flush_miss out=0 cancelled=1 cpu_resp=0 alloc_after_flush=0 dirty_evict dirty=0 wb=0 refill=0 partial_word=44cc22aa
+C29 phase flush_miss out=0 cancelled=1 cpu_resp=0 alloc_after_flush=0 dirty_evict dirty=0 wb=0 refill=0 partial_word=44cc22aa
+C30 phase flush_miss out=0 cancelled=1 cpu_resp=0 alloc_after_flush=0 dirty_evict dirty=0 wb=0 refill=0 partial_word=44cc22aa
+C31 phase flush_miss out=0 cancelled=1 cpu_resp=0 alloc_after_flush=0 dirty_evict dirty=0 wb=0 refill=0 partial_word=44cc22aa
+MANUAL_RESULT: THREE_UCAGENT_HYPOTHESES_NOT_REPRODUCED_IN_VERILOG_WAVEFORM
+/home/distortionk/WorkSpace/VCS/UCAgent_with_formal_verify/tests/cases/05_full_cache_coverage_plan/manual/manual_hypothesis_probe_tb.sv:163: $finish called at 315000 (1ps)

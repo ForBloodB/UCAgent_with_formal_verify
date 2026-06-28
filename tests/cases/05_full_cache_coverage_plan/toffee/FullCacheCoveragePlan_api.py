@@ -26,8 +26,10 @@ BUG_CANDIDATE_JSON = (
 GENERATED_EVIDENCE = {
     "reports/05_full_cache_coverage_plan.md",
     "reports/05_ucagent_bug_candidates.md",
+    "reports/05_manual_verilog_validation.md",
     "reports/artifacts/05_full_cache_coverage_plan/coverage_plan_summary.json",
     "reports/artifacts/05_full_cache_coverage_plan/bug_candidates.json",
+    "reports/artifacts/05_full_cache_coverage_plan/manual_hypothesis_probe.vcd",
 }
 
 LINE_SIZE = 16
@@ -294,31 +296,31 @@ def write_bug_candidate_report(plan: dict, summary: dict) -> None:
             "id": "HYP_FLUSH_OUTSTANDING_MISS",
             "title": "Flush while a miss is outstanding may expose stale-response bugs",
             "classification": ["latest_hypothesis", "UCAgent_suggested", "human_refined"],
-            "evidence_level": "ucagent_hypothesis_only",
+            "evidence_level": "manual_verilog_not_reproduced",
             "trigger": "Issue a read miss, hold memory response, assert flush, then release memory response.",
-            "verification": "05 declared closure uses an outstanding tracker; a future real-DUT formal property should be added if the public Cache flush contract is clarified.",
-            "evidence": ["reports/05_full_cache_coverage_plan.md"],
-            "human_signoff_status": "needs_real_dut_property",
+            "verification": "Manual Verilog testbench drives the trigger and the VCD shows the cancelled response is dropped; not upgraded to candidate bug.",
+            "evidence": ["reports/05_manual_verilog_validation.md"],
+            "human_signoff_status": "manual_verilog_not_reproduced",
         },
         {
             "id": "HYP_DIRTY_EVICTION_ORDER",
             "title": "Dirty eviction writeback/refill ordering is a high-risk replacement corner",
             "classification": ["latest_hypothesis", "UCAgent_suggested", "human_refined"],
-            "evidence_level": "ucagent_hypothesis_only",
+            "evidence_level": "manual_verilog_not_reproduced",
             "trigger": "Dirty a line, force conflict replacement, and observe whether writeback precedes refill.",
-            "verification": "05 reference model closes the declared coverage bin; future work can bind the same oracle to a wider randomized real-DUT regression.",
-            "evidence": ["reports/05_full_cache_coverage_plan.md"],
-            "human_signoff_status": "needs_wider_real_dut_regression",
+            "verification": "Manual Verilog waveform shows writeback is visible with the replacement refill; not upgraded to candidate bug.",
+            "evidence": ["reports/05_manual_verilog_validation.md"],
+            "human_signoff_status": "manual_verilog_not_reproduced",
         },
         {
             "id": "HYP_PARTIAL_MASK_MERGE",
             "title": "Partial write masks can corrupt untouched bytes",
             "classification": ["latest_hypothesis", "UCAgent_suggested", "human_refined"],
-            "evidence_level": "ucagent_hypothesis_only",
+            "evidence_level": "manual_verilog_not_reproduced",
             "trigger": "Write alternating byte masks to a cached word and read back the untouched lanes.",
-            "verification": "05 byte-level scoreboard closes the declared partial-mask bin.",
-            "evidence": ["reports/05_full_cache_coverage_plan.md"],
-            "human_signoff_status": "covered_by_declared_scoreboard",
+            "verification": "Manual Verilog waveform shows disabled byte lanes are preserved; not upgraded to candidate bug.",
+            "evidence": ["reports/05_manual_verilog_validation.md"],
+            "human_signoff_status": "manual_verilog_not_reproduced",
         },
     ]
     payload = {"confirmed_or_candidate_bug_points": candidates, "ucagent_suggested_hypotheses": suggested}
@@ -347,13 +349,28 @@ def write_bug_candidate_report(plan: dict, summary: dict) -> None:
             "",
             "## Latest hypotheses suggested by UCAgent/human refinement",
             "",
-            "| ID | Evidence Level | 分类 | 建议触发条件 | 当前处理 |",
+            "| ID | Evidence Level | 分类 | 建议触发条件 | 人工 Verilog 复查 |",
             "| --- | --- | --- | --- | --- |",
         ]
     )
     for item in suggested:
         classes = ", ".join(f"`{value}`" for value in item["classification"])
         lines.append(f"| `{item['id']}` | `{item['evidence_level']}` | {classes} | {item['trigger']} | {item['verification']} |")
+
+    lines.extend(
+        [
+            "",
+            "## Manual Verilog waveform validation",
+            "",
+            "三个 UCAgent hypothesis 已在 `tests/cases/05_full_cache_coverage_plan/manual/` 中转成 Verilog testbench 激励。",
+            "人工复查依据不是 Python reference model，而是 `iverilog + vvp` 生成的 VCD 波形。",
+            "",
+            "- 报告：`reports/05_manual_verilog_validation.md`",
+            "- VCD：`reports/artifacts/05_full_cache_coverage_plan/manual_hypothesis_probe.vcd`",
+            "",
+            "结论：这三个 hypothesis 在当前人工 Verilog 波形复查中均未复现为 bug，因此保留为 UCAgent 高风险建议/误判，不升级为 candidate bug。",
+        ]
+    )
 
     BUG_CANDIDATE_REPORT.write_text("\n".join(lines) + "\n", encoding="utf-8")
 
@@ -398,6 +415,22 @@ def write_report(plan: dict, summary: dict) -> None:
     lines.extend(
         [
             "",
+            "## UCAgent Hypothesis 人工 Verilog 复查",
+            "",
+            "UCAgent 在 05 中提出了三个高风险 hypothesis。为了避免把“AI 建议”误写成“已发现 bug”，本仓库新增 `tests/cases/05_full_cache_coverage_plan/manual/`，由人工编写 Verilog probe 和 testbench，使用 `iverilog + vvp` 直接施加触发条件，并通过 VCD 观察结果。",
+            "",
+            "- 报告：`reports/05_manual_verilog_validation.md`",
+            "- VCD：`reports/artifacts/05_full_cache_coverage_plan/manual_hypothesis_probe.vcd`",
+            "- 运行方式：`bash tests/cases/05_full_cache_coverage_plan/manual/run_manual_verilog.sh`",
+            "",
+            "| ID | UCAgent 建议触发条件 | 人工 Verilog 波形复查结论 |",
+            "| --- | --- | --- |",
+            "| `HYP_FLUSH_OUTSTANDING_MISS` | read miss 未完成时 flush，之后 memory response 返回 | 未复现为 bug：波形显示 cancelled response 被丢弃，没有 stale CPU response，也没有 after-flush line allocation。 |",
+            "| `HYP_DIRTY_EVICTION_ORDER` | dirty line 后 conflict replacement | 未复现为 bug：波形显示 replacement 窗口中 `writeback_valid` 与 refill 事件可见，dirty victim 没有静默丢失。 |",
+            "| `HYP_PARTIAL_MASK_MERGE` | alternating byte mask 写 cached word 后读回 | 未复现为 bug：波形显示 `partial_wmask=4'b0101` 时未使能 byte lane 保持原值，`partial_word=32'h44CC_22AA`。 |",
+            "",
+            "因此，05 当前人工签核口径为：`CAND_LATEST_L2_READBURST_READY_VALID` 仍是有 formal/dynamic 证据的潜在 bug；三个 UCAgent hypothesis 是高风险建议，但在人工 Verilog 波形复查中未复现，暂归类为 UCAgent 误判/未升级项。",
+            "",
             "## 人工/UCAgent/Picker/Toffee/Formal 分工",
             "",
             "| 步骤 | 执行者 | 说明 |",
@@ -407,6 +440,7 @@ def write_report(plan: dict, summary: dict) -> None:
             "| 准备 latest Cache formal wrapper | 脚本 + 人工审查 | 05 只面向 latest NutShell Cache，不读取历史 PR 证据。 |",
             "| 执行动态测试、收集场景 coverage | Toffee/pytest | 跑 public-IO 或 reference-scoreboard 测试，生成 HTML/JSON/Markdown 报告。 |",
             "| 执行窄窗口 property 搜索 | UCAgent + generic-formal skill | 对 latest Cache readBurst ready/valid 风险点做 bounded formal。 |",
+            "| 复查 UCAgent hypothesis | 人工 Verilog testbench | 对三个 AI 建议触发条件直接施加 Verilog 激励，查看 VCD 后判定未复现。 |",
             "| 审查候选 bug、确认覆盖关闭 | 人工 | 判断 UCAgent 建议是否可接受，避免纯 AI 刷覆盖。 |",
             "",
             "## Coverage Points",

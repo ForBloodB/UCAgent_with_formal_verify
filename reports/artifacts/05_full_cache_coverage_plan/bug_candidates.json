@@ -28,13 +28,13 @@
         "UCAgent_suggested",
         "human_refined"
       ],
-      "evidence_level": "ucagent_hypothesis_only",
+      "evidence_level": "manual_verilog_not_reproduced",
       "trigger": "Issue a read miss, hold memory response, assert flush, then release memory response.",
-      "verification": "05 declared closure uses an outstanding tracker; a future real-DUT formal property should be added if the public Cache flush contract is clarified.",
+      "verification": "Manual Verilog testbench drives the trigger and the VCD shows the cancelled response is dropped; not upgraded to candidate bug.",
       "evidence": [
-        "reports/05_full_cache_coverage_plan.md"
+        "reports/05_manual_verilog_validation.md"
       ],
-      "human_signoff_status": "needs_real_dut_property"
+      "human_signoff_status": "manual_verilog_not_reproduced"
     },
     {
       "id": "HYP_DIRTY_EVICTION_ORDER",
@@ -44,13 +44,13 @@
         "UCAgent_suggested",
         "human_refined"
       ],
-      "evidence_level": "ucagent_hypothesis_only",
+      "evidence_level": "manual_verilog_not_reproduced",
       "trigger": "Dirty a line, force conflict replacement, and observe whether writeback precedes refill.",
-      "verification": "05 reference model closes the declared coverage bin; future work can bind the same oracle to a wider randomized real-DUT regression.",
+      "verification": "Manual Verilog waveform shows writeback is visible with the replacement refill; not upgraded to candidate bug.",
       "evidence": [
-        "reports/05_full_cache_coverage_plan.md"
+        "reports/05_manual_verilog_validation.md"
       ],
-      "human_signoff_status": "needs_wider_real_dut_regression"
+      "human_signoff_status": "manual_verilog_not_reproduced"
     },
     {
       "id": "HYP_PARTIAL_MASK_MERGE",
@@ -60,13 +60,13 @@
         "UCAgent_suggested",
         "human_refined"
       ],
-      "evidence_level": "ucagent_hypothesis_only",
+      "evidence_level": "manual_verilog_not_reproduced",
       "trigger": "Write alternating byte masks to a cached word and read back the untouched lanes.",
-      "verification": "05 byte-level scoreboard closes the declared partial-mask bin.",
+      "verification": "Manual Verilog waveform shows disabled byte lanes are preserved; not upgraded to candidate bug.",
       "evidence": [
-        "reports/05_full_cache_coverage_plan.md"
+        "reports/05_manual_verilog_validation.md"
       ],
-      "human_signoff_status": "covered_by_declared_scoreboard"
+      "human_signoff_status": "manual_verilog_not_reproduced"
     }
   ]
 }

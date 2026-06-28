@@ -16,7 +16,7 @@
 | 02 | NutShell PR21 真实历史 bug | pre `FAIL`，fixed `PASS` |
 | 03 | NutShell PR74 真实历史接口 bug | pre `ELAB_FAIL/ERROR`，fixed `PASS` |
 | 04 | latest L2 readBurst ready/valid candidate bug | formal 发现反例，Toffee 动态复现，场景覆盖 `5/5` |
-| 05 | latest-only UCAgent + formal skill 覆盖闭环 | 15/15 declared functional coverage，汇总 latest 可疑 bug |
+| 05 | latest-only UCAgent + formal skill 覆盖闭环 | 15/15 declared functional coverage；1 个 latest candidate bug；3 个 UCAgent hypothesis 经人工 Verilog 波形复查未复现 |
 
 ## 基础环境与复现方式
 
@@ -128,6 +128,10 @@ Bug 点：OOO 风格 Cache 配置需要 `idBits`，PR 前版本在 elaboration/i
 - formal skill report：`reports/05_full_cache_formal_skill.md`
 - UCAgent report：`reports/05_full_cache_coverage_plan_ucagent.md`
 - latest candidate summary：`reports/05_ucagent_bug_candidates.md`
+- 人工 Verilog 复查：`reports/05_manual_verilog_validation.md`
+- 人工 Verilog VCD：`reports/artifacts/05_full_cache_coverage_plan/manual_hypothesis_probe.vcd`
+
+05 中 UCAgent 额外提出了三个高风险 hypothesis：flush outstanding miss、dirty eviction ordering、partial mask merge。为了避免“纯 AI 误判”，这三个点被人工写成 Verilog probe/testbench，并通过 `iverilog + vvp` 直接施加激励、生成 VCD。当前人工波形复查结论是三者均未复现为 bug，因此不升级为 candidate bug。05 仍保留为 latest candidate bug 的只有 `CAND_LATEST_L2_READBURST_READY_VALID`。
 
 ## UCAgent 与人工分工
 
