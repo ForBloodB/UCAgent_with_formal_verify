@@ -17,13 +17,13 @@ mission:
       3. Call `RunSkillScript` for the two formal cases. The current UCAgent tool expects four-element commands in the form `[runner, skill_name, script, args]`:
          - `["python3", "generic-formal", "run_formal.py", "--workspace ../../.. --case tests/cases/04_l2_readburst_hit_ready_valid_deadlock/formal/l2_readburst_assert.yaml --timeout 1200"]`
          - `["python3", "generic-formal", "run_formal.py", "--workspace ../../.. --case tests/cases/04_l2_readburst_hit_ready_valid_deadlock/formal/l2_readburst_cover.yaml --timeout 1200"]`
-      4. Call `ReadTextFile` to read `reports/04_l2_readburst.md` inside the workspace.
+      4. Call `ReadTextFile` to read `reports/04_l2_readburst_formal_skill.md` inside the workspace.
       5. Summarize the result clearly:
          - If the assert case reports expected `FAIL` and actual `FAIL`, classify it as `COUNTEREXAMPLE_FOUND`.
          - If the cover case reports expected `PASS` and actual `PASS`, state that the target window is reachable.
          - If no counterexample is found, classify it as `NO_COUNTEREXAMPLE_IN_BOUND`.
       6. If a counterexample is found, explicitly write the bug reproduction idea before moving on:
-         first issue a same-address L2 `readBurst` miss/refill, then issue a second same-address `readBurst` hit, hold `resp_ready=0`, and observe whether `resp_valid` is incorrectly held low. Mention `reports/04_l2_readburst.md` as the formal report and the formal log paths listed inside it.
+         first issue a same-address L2 `readBurst` miss/refill, then issue a second same-address `readBurst` hit, hold `resp_ready=0`, and observe whether `resp_valid` is incorrectly held low. Mention `reports/04_l2_readburst_formal_skill.md` as the formal skill report and the formal log paths listed inside it.
       7. Call `SetSkillUsage` and mark `generic-formal` as listed, read, and used before leaving this formal stage.
 
       Stage B - original official UCAgent Toffee/pytest flow:
@@ -53,14 +53,14 @@ stage:
     task:
       - "List available skills and read the `generic-formal` SKILL.md."
       - "Use `RunSkillScript` to run `l2_readburst_assert.yaml` and `l2_readburst_cover.yaml`."
-      - "Read and summarize `reports/04_l2_readburst.md` inside the workspace."
+      - "Read and summarize `reports/04_l2_readburst_formal_skill.md` inside the workspace."
       - "If a counterexample is found, write the reproduction idea before continuing to dynamic verification."
       - "Use `SetSkillUsage` to mark `generic-formal` as listed, read, and used before leaving this stage."
     reference_files:
       - "README.md"
       - "L2ReadBurstDeadlock/README.md"
     output_files:
-      - "reports/04_l2_readburst.md"
+      - "reports/04_l2_readburst_formal_skill.md"
   - name: run_official_toffee_dynamic_flow
     desc: "Continue with the official UCAgent Toffee/pytest dynamic flow for 04"
     task:

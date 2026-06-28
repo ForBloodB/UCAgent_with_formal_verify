@@ -5,4 +5,4 @@
 - Bug candidate report：`reports/05_ucagent_bug_candidates.md`
 - Summary JSON：`reports/artifacts/05_full_cache_coverage_plan/coverage_plan_summary.json`
 
-本次运行使用 `--smoke`，不调用 UCAgent API。它验证 05 声明的 15 个 functional coverage points、PR21/PR74/04 bug point 映射、scoreboard 和 evidence 映射是可执行检查的。
+本次运行使用 `--smoke`，不调用 UCAgent API。它验证 05 latest 声明的 15 个 functional coverage points、scoreboard、candidate report 和 evidence 映射是可执行检查的。

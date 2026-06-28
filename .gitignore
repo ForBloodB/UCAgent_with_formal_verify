@@ -39,29 +39,11 @@ tests/ucagent_workspaces/*/reports/
 reports/artifacts/*
 !reports/artifacts/02_pr21/
 reports/artifacts/02_pr21/*
-!reports/artifacts/02_pr21/original_no_formal/
-reports/artifacts/02_pr21/original_no_formal/*
-!reports/artifacts/02_pr21/original_no_formal/token_usage.md
-!reports/artifacts/02_pr21/toffee/
-reports/artifacts/02_pr21/toffee/*
-!reports/artifacts/02_pr21/toffee/coverage_summary.json
-!reports/artifacts/02_pr21/toffee_ucagent/
-reports/artifacts/02_pr21/toffee_ucagent/*
-!reports/artifacts/02_pr21/toffee_ucagent/token_usage.md
 !reports/artifacts/02_pr21/ucagent_formal/
 reports/artifacts/02_pr21/ucagent_formal/*
 !reports/artifacts/02_pr21/ucagent_formal/token_usage.md
 !reports/artifacts/03_pr74/
 reports/artifacts/03_pr74/*
-!reports/artifacts/03_pr74/original_no_formal/
-reports/artifacts/03_pr74/original_no_formal/*
-!reports/artifacts/03_pr74/original_no_formal/token_usage.md
-!reports/artifacts/03_pr74/toffee/
-reports/artifacts/03_pr74/toffee/*
-!reports/artifacts/03_pr74/toffee/coverage_summary.json
-!reports/artifacts/03_pr74/toffee_ucagent/
-reports/artifacts/03_pr74/toffee_ucagent/*
-!reports/artifacts/03_pr74/toffee_ucagent/token_usage.md
 !reports/artifacts/03_pr74/ucagent_formal/
 reports/artifacts/03_pr74/ucagent_formal/*
 !reports/artifacts/03_pr74/ucagent_formal/token_usage.md
@@ -80,9 +62,6 @@ reports/artifacts/05_full_cache_coverage_plan/*
 reports/artifacts/05_full_cache_coverage_plan/toffee_ucagent/*
 !reports/artifacts/05_full_cache_coverage_plan/toffee_ucagent/token_usage.md
 !reports/artifacts/05_full_cache_coverage_plan/toffee_ucagent/token_usage_with_formal.md
-!reports/artifacts/05_full_cache_coverage_plan/toffee_ucagent/token_usage_no_formal.md
 
 # Generic user-run Verilog verification outputs. Keep Markdown summaries only.
 reports/generic_verilog/**
-!reports/generic_verilog/**/
-!reports/generic_verilog/**/README.md

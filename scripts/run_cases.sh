@@ -149,15 +149,15 @@ run_case_04() {
 }
 
 run_case_05() {
-  echo "[05] full Cache coverage plan UCAgent/Toffee flow"
-  local mode_arg="--with-formal"
   if [[ "$mode" == "no-formal" ]]; then
-    mode_arg="--no-formal"
+    echo "[05] no-formal is not supported. Case 05 is the formal-enabled UCAgent latest Cache flow." >&2
+    exit 2
   fi
+  echo "[05] latest Cache formal-enabled UCAgent coverage flow"
   if [[ "$smoke" == "1" ]]; then
-    bash scripts/internal/50_run_full_cache_coverage_plan.sh "$mode_arg" --smoke
+    bash scripts/internal/50_run_full_cache_coverage_plan.sh --with-formal --smoke
   else
-    bash scripts/internal/50_run_full_cache_coverage_plan.sh "$mode_arg"
+    bash scripts/internal/50_run_full_cache_coverage_plan.sh --with-formal
   fi
 }
 

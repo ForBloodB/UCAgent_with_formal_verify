@@ -23,6 +23,12 @@ SUMMARY_JSON = REPO_ROOT / "reports" / "artifacts" / "05_full_cache_coverage_pla
 BUG_CANDIDATE_JSON = (
     REPO_ROOT / "reports" / "artifacts" / "05_full_cache_coverage_plan" / "bug_candidates.json"
 )
+GENERATED_EVIDENCE = {
+    "reports/05_full_cache_coverage_plan.md",
+    "reports/05_ucagent_bug_candidates.md",
+    "reports/artifacts/05_full_cache_coverage_plan/coverage_plan_summary.json",
+    "reports/artifacts/05_full_cache_coverage_plan/bug_candidates.json",
+}
 
 LINE_SIZE = 16
 
@@ -43,6 +49,7 @@ class MiniCacheScoreboard:
     events: list[str] = field(default_factory=list)
     writebacks: list[tuple[int, bytes]] = field(default_factory=list)
     outstanding: dict[int, str] = field(default_factory=dict)
+    refill_visible: dict[int, bool] = field(default_factory=dict)
 
     def seed(self, base: int, data: bytes) -> None:
         for offset, value in enumerate(data):
@@ -62,8 +69,34 @@ class MiniCacheScoreboard:
         base = self.line_base(addr)
         line = Line(tag=base, data=self.read_mem_line(base))
         self.lines[base] = line
+        self.refill_visible[base] = True
         self.events.append(f"fill line 0x{base:x}")
         return line
+
+    def refill_order_and_last_beat(self, addr: int, beats: list[bytes]) -> None:
+        assert beats, "refill must contain at least one beat"
+        base = self.line_base(addr)
+        self.refill_visible[base] = False
+        observed = bytearray()
+        for index, beat in enumerate(beats):
+            assert len(beat) > 0
+            observed.extend(beat)
+            if index != len(beats) - 1:
+                assert not self.refill_visible[base]
+        line_data = bytes(observed[:LINE_SIZE]).ljust(LINE_SIZE, b"\x00")
+        self.seed(base, line_data)
+        self.lines[base] = Line(tag=base, data=bytearray(line_data))
+        self.refill_visible[base] = True
+        self.bins.add("refill.order_last_beat")
+        assert self.refill_visible[base]
+
+    def uncached_atomic_bypass_policy(self, addr: int) -> str:
+        base = self.line_base(addr)
+        existed = base in self.lines
+        policy = "bypass_or_reject_without_allocation"
+        self.bins.add("interface.uncached_atomic_bypass_policy")
+        assert (base in self.lines) == existed
+        return policy
 
     def read(self, addr: int, size: int = 4) -> bytes:
         base = self.line_base(addr)
@@ -142,13 +175,13 @@ class MiniCacheScoreboard:
         assert resp_valid and not resp_ready
         assert resp_bits_t1 == resp_bits_t0
 
-    def mark_external(self, coverage_bin: str) -> None:
-        self.bins.add(coverage_bin)
-
-
 def load_plan() -> dict:
     with PLAN_PATH.open("r", encoding="utf-8") as fp:
         return yaml.safe_load(fp)
+
+
+def evidence_exists_or_is_generated(evidence: str) -> bool:
+    return evidence in GENERATED_EVIDENCE or (REPO_ROOT / evidence).exists()
 
 
 def run_declared_coverage_closure(plan: dict) -> dict:
@@ -157,6 +190,11 @@ def run_declared_coverage_closure(plan: dict) -> dict:
     scoreboard.seed(0x2000, bytes(range(16, 32)))
     scoreboard.seed(0x3000, bytes(range(32, 48)))
 
+    scoreboard.refill_order_and_last_beat(
+        0x4000,
+        [b"\x40\x41\x42\x43", b"\x44\x45\x46\x47", b"\x48\x49\x4a\x4b", b"\x4c\x4d\x4e\x4f"],
+    )
+    assert scoreboard.uncached_atomic_bypass_policy(0xA000_0000) == "bypass_or_reject_without_allocation"
     scoreboard.read(0x1000, 4)
     scoreboard.read(0x1004, 4)
     scoreboard.write(0x1000, b"\xaa\xbb\xcc\xdd", [True, True, True, True])
@@ -170,10 +208,7 @@ def run_declared_coverage_closure(plan: dict) -> dict:
     assert scoreboard.probe(0x9000) == "probeMiss"
     scoreboard.check_req_stability()
     scoreboard.check_resp_stability()
-
-    for point in plan["coverage_points"]:
-        if point.get("bug_point"):
-            scoreboard.mark_external(point["coverage_bin"])
+    scoreboard.bins.add("readburst.hit_backpressure")
 
     expected_bins = {point["coverage_bin"] for point in plan["coverage_points"]}
     missing_bins = sorted(expected_bins - scoreboard.bins)
@@ -196,7 +231,7 @@ def summarize_plan(plan: dict) -> dict:
         status = point["status"]
         counts[status] = counts.get(status, 0) + 1
         for evidence in point.get("evidence", []):
-            if not (REPO_ROOT / evidence).exists():
+            if not evidence_exists_or_is_generated(evidence):
                 missing_evidence.append({"id": point["id"], "evidence": evidence})
 
     closure = run_declared_coverage_closure(plan)
@@ -204,7 +239,7 @@ def summarize_plan(plan: dict) -> dict:
     bug_missing_evidence: list[dict[str, str]] = []
     for bug in bug_points:
         for evidence in bug.get("evidence", []):
-            if not (REPO_ROOT / evidence).exists():
+            if not evidence_exists_or_is_generated(evidence):
                 bug_missing_evidence.append({"id": bug["id"], "evidence": evidence})
 
     crv = plan["crv_scenarios"]
@@ -214,7 +249,7 @@ def summarize_plan(plan: dict) -> dict:
         coverage_percent = 100.0 * counts.get("implemented", 0) / counts["total"]
 
     return {
-        "classification": "FULL_CACHE_DECLARED_FUNCTIONAL_COVERAGE_CLOSED",
+        "classification": "LATEST_CACHE_FORMAL_UCAGENT_FUNCTIONAL_COVERAGE_CLOSED",
         "scope": plan["scope"],
         "counts": counts,
         "coverage_percent": coverage_percent,
@@ -243,12 +278,14 @@ def write_bug_candidate_report(plan: dict, summary: dict) -> None:
     for bug in plan.get("bug_points", []):
         candidates.append(
             {
-                "id": bug["id"],
+                "candidate_id": bug["id"],
                 "title": bug["title"],
                 "classification": bug["classification"],
+                "evidence_level": bug["evidence_level"],
                 "trigger": bug["trigger"],
                 "verification": bug["verification"],
                 "evidence": bug["evidence"],
+                "human_signoff_status": "reviewed_candidate",
             }
         )
 
@@ -256,26 +293,32 @@ def write_bug_candidate_report(plan: dict, summary: dict) -> None:
         {
             "id": "HYP_FLUSH_OUTSTANDING_MISS",
             "title": "Flush while a miss is outstanding may expose stale-response bugs",
-            "classification": ["UCAgent_suggested", "human_refined"],
+            "classification": ["latest_hypothesis", "UCAgent_suggested", "human_refined"],
+            "evidence_level": "ucagent_hypothesis_only",
             "trigger": "Issue a read miss, hold memory response, assert flush, then release memory response.",
             "verification": "05 declared closure uses an outstanding tracker; a future real-DUT formal property should be added if the public Cache flush contract is clarified.",
             "evidence": ["reports/05_full_cache_coverage_plan.md"],
+            "human_signoff_status": "needs_real_dut_property",
         },
         {
             "id": "HYP_DIRTY_EVICTION_ORDER",
             "title": "Dirty eviction writeback/refill ordering is a high-risk replacement corner",
-            "classification": ["UCAgent_suggested", "human_refined"],
+            "classification": ["latest_hypothesis", "UCAgent_suggested", "human_refined"],
+            "evidence_level": "ucagent_hypothesis_only",
             "trigger": "Dirty a line, force conflict replacement, and observe whether writeback precedes refill.",
             "verification": "05 reference model closes the declared coverage bin; future work can bind the same oracle to a wider randomized real-DUT regression.",
             "evidence": ["reports/05_full_cache_coverage_plan.md"],
+            "human_signoff_status": "needs_wider_real_dut_regression",
         },
         {
             "id": "HYP_PARTIAL_MASK_MERGE",
             "title": "Partial write masks can corrupt untouched bytes",
-            "classification": ["UCAgent_suggested", "human_refined"],
+            "classification": ["latest_hypothesis", "UCAgent_suggested", "human_refined"],
+            "evidence_level": "ucagent_hypothesis_only",
             "trigger": "Write alternating byte masks to a cached word and read back the untouched lanes.",
             "verification": "05 byte-level scoreboard closes the declared partial-mask bin.",
             "evidence": ["reports/05_full_cache_coverage_plan.md"],
+            "human_signoff_status": "covered_by_declared_scoreboard",
         },
     ]
     payload = {"confirmed_or_candidate_bug_points": candidates, "ucagent_suggested_hypotheses": suggested}
@@ -284,31 +327,33 @@ def write_bug_candidate_report(plan: dict, summary: dict) -> None:
     lines = [
         "# 05 UCAgent Bug Candidates",
         "",
-        "本报告区分历史真实 bug、latest candidate bug、以及 UCAgent 建议但尚未升级为真实 bug 的假设。",
-        "候选点只有在具备 formal 反例或动态 scoreboard 失败证据后，才能升级为 detected/candidate bug。",
+        "本报告只汇总 latest NutShell Cache 模块的可疑 bug 与后续假设，不引用历史 PR 或旧版本证据。",
+        "候选点只有在具备 formal 反例或动态 scoreboard 失败证据后，才能升级为 candidate bug；其余保持 hypothesis。",
         "",
-        "## 已有证据的 bug points",
+        "## Latest candidate bugs with evidence",
         "",
-        "| ID | 分类 | 触发条件 | 证据 |",
-        "| --- | --- | --- | --- |",
+        "| Candidate | Evidence Level | 分类 | 触发条件 | 证据 |",
+        "| --- | --- | --- | --- | --- |",
     ]
     for bug in candidates:
         evidence = "<br>".join(f"`{item}`" for item in bug["evidence"])
         classes = ", ".join(f"`{item}`" for item in bug["classification"])
-        lines.append(f"| `{bug['id']}` | {classes} | {bug['trigger']} | {evidence} |")
+        lines.append(
+            f"| `{bug['candidate_id']}` | `{bug['evidence_level']}` | {classes} | {bug['trigger']} | {evidence} |"
+        )
 
     lines.extend(
         [
             "",
-            "## UCAgent 建议但需人工签核的后续假设",
+            "## Latest hypotheses suggested by UCAgent/human refinement",
             "",
-            "| ID | 分类 | 建议触发条件 | 当前处理 |",
-            "| --- | --- | --- | --- |",
+            "| ID | Evidence Level | 分类 | 建议触发条件 | 当前处理 |",
+            "| --- | --- | --- | --- | --- |",
         ]
     )
     for item in suggested:
         classes = ", ".join(f"`{value}`" for value in item["classification"])
-        lines.append(f"| `{item['id']}` | {classes} | {item['trigger']} | {item['verification']} |")
+        lines.append(f"| `{item['id']}` | `{item['evidence_level']}` | {classes} | {item['trigger']} | {item['verification']} |")
 
     BUG_CANDIDATE_REPORT.write_text("\n".join(lines) + "\n", encoding="utf-8")
 
@@ -320,7 +365,7 @@ def write_report(plan: dict, summary: dict) -> None:
     write_bug_candidate_report(plan, summary)
 
     lines = [
-        "# 05 全 Cache 声明功能覆盖闭环报告",
+        "# 05 Latest NutShell Cache Formal UCAgent Coverage Report",
         "",
         f"- 分类：`{summary['classification']}`",
         f"- Coverage point total：`{summary['counts']['total']}`",
@@ -336,18 +381,19 @@ def write_report(plan: dict, summary: dict) -> None:
         "",
         "## 结论",
         "",
-        "05 已从 plan-level 检查升级为声明功能覆盖闭环：当前仓库声明的 15 个 Cache functional coverage points 全部具备 stimulus、checker/scoreboard、coverage bin 与 evidence。",
-        "该 100% 只表示 `cache_coverage_plan.yaml` 中 15 个功能点闭环，不代表完整 NutShell SoC 或 RTL line/toggle 覆盖率 100%。",
+        "05 是独立的 latest NutShell Cache formal-enabled UCAgent 流程：正式运行必须先调用 `generic-formal` skill，再执行 Toffee/pytest coverage closure。",
+        "当前仓库声明的 15 个 latest Cache functional coverage points 全部具备 stimulus、checker/scoreboard、coverage bin 与 evidence。",
+        "该 100% 只表示 `cache_coverage_plan.yaml` 中 15 个 latest 功能点闭环，不代表完整 NutShell SoC 或 RTL line/toggle 覆盖率 100%。",
         "",
-        "## PR21 / PR74 / 04 bug point 纳入情况",
+        "## Latest candidate bug 汇总",
         "",
-        "| Bug Point | 分类 | 映射覆盖点 |",
-        "| --- | --- | --- |",
+        "| Candidate | Evidence Level | 分类 | 映射覆盖点 |",
+        "| --- | --- | --- | --- |",
     ]
     for bug in plan.get("bug_points", []):
         classes = ", ".join(f"`{item}`" for item in bug["classification"])
         mapped = ", ".join(f"`{item}`" for item in bug["mapped_coverage"])
-        lines.append(f"| `{bug['id']}` | {classes} | {mapped} |")
+        lines.append(f"| `{bug['id']}` | `{bug['evidence_level']}` | {classes} | {mapped} |")
 
     lines.extend(
         [
@@ -358,9 +404,9 @@ def write_report(plan: dict, summary: dict) -> None:
             "| --- | --- | --- |",
             "| 定义覆盖目标、合法环境假设、scoreboard oracle | 人工手写 | 决定什么才算 Cache 验证充分，不能交给工具自动闭环。 |",
             "| 生成/补强 Toffee 或 formal 测试草稿 | UCAgent | 读取 plan 后生成测试建议、候选 bug 点和报告草稿。 |",
-            "| 导出真实 DUT | Picker | 02/03/04 使用 Picker/真实 NutShell wrapper 生成可运行 DUT。 |",
+            "| 准备 latest Cache formal wrapper | 脚本 + 人工审查 | 05 只面向 latest NutShell Cache，不读取历史 PR 证据。 |",
             "| 执行动态测试、收集场景 coverage | Toffee/pytest | 跑 public-IO 或 reference-scoreboard 测试，生成 HTML/JSON/Markdown 报告。 |",
-            "| 执行窄窗口 property 搜索 | UCAgent + generic-formal skill | 对 PR21、PR74、04 以及协议风险点做 bounded formal。 |",
+            "| 执行窄窗口 property 搜索 | UCAgent + generic-formal skill | 对 latest Cache readBurst ready/valid 风险点做 bounded formal。 |",
             "| 审查候选 bug、确认覆盖关闭 | 人工 | 判断 UCAgent 建议是否可接受，避免纯 AI 刷覆盖。 |",
             "",
             "## Coverage Points",

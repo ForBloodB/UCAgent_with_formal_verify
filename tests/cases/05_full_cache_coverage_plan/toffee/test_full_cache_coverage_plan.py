@@ -6,7 +6,7 @@ def test_full_cache_declared_coverage_closure_is_complete():
     summary = summarize_plan(plan)
     write_report(plan, summary)
 
-    assert "15 functional coverage points" in plan["scope"]
+    assert "15 latest NutShell Cache functional coverage points" in plan["scope"]
     assert summary["counts"]["total"] == 15
     assert summary["counts"]["implemented"] == 15
     assert summary["counts"].get("partial", 0) == 0
@@ -19,24 +19,23 @@ def test_full_cache_declared_coverage_closure_is_complete():
     assert not summary["closure"]["missing_bins"], summary["closure"]["missing_bins"]
 
 
-def test_pr21_pr74_and_l2_readburst_bug_points_are_first_class_coverage():
+def test_case05_is_latest_only_and_excludes_historical_bugs():
     plan = load_plan()
+    serialized = repr(plan)
+    forbidden = ["PR21", "PR74", "02_pr21", "03_pr74", "historical_real_bug"]
+    for token in forbidden:
+        assert token not in serialized
+
     bug_ids = {item["id"]: item for item in plan["bug_points"]}
 
-    assert {
-        "BUG_PR21_MMIO_PREFETCH_PIPELINE",
-        "BUG_PR74_CACHE_IO_IDBITS",
-        "BUG_04_L2_READBURST_READY_VALID",
-    } <= set(bug_ids)
+    assert set(bug_ids) == {"CAND_LATEST_L2_READBURST_READY_VALID"}
 
-    assert "historical_real_bug" in bug_ids["BUG_PR21_MMIO_PREFETCH_PIPELINE"]["classification"]
-    assert "historical_real_bug" in bug_ids["BUG_PR74_CACHE_IO_IDBITS"]["classification"]
-    assert "formal_detected" in bug_ids["BUG_04_L2_READBURST_READY_VALID"]["classification"]
-    assert "dynamic_reproduced" in bug_ids["BUG_04_L2_READBURST_READY_VALID"]["classification"]
+    latest = bug_ids["CAND_LATEST_L2_READBURST_READY_VALID"]
+    assert "latest_candidate_bug" in latest["classification"]
+    assert "formal_detected" in latest["classification"]
+    assert "dynamic_reproduced" in latest["classification"]
 
     mapped = {coverage_id for bug in bug_ids.values() for coverage_id in bug["mapped_coverage"]}
-    assert "CP_MMIO_PREFETCH_PIPELINE_INTERFERENCE" in mapped
-    assert "CP_CACHE_IO_IDBITS" in mapped
     assert "CP_READBURST_HIT_BACKPRESSURE" in mapped
     assert "CP_READY_VALID_RESP_STABILITY" in mapped
 
@@ -47,6 +46,8 @@ def test_reference_scoreboard_hits_all_declared_bins():
 
     assert len(closure["expected_bins"]) == 15
     assert sorted(closure["hit_bins"]) == sorted(closure["expected_bins"])
+    assert "refill.order_last_beat" in closure["hit_bins"]
+    assert "interface.uncached_atomic_bypass_policy" in closure["hit_bins"]
     assert closure["writeback_count"] >= 1
     assert not closure["unexpected_bins"], closure["unexpected_bins"]
 
@@ -54,7 +55,7 @@ def test_reference_scoreboard_hits_all_declared_bins():
 def test_methodology_blocks_remain_explicit():
     plan = load_plan()
     assert {"human", "ucagent", "picker", "toffee", "formal_skill"} <= set(plan["roles"].keys())
-    assert {"reference_memory", "outstanding_tracker", "protocol_monitor", "cache_state_shadow"} <= set(
+    assert {"reference_memory", "outstanding_tracker", "protocol_monitor", "cache_state_shadow", "refill_and_policy_monitor"} <= set(
         plan["scoreboard_plan"].keys()
     )
     assert len(plan["crv_scenarios"]) == 6

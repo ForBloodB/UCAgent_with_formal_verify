@@ -14,7 +14,7 @@ tests/ucagent_workspaces/                     UCAgent 官方 workflow workspace
 
 ```bash
 bash scripts/run_cases.sh --case all --with-formal --smoke
-bash scripts/run_cases.sh --case all --no-formal --smoke
+for c in 02 03 04; do bash scripts/run_cases.sh --case $c --no-formal --smoke; done
 ```
 
 01 是本项目通用型证明：它用最小 adder buggy/fixed 模块证明 `generic-formal` 可以对普通 RTL 运行、捕获反例，并在 fixed RTL 上不误报。它不是 NutShell Cache bug。

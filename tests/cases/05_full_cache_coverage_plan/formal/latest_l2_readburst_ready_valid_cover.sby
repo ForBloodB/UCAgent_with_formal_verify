@@ -1,0 +1,17 @@
+[options]
+mode cover
+depth 96
+timeout 240
+append 0
+
+[engines]
+smtbmc --nopresat --unroll z3
+
+[script]
+read_verilog -formal -sv -DSYNTHESIS -DFRESH_COVER_ONLY FreshCacheFormalDut.sv
+read_verilog -formal -sv -DSYNTHESIS -DFRESH_COVER_ONLY latest_l2_readburst_ready_valid_formal.sv
+prep -top fresh_l2_readburst_hit_ready_deadlock_formal
+
+[files]
+tests/cases/04_l2_readburst_hit_ready_valid_deadlock/formal/generated/latest/FreshCacheFormalDut.sv
+tests/cases/05_full_cache_coverage_plan/formal/latest_l2_readburst_ready_valid_formal.sv

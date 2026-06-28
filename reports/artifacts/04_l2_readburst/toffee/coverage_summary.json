@@ -16,5 +16,5 @@
     "C44: resp_valid stayed low while ready was low on a readBurst hit"
   ],
   "source": "case-local directed Toffee test",
-  "waveform": "/home/distortionk/WorkSpace/VCS/NutShellCacheVerify/reports/artifacts/04_l2_readburst/toffee/l2_readburst_ready_deadlock.fst"
+  "waveform": "/home/distortionk/WorkSpace/VCS/UCAgent_with_formal_verify/reports/artifacts/04_l2_readburst/toffee/l2_readburst_ready_deadlock.fst"
 }

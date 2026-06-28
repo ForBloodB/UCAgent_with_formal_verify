@@ -1,0 +1,11 @@
+name: latest_l2_readburst_ready_valid_assert
+sby: tests/cases/05_full_cache_coverage_plan/formal/latest_l2_readburst_ready_valid_assert.sby
+depth: 96
+expected: FAIL
+prepare:
+  - python3 tests/cases/04_l2_readburst_hit_ready_valid_deadlock/scripts/prepare_latest_l2_readburst.py --repo-root . --timeout 1200
+report: reports/05_full_cache_formal_skill.md
+log_dir: reports/artifacts/05_full_cache_coverage_plan/logs
+result_dir: reports/artifacts/05_full_cache_coverage_plan/results
+mirror_report:
+  - tests/ucagent_workspaces/05_full_cache_coverage_plan/reports/05_full_cache_formal_skill.md

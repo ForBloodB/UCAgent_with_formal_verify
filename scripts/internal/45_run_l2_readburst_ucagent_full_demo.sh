@@ -51,11 +51,14 @@ if [[ ! -f "$ROOT/reports/artifacts/04_l2_readburst/toffee_dut/__init__.py" ]]; 
 fi
 
 rm -rf "$WORKSPACE/.ucagent" "$WORKSPACE/uc_test_report"
-rm -f "$UCA_LOG" "$MSG_FILE" "$FULL_REPORT"
+rm -f "$UCA_LOG" "$MSG_FILE" "$FULL_REPORT" "$ROOT/reports/04_l2_readburst_formal_skill.md" "$WORKSPACE/reports/04_l2_readburst_formal_skill.md"
 mkdir -p "$WORKSPACE/reports" "$WORK_TESTS"
 
 if [[ -f "$ROOT/reports/04_l2_readburst.md" ]]; then
   cp "$ROOT/reports/04_l2_readburst.md" "$WORKSPACE/reports/04_l2_readburst.md"
+fi
+if [[ -f "$ROOT/reports/04_l2_readburst_formal_skill.md" ]]; then
+  cp "$ROOT/reports/04_l2_readburst_formal_skill.md" "$WORKSPACE/reports/04_l2_readburst_formal_skill.md"
 fi
 if [[ -f "$ROOT/reports/04_l2_readburst_toffee_coverage.md" ]]; then
   cp "$ROOT/reports/04_l2_readburst_toffee_coverage.md" "$WORKSPACE/reports/04_l2_readburst_toffee_coverage.md"
@@ -78,7 +81,7 @@ pythonpath =
 testpaths = ./tests
 EOF
 
-LOOP_MSG="Complete the 04 formal-first full demo in one UCAgent run. First use the generic-formal skill as a pre-diagnosis tool: ListSkill, read .ucagent/skills/generic-formal/SKILL.md, RunSkillScript for l2_readburst_assert.yaml and l2_readburst_cover.yaml, read reports/04_l2_readburst.md, and SetSkillUsage. If the assert case reports a counterexample, write the reproduction idea: same-address L2 readBurst miss/refill, then same-address readBurst hit with resp_ready=0, observe resp_valid. Then continue regardless of the formal result and run the original official Toffee flow with RunTestCases using pytest args 'test_l2_readburst_ready_valid.py -q'. Summarize both the formal diagnosis and Toffee scenario coverage. Do not run PR21, PR74, MMIO prefetch, idBits, or any other case. Do not describe this candidate issue as upstream-confirmed."
+LOOP_MSG="Complete the 04 formal-first full demo in one UCAgent run. First use the generic-formal skill as a pre-diagnosis tool: ListSkill, read .ucagent/skills/generic-formal/SKILL.md, RunSkillScript for l2_readburst_assert.yaml and l2_readburst_cover.yaml, read reports/04_l2_readburst_formal_skill.md, and SetSkillUsage. If the assert case reports a counterexample, write the reproduction idea: same-address L2 readBurst miss/refill, then same-address readBurst hit with resp_ready=0, observe resp_valid. Then continue regardless of the formal result and run the original official Toffee flow with RunTestCases using pytest args 'test_l2_readburst_ready_valid.py -q'. Summarize both the formal diagnosis and Toffee scenario coverage. Do not run PR21, PR74, MMIO prefetch, idBits, or any other case. Do not describe this candidate issue as upstream-confirmed."
 
 export L2_READBURST_TOFFEE_DUT_DIR="$ROOT/reports/artifacts/04_l2_readburst/toffee_dut"
 export NUTSHELL_CACHE_VERIFY_ROOT="$ROOT"
@@ -129,8 +132,8 @@ if [[ ! -f "$WORKSPACE/uc_test_report/index.html" ]]; then
   exit 1
 fi
 
-if [[ ! -f "$ROOT/reports/04_l2_readburst.md" ]]; then
-  write_blocked_report "missing formal report reports/04_l2_readburst.md"
+if [[ ! -f "$ROOT/reports/04_l2_readburst_formal_skill.md" ]]; then
+  write_blocked_report "missing formal skill report reports/04_l2_readburst_formal_skill.md"
   exit 1
 fi
 
@@ -165,11 +168,11 @@ if ! grep -q "ToolComplete:" "$UCA_LOG" || ! grep -q "ToolExit:" "$UCA_LOG"; the
 fi
 
 formal_assert_result="UNKNOWN"
-if grep -q '`l2_readburst_hit_ready_deadlock_assert` | FAIL | FAIL | OK' "$ROOT/reports/04_l2_readburst.md"; then
+if grep -q '`l2_readburst_hit_ready_deadlock_assert` | FAIL | FAIL | OK' "$ROOT/reports/04_l2_readburst_formal_skill.md"; then
   formal_assert_result="FAIL as expected"
 fi
 formal_cover_result="UNKNOWN"
-if grep -q '`l2_readburst_hit_ready_deadlock_cover` | PASS | PASS | OK' "$ROOT/reports/04_l2_readburst.md"; then
+if grep -q '`l2_readburst_hit_ready_deadlock_cover` | PASS | PASS | OK' "$ROOT/reports/04_l2_readburst_formal_skill.md"; then
   formal_cover_result="PASS as expected"
 fi
 toffee_coverage="UNKNOWN"
@@ -197,7 +200,7 @@ UCAgent 在同一次 mission 中先通过 \`generic-formal\` skill 执行：
 - \`l2_readburst_assert.yaml\`
 - \`l2_readburst_cover.yaml\`
 
-formal 报告：\`reports/04_l2_readburst.md\`
+formal skill 报告：\`reports/04_l2_readburst_formal_skill.md\`
 
 该阶段用于让 agent 先拥有形式验证搜索能力，而不是直接进入动态测试。
 
@@ -236,6 +239,7 @@ UCAgent Toffee HTML：\`tests/ucagent_workspaces/04_l2_readburst_deadlock/uc_tes
 EOF
 
 cp "$ROOT/reports/04_l2_readburst.md" "$WORKSPACE/reports/04_l2_readburst.md"
+cp "$ROOT/reports/04_l2_readburst_formal_skill.md" "$WORKSPACE/reports/04_l2_readburst_formal_skill.md"
 cp "$ROOT/reports/04_l2_readburst_toffee_coverage.md" "$WORKSPACE/reports/04_l2_readburst_toffee_coverage.md"
 
 echo "[45] wrote ${FULL_REPORT#${ROOT}/}"

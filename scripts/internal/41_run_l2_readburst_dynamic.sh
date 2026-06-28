@@ -9,6 +9,7 @@ LOG="${ARTIFACT_DIR}/dynamic_readburst_ready_deadlock.log"
 VVP="${ARTIFACT_DIR}/dynamic_readburst_ready_deadlock.vvp"
 REPORT="${ROOT_DIR}/reports/artifacts/04_l2_readburst/dynamic_readburst_ready_deadlock.md"
 MAIN_REPORT="${ROOT_DIR}/reports/04_l2_readburst.md"
+FORMAL_SKILL_REPORT="${ROOT_DIR}/reports/04_l2_readburst_formal_skill.md"
 
 mkdir -p "${ARTIFACT_DIR}"
 
@@ -123,10 +124,54 @@ EOF_MAIN
     cat "${tail_report}"
   } > "${MAIN_REPORT}"
   rm -f "${head_report}" "${tail_report}"
-  workspace_mirror="${ROOT_DIR}/tests/ucagent_workspaces/04_l2_readburst_deadlock/reports/04_l2_readburst.md"
-  if [[ -d "$(dirname "${workspace_mirror}")" ]]; then
-    cp "${MAIN_REPORT}" "${workspace_mirror}"
+else
+  formal_summary="尚未生成。"
+  if [[ -f "${FORMAL_SKILL_REPORT}" ]]; then
+    formal_summary="\`${FORMAL_SKILL_REPORT#${ROOT_DIR}/}\`"
   fi
+  cat > "${MAIN_REPORT}" <<EOF_MAIN
+# 04 L2 readBurst Ready/Valid Candidate
+
+- Formal skill report：${formal_summary}
+- Dynamic replay report：\`${REPORT#${ROOT_DIR}/}\`
+- Toffee coverage report：\`reports/04_l2_readburst_toffee_coverage.md\`
+- Waveform screenshot：\`reports/assets/04_l2_readburst_ready_valid_waveform.png\`
+
+## 结论
+
+在标准 Decoupled ready/valid 语义下，当前情况是一个很强的 candidate bug；但如果 NutShell 设计者额外规定 L1 必须一直 ready，则需要在设计文档中明确写出这个环境假设。
+
+![04 ready/valid waveform](assets/04_l2_readburst_ready_valid_waveform.png)
+
+## 动态复现
+
+- 分类：\`${classification}\`
+- 报告：\`${REPORT#${ROOT_DIR}/}\`
+- 日志：\`${LOG#${ROOT_DIR}/}\`
+- VCD: \`reports/artifacts/04_l2_readburst/artifacts/dynamic_readburst_ready_deadlock.vcd\`
+- 首次 bug marker cycle：\`${first_bug_cycle:-n/a}\`
+- 最后一次 bug marker cycle：\`${last_bug_cycle:-n/a}\`
+- 最后记录 cycle：\`${last_logged_cycle:-n/a}\`
+- bug 触发后继续记录周期数：\`${post_trigger_cycles}\`
+
+${conclusion}
+
+当前 VCD 覆盖首次 bug marker 后至少 \`${post_trigger_cycles}\` 个周期；其中 cycle 45 到 cycle 54 是“触发之后 10 个循环”的核心观察窗口。
+
+## Toffee 动态覆盖闭环
+
+- 报告：\`reports/04_l2_readburst_toffee_coverage.md\`
+- Toffee/pytest HTML：\`reports/artifacts/04_l2_readburst/toffee/pytest_report/index.html\`
+- Toffee waveform：\`reports/artifacts/04_l2_readburst/toffee/l2_readburst_ready_deadlock.fst\`
+- Coverage JSON：\`reports/artifacts/04_l2_readburst/toffee/coverage_summary.json\`
+
+该闭环使用 Picker 导出的 Python DUT、Toffee/pytest env、scoreboard 和场景级 coverage。Coverage 口径只覆盖 04 场景本身，不声明覆盖整个 NutShell Cache。
+EOF_MAIN
+fi
+
+workspace_mirror="${ROOT_DIR}/tests/ucagent_workspaces/04_l2_readburst_deadlock/reports/04_l2_readburst.md"
+if [[ -d "$(dirname "${workspace_mirror}")" ]]; then
+  cp "${MAIN_REPORT}" "${workspace_mirror}"
 fi
 
 echo "Wrote ${REPORT}"

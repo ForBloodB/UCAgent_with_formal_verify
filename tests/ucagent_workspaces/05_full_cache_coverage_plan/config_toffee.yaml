@@ -1,42 +1,5 @@
-mission:
-  name: "NutShell Cache 05 Declared Functional Coverage Closure"
-  prompt:
-    system: |
-      You are a senior hardware verification engineer using the official UCAgent
-      Toffee/pytest flow.
-
-      Run case 05, the NutShell Cache declared functional coverage closure flow.
-      The goal is to validate the 15 functional coverage points declared by this
-      repository, including the PR21, PR74, and L2 readBurst bug points. This is
-      not a claim of full NutShell SoC or RTL line/toggle coverage.
-
-      Execute these steps in order:
-      1. Read `README.md` and `FullCacheCoveragePlan/README.md`.
-      2. Read `unity_test/tests/test_full_cache_coverage_plan.py` and
-         `unity_test/tests/FullCacheCoveragePlan_api.py`.
-      3. Use `RunTestCases` with pytest args `test_full_cache_coverage_plan.py -q`.
-      4. Read or summarize `reports/05_full_cache_coverage_plan.md` after the test.
-      5. Read or summarize `reports/05_ucagent_bug_candidates.md`.
-      6. Explain that the 100% coverage result is scoped to the declared 15
-         functional coverage points, not full RTL coverage.
-      6. Complete and exit.
-
-      Do not call any formal skill in this no-formal closure flow.
-      Do not claim that full NutShell SoC or RTL line/toggle coverage has been achieved.
-
-stage:
-  - name: run_declared_coverage_closure_check
-    desc: "Run the case 05 declared coverage closure through UCAgent RunTestCases"
-    task:
-      - "Read the workspace README and the pytest files."
-      - "Run `RunTestCases` with `test_full_cache_coverage_plan.py -q`."
-      - "Summarize the 15/15 coverage closure and the PR21/PR74/04 bug points."
-      - "Summarize the UCAgent bug candidate report."
-      - "Complete only after pytest has run."
-    reference_files:
-      - "README.md"
-      - "FullCacheCoveragePlan/README.md"
-      - "unity_test/tests/FullCacheCoveragePlan_api.py"
-      - "unity_test/tests/test_full_cache_coverage_plan.py"
-    output_files:
-      - "uc_test_report/index.html"
+# Case 05 intentionally has no official no-formal UCAgent flow.
+# Use `config_full_demo.yaml` through `bash scripts/run_cases.sh --case 05`.
+#
+# This placeholder is kept only to make the absence explicit for readers who
+# inspect the workspace. The public runner rejects `--case 05 --no-formal`.

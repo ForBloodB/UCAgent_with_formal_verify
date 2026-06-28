@@ -13,7 +13,7 @@ UCAgent 在同一次 mission 中先通过 `generic-formal` skill 执行：
 - `l2_readburst_assert.yaml`
 - `l2_readburst_cover.yaml`
 
-formal 报告：`reports/04_l2_readburst.md`
+formal skill 报告：`reports/04_l2_readburst_formal_skill.md`
 
 该阶段用于让 agent 先拥有形式验证搜索能力，而不是直接进入动态测试。
 
@@ -41,8 +41,6 @@ test_l2_readburst_ready_valid.py -q
 UCAgent Toffee HTML：`tests/ucagent_workspaces/04_l2_readburst_deadlock/uc_test_report/index.html`
 
 该阶段证明 formal 发现可以继续转化为 Toffee/pytest 动态复现与回归测试。
-
-注意：本次 UCAgent Stage B journal 中曾把 pytest pass 误解为“没有 deadlock”。人工复核后按测试 oracle 修正解释：该 Toffee test 是反例复现型测试，pytest pass 表示 `resp_valid_low_during_ready_low_hit` 被命中，分类应为 `DYNAMIC_REPRODUCED`。
 
 ## 4. UCAgent 证据
 
