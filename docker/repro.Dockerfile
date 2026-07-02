@@ -36,6 +36,7 @@ RUN for attempt in 1 2 3 4 5; do \
           python3-venv \
           rsync \
           swig \
+          time \
           verilator \
           yosys \
           z3; then \
@@ -82,5 +83,8 @@ ENV LD_LIBRARY_PATH="/usr/local/lib"
 ENV NUTSHELL_CACHE_VERIFY_DOCKER=1
 
 WORKDIR /work
+COPY . /work
+RUN find /work/scripts -type f -name "*.sh" -exec chmod +x {} + && \
+    find /work/docker -type f -name "*.sh" -exec chmod +x {} +
 ENTRYPOINT ["ucagent-formal-entrypoint"]
 CMD ["bash"]

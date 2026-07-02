@@ -315,6 +315,19 @@ def generate_latest(root: Path, repo: Path, commit: str, log_dir: Path, timeout:
     return out_file
 
 
+def install_repro_rtl(root: Path) -> Path:
+    src = root / "tests/cases/04_l2_readburst_hit_ready_valid_deadlock/formal/repro/FreshCacheFormalDut.sv"
+    out_dir = root / "tests/cases/04_l2_readburst_hit_ready_valid_deadlock/formal/generated/latest"
+    out_file = out_dir / "FreshCacheFormalDut.sv"
+    if not src.exists():
+        raise FileNotFoundError(f"missing reproducible RTL fallback: {src}")
+    out_dir.mkdir(parents=True, exist_ok=True)
+    shutil.copy2(src, out_file)
+    (out_dir / ".l2_readburst_generator_version").write_text("repo-local-repro-rtl\n", encoding="utf-8")
+    (out_dir / "source_commit.txt").write_text("repo-local-repro-rtl\n", encoding="utf-8")
+    return out_file
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description="Prepare latest NutShell L2 readBurst formal RTL.")
     parser.add_argument("--repo-root", default="", help="Repository root. Defaults to searching upward from cwd.")
@@ -325,6 +338,12 @@ def main() -> int:
     root = Path(args.repo_root).resolve() if args.repo_root else find_repo_root(Path.cwd())
     log_dir = root / "reports/artifacts/04_l2_readburst/logs"
     log_dir.mkdir(parents=True, exist_ok=True)
+
+    if os.environ.get("NUTSHELL_CACHE_VERIFY_REPRO_MODE") == "1":
+        out_file = install_repro_rtl(root)
+        print(f"prepared={out_file.relative_to(root).as_posix()}")
+        print("commit=repo-local-repro-rtl")
+        return 0
 
     commit = latest_commit(root, log_dir, args.timeout)
     repo = fetch_latest(root, commit, log_dir, args.timeout, args.force_prepare)

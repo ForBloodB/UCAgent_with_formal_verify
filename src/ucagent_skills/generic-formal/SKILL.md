@@ -62,12 +62,13 @@ Optional fields:
 1. Read the DUT RTL, formal harness, or existing SBY case.
 2. Run the case through UCAgent's official `RunSkillScript` tool.
    The UCAgent version used by this workspace expects each command as
-   `[runner, skill_name, skill_script, args]`:
+   `[skill_name, skill_script, args]`; the script runner is inferred by
+   UCAgent from the script extension:
 
 ```json
 {
   "commands": [
-    ["python3", "generic-formal", "run_formal.py", "--case tests/cases/01_generic_formal_proof/formal/adder_buggy.yaml"]
+    ["generic-formal", "run_formal.py", "--case tests/cases/01_generic_formal_proof/formal/adder_buggy.yaml"]
   ]
 }
 ```

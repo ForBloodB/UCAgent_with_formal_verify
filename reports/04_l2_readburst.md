@@ -11,27 +11,29 @@
 
 ![04 ready/valid waveform](assets/04_l2_readburst_ready_valid_waveform.png)
 
+
+
+
 ## 动态复现
 
 - 分类：`DYNAMIC_REPRODUCED`
 - 报告：`reports/artifacts/04_l2_readburst/dynamic_readburst_ready_deadlock.md`
-- 首次 bug marker cycle：`44`
-- 最后一次 bug marker cycle：`59`
-- 最后记录 cycle：`67`
+- 日志：`reports/artifacts/04_l2_readburst/artifacts/dynamic_readburst_ready_deadlock.log`
+- VCD: `reports/artifacts/04_l2_readburst/artifacts/dynamic_readburst_ready_deadlock.vcd`
+- 首次 bug marker cycle：`41`
+- 最后一次 bug marker cycle：`56`
+- 最后记录 cycle：`64`
 - bug 触发后继续记录周期数：`23`
 
 public-IO 仿真复现了 ready/valid deadlock 风险：同地址 L2 readBurst hit 停留在 S3 且 L1 侧 `resp_ready=0` 时，`io_cpu_resp_valid` 也保持为低。
 
 当前 VCD 覆盖首次 bug marker 后至少 `23` 个周期；其中 cycle 45 到 cycle 54 是“触发之后 10 个循环”的核心观察窗口。
 
-## 复现方式
+## Toffee 动态覆盖闭环
 
-```bash
-bash scripts/docker_run.sh bash scripts/run_cases.sh --case 04 --with-formal --smoke
-```
+- 报告：`reports/04_l2_readburst_toffee_coverage.md`
+- Toffee/pytest HTML：`reports/artifacts/04_l2_readburst/toffee/pytest_report/index.html`
+- Toffee waveform：`reports/artifacts/04_l2_readburst/toffee/l2_readburst_ready_deadlock.fst`
+- Coverage JSON：`reports/artifacts/04_l2_readburst/toffee/coverage_summary.json`
 
-严格 UCAgent 流程需要配置 `.ucagent_env` 后运行：
-
-```bash
-bash scripts/docker_run.sh bash scripts/run_cases.sh --case 04 --with-formal
-```
+该闭环使用 Picker 导出的 Python DUT、Toffee/pytest env、scoreboard 和场景级 coverage。Coverage 口径只覆盖 04 场景本身，不声明覆盖整个 NutShell Cache。

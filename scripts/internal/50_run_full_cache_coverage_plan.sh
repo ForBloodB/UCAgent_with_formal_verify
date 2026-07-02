@@ -94,6 +94,8 @@ fi
 
 rm -rf "$WORKSPACE/.ucagent" "$WORKSPACE/uc_test_report"
 rm -f "$UCA_LOG" "$MSG_FILE" "$REPORT" "$MODE_REPORT" "$ROOT/reports/05_full_cache_formal_skill.md" "$WORKSPACE/reports/05_full_cache_formal_skill.md"
+mkdir -p "$WORKSPACE/.ucagent/skills"
+cp -a "$ROOT/src/ucagent_skills/generic-formal" "$WORKSPACE/.ucagent/skills/generic-formal"
 
 if [[ -f "$ROOT/.ucagent_env" ]]; then
   set -a
@@ -113,7 +115,7 @@ EOF
 fi
 
 CONFIG="$WORKSPACE/config_full_demo.yaml"
-LOOP_MSG="Run case 05 as a latest-only formal-enabled UCAgent flow. First use the generic-formal skill: ListSkill, read .ucagent/skills/generic-formal/SKILL.md, RunSkillScript for latest_l2_readburst_assert.yaml and latest_l2_readburst_cover.yaml, read reports/05_full_cache_formal_skill.md, then SetSkillUsage. Continue regardless of formal failures and call RunTestCases with pytest args 'test_full_cache_coverage_plan.py -q'. Summarize reports/05_full_cache_coverage_plan.md and reports/05_ucagent_bug_candidates.md. State that 15/15 means latest declared functional coverage closure, not full RTL coverage. Do not run historical PR cases or old-version evidence."
+LOOP_MSG="Run case 05 as a latest-only formal-enabled UCAgent flow. First use the generic-formal skill: ListSkill, read .ucagent/skills/generic-formal/SKILL.md, then immediately call RunSkillScript with the official three-element command form [skill_name, script, args] for latest_l2_readburst_assert.yaml and latest_l2_readburst_cover.yaml. Use args '--workspace ../../.. --case tests/cases/05_full_cache_coverage_plan/formal/latest_l2_readburst_assert.yaml --timeout 1200' and '--workspace ../../.. --case tests/cases/05_full_cache_coverage_plan/formal/latest_l2_readburst_cover.yaml --timeout 1200'. Do not search for those YAML files inside the workspace. Read reports/05_full_cache_formal_skill.md, then SetSkillUsage. Continue regardless of formal failures and call RunTestCases with pytest args 'test_full_cache_coverage_plan.py -q'. Summarize reports/05_full_cache_coverage_plan.md and reports/05_ucagent_bug_candidates.md. State that 15/15 means latest declared functional coverage closure, not full RTL coverage. Do not run historical PR cases or old-version evidence."
 SKILL_ARGS=(--use-skill --extra-skill-path "$ROOT/src/ucagent_skills" --override "skill.general_skill_list=['generic-formal']")
 
 set +e

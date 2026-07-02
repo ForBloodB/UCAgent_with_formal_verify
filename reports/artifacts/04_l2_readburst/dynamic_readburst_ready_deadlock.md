@@ -5,9 +5,9 @@
 - Testbench: `tests/cases/04_l2_readburst_hit_ready_valid_deadlock/sim/readburst_ready_deadlock_tb.sv`
 - 日志：`reports/artifacts/04_l2_readburst/artifacts/dynamic_readburst_ready_deadlock.log`
 - VCD: `reports/artifacts/04_l2_readburst/artifacts/dynamic_readburst_ready_deadlock.vcd`
-- 首次 bug marker cycle：`44`
-- 最后一次 bug marker cycle：`59`
-- 最后记录 cycle：`67`
+- 首次 bug marker cycle：`41`
+- 最后一次 bug marker cycle：`56`
+- 最后记录 cycle：`64`
 - bug 触发后继续记录周期数：`23`
 
 ## 场景

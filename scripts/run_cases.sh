@@ -163,6 +163,8 @@ run_case_05() {
 
 if [[ "$smoke" != "1" ]]; then
   require_api
+else
+  export NUTSHELL_CACHE_VERIFY_REPRO_MODE=1
 fi
 
 run_selected() {

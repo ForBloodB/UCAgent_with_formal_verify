@@ -38,6 +38,17 @@ if [[ ${#cmd[@]} -eq 0 ]]; then
   cmd=(bash)
 fi
 
+time_wrapper="${TMPDIR:-/tmp}/ucagent-formal-verify-time-wrapper"
+cat > "$time_wrapper" <<'EOF'
+#!/usr/bin/env bash
+if [[ "${1:-}" == "--version" ]]; then
+  echo "ucagent-formal-verify compatibility time wrapper"
+  exit 0
+fi
+exec "$@"
+EOF
+chmod +x "$time_wrapper"
+
 tty_args=()
 if [[ -t 0 && -t 1 ]]; then
   tty_args=(-it)
@@ -50,6 +61,7 @@ exec docker run --rm "${tty_args[@]}" \
   --env NUTSHELL_CACHE_VERIFY_ROOT=/work \
   --mount type=bind,source="$ROOT",target=/work \
   --mount type=volume,source="$THIRD_PARTY_VOLUME",target=/work/third_party \
+  --mount type=bind,source="$time_wrapper",target=/usr/bin/time,readonly \
   --workdir /work \
   "${env_args[@]}" \
   "$IMAGE" \

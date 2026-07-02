@@ -15,10 +15,13 @@ mission:
       Stage A - formal skill diagnosis:
       1. Call `ListSkill` and confirm that `generic-formal` is available.
       2. Call `ReadTextFile` to read `.ucagent/skills/generic-formal/SKILL.md`.
-      3. Call `RunSkillScript` for these two latest-only formal cases. Use the
-         current four-element command form `[runner, skill_name, script, args]`:
-         - `["python3", "generic-formal", "run_formal.py", "--workspace ../../.. --case tests/cases/05_full_cache_coverage_plan/formal/latest_l2_readburst_assert.yaml --timeout 1200"]`
-         - `["python3", "generic-formal", "run_formal.py", "--workspace ../../.. --case tests/cases/05_full_cache_coverage_plan/formal/latest_l2_readburst_cover.yaml --timeout 1200"]`
+      3. Call `RunSkillScript` immediately for these two latest-only formal
+         cases. Use the official three-element command form
+         `[skill_name, script, args]`; do not search for these YAML files inside
+         the UCAgent workspace, because the command below sets the repo root
+         through `--workspace ../../..`:
+         - `["generic-formal", "run_formal.py", "--workspace ../../.. --case tests/cases/05_full_cache_coverage_plan/formal/latest_l2_readburst_assert.yaml --timeout 1200"]`
+         - `["generic-formal", "run_formal.py", "--workspace ../../.. --case tests/cases/05_full_cache_coverage_plan/formal/latest_l2_readburst_cover.yaml --timeout 1200"]`
       4. Summarize the latest L2 readBurst ready/valid candidate. The assert
          case is expected to FAIL and the cover case is expected to PASS.
       5. Read or summarize `reports/05_full_cache_formal_skill.md`.

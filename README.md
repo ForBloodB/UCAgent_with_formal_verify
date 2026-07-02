@@ -20,68 +20,65 @@ docker/                      一键复现镜像
 reports/                     轻量结果与波形证据
 ```
 
-## 构建环境
+## 一键复现
 
-默认构建不使用 Docker layer cache，适合模拟别人从零复现：
-
-```bash
-bash scripts/docker_build.sh
-```
-
-快速检查镜像和项目 smoke：
-
-```bash
-bash scripts/docker_smoke.sh
-```
-
-如需在容器中运行任意命令：
-
-```bash
-bash scripts/docker_run.sh bash scripts/run_cases.sh --case 01 --with-formal --smoke
-```
-
-开发 Dockerfile 时才建议显式启用缓存：
-
-```bash
-UCAGENT_FORMAL_DOCKER_CACHE=1 bash scripts/docker_build.sh
-```
-
-## 复现案例
-
-本地 smoke 不调用 API：
-
-```bash
-bash scripts/docker_run.sh bash scripts/run_cases.sh --case all --with-formal --smoke
-```
-
-单独复现某个案例：
-
-```bash
-bash scripts/docker_run.sh bash scripts/run_cases.sh --case 01 --with-formal --smoke
-bash scripts/docker_run.sh bash scripts/run_cases.sh --case 02 --with-formal --smoke
-bash scripts/docker_run.sh bash scripts/run_cases.sh --case 03 --with-formal --smoke
-bash scripts/docker_run.sh bash scripts/run_cases.sh --case 04 --with-formal --smoke
-bash scripts/docker_run.sh bash scripts/run_cases.sh --case 05 --with-formal --smoke
-```
-
-正式 UCAgent API 流程需要配置 `.ucagent_env`：
+推荐只使用一个入口脚本。若本地已有 Docker 镜像，它会直接复用；若没有镜像，它会自动从零构建。默认模式会读取 `.ucagent_env`，真实调用 UCAgent API，并在容器中复现 01-05：
 
 ```bash
 cp .ucagent_env.example .ucagent_env
 vim .ucagent_env
 
-bash scripts/docker_run.sh bash scripts/run_cases.sh --case 04 --with-formal
-bash scripts/docker_run.sh bash scripts/run_cases.sh --case 05
+bash scripts/reproduce.sh
 ```
 
-参数：
+如果要强制删除缓存后重新构建镜像并完整复现 01-05：
+
+```bash
+bash scripts/reproduce.sh --case all --rebuild
+```
+
+如果别人已经下载了预构建镜像，也可以不依赖宿主机 Python/Conda，直接运行镜像内置的项目源码：
+
+```bash
+docker run --rm --env-file .ucagent_env ucagent-with-formal-verify:latest \
+  bash scripts/run_cases.sh --case all --with-formal
+```
+
+复现单个案例：
+
+```bash
+bash scripts/reproduce.sh --case 01
+bash scripts/reproduce.sh --case 05
+```
+
+本地快速检查不调用任何 LLM/API，显式使用 `--smoke`：
+
+```bash
+bash scripts/reproduce.sh --case all --smoke
+bash scripts/reproduce.sh --case 05 --smoke
+```
+
+注意：默认模式和 `--api` 模式会真实调用 UCAgent API。05 的 formal 阶段还需要准备 latest NutShell Cache wrapper；如果运行环境无法访问 upstream Git 仓库，脚本会把它报告为基础设施阻塞，而不会伪装成验证结论。
+
+常用参数：
 
 ```text
---case all|01|02|03|04|05
---with-formal    默认，运行 formal/skill 路径
---no-formal      运行动态 Toffee 路径；05 不支持该模式
---smoke          不调用 LLM/API
+--case all|01|02|03|04|05  选择案例
+--smoke                    本地复现，不调用 API
+--api                      调用真实 UCAgent API，默认模式
+--rebuild                  强制从零重建 Docker 镜像
+--skip-build               要求使用已有 Docker 镜像，不自动构建
+--skip-tool-smoke          跳过工具链 smoke
 ```
+
+底层脚本仍保留给调试使用：
+
+```bash
+bash scripts/docker_build.sh
+bash scripts/docker_run.sh bash scripts/run_cases.sh --case 05 --with-formal --smoke
+```
+
+完整证据链会写入 `reports/` 和 `reports/artifacts/`，包括 formal 反例、PR21/PR74 历史复现、04 ready/valid 波形、Picker/Toffee pytest 报告，以及 05 latest-only 覆盖闭合和人工 Verilog 波形后验结果。
 
 ## 案例说明
 
@@ -92,8 +89,6 @@ bash scripts/docker_run.sh bash scripts/run_cases.sh --case 05
 | 03 | NutShell PR74 CacheIO idBits/interface 问题 | pre elaboration `FAIL/ERROR`，fixed `PASS` |
 | 04 | latest L2 readBurst ready/valid candidate | formal assert `FAIL`，cover `PASS`，动态场景可复现 |
 | 05 | latest-only UCAgent + formal skill 覆盖闭环 | 15/15 declared functional coverage；UCAgent hypothesis 经过人工 Verilog 波形复查 |
-
-05 的 `100%` 只表示本仓库声明的 15 个 latest NutShell Cache functional coverage points 全部闭合，不代表完整 SoC 或 RTL line/toggle coverage 100%。
 
 ## 任意 Verilog 模块
 
@@ -122,6 +117,7 @@ bash scripts/docker_run.sh bash scripts/verify_verilog.sh \
 
 ## 关键报告
 
+- `docs/competition_report.md`
 - `reports/04_l2_readburst.md`
 - `reports/assets/04_l2_readburst_ready_valid_waveform.png`
 - `reports/05_full_cache_coverage_plan.md`
