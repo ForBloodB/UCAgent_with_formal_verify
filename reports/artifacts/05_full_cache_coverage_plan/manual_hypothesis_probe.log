@@ -38,4 +38,4 @@ C29 phase flush_miss out=0 cancelled=1 cpu_resp=0 alloc_after_flush=0 dirty_evic
 C30 phase flush_miss out=0 cancelled=1 cpu_resp=0 alloc_after_flush=0 dirty_evict dirty=0 wb=0 refill=0 partial_word=44cc22aa
 C31 phase flush_miss out=0 cancelled=1 cpu_resp=0 alloc_after_flush=0 dirty_evict dirty=0 wb=0 refill=0 partial_word=44cc22aa
 MANUAL_RESULT: THREE_UCAGENT_HYPOTHESES_NOT_REPRODUCED_IN_VERILOG_WAVEFORM
-/home/distortionk/WorkSpace/VCS/UCAgent_with_formal_verify/tests/cases/05_full_cache_coverage_plan/manual/manual_hypothesis_probe_tb.sv:163: $finish called at 315000 (1ps)
+/work/tests/cases/05_full_cache_coverage_plan/manual/manual_hypothesis_probe_tb.sv:163: $finish called at 315000 (1ps)

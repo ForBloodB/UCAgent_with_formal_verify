@@ -10,7 +10,6 @@ WORK_TESTS="$WORKSPACE/unity_test/tests"
 REPORT_DIR="$ROOT/reports/artifacts/05_full_cache_coverage_plan"
 LOG_DIR="$REPORT_DIR/logs"
 REPORT="$ROOT/reports/05_full_cache_coverage_plan_ucagent.md"
-SMOKE_REPORT="$ROOT/reports/05_full_cache_coverage_plan_smoke.md"
 UCA_TIMEOUT="${UCAGENT_05_TIMEOUT:-1800}"
 SMOKE=0
 MODE="with-formal"
@@ -80,26 +79,16 @@ EOF
 export NUTSHELL_CACHE_VERIFY_ROOT="$ROOT"
 export PYTHONPATH="$WORK_TESTS:${PYTHONPATH:-}"
 
-python3 -m pytest -q -c /dev/null "$WORK_TESTS/test_full_cache_coverage_plan.py"
+PYTEST_ADDOPTS="${PYTEST_ADDOPTS:-} -p no:cacheprovider" \
+  python3 -m pytest -q -c /dev/null "$WORK_TESTS/test_full_cache_coverage_plan.py"
 bash "$CASE_MANUAL/run_manual_verilog.sh"
 cp "$ROOT/reports/05_full_cache_coverage_plan.md" "$WORKSPACE/reports/05_full_cache_coverage_plan.md"
 cp "$ROOT/reports/05_ucagent_bug_candidates.md" "$WORKSPACE/reports/05_ucagent_bug_candidates.md"
 cp "$ROOT/reports/05_manual_verilog_validation.md" "$WORKSPACE/reports/05_manual_verilog_validation.md"
 
 if [[ "$SMOKE" == "1" ]]; then
-  cat > "$SMOKE_REPORT" <<EOF
-# 05 全 Cache 声明功能覆盖闭环
-
-- 分类：\`SMOKE_LOCAL_PYTEST_COMPLETED\`
-- 本地报告：\`reports/05_full_cache_coverage_plan.md\`
-- Bug candidate report：\`reports/05_ucagent_bug_candidates.md\`
-- Summary JSON：\`reports/artifacts/05_full_cache_coverage_plan/coverage_plan_summary.json\`
-- Manual Verilog validation：\`reports/05_manual_verilog_validation.md\`
-
-本次运行使用 \`--smoke\`，不调用 UCAgent API。它验证 05 latest 声明的 15 个 functional coverage points、scoreboard、candidate report 和 evidence 映射是可执行检查的，并用人工 Verilog testbench/VCD 复查三个 UCAgent hypothesis。
-EOF
   echo "[50] wrote reports/05_full_cache_coverage_plan.md"
-  echo "[50] wrote reports/05_full_cache_coverage_plan_smoke.md"
+  echo "[50] smoke completed without writing a separate smoke report"
   exit 0
 fi
 

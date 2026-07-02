@@ -1,0 +1,36 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+if [[ "${1:-}" != "run" ]]; then
+  echo "This Docker image provides a small compatibility shim for: conda run -n ucagent <command>" >&2
+  exit 2
+fi
+
+shift
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    -n|--name)
+      if [[ "${2:-}" != "ucagent" ]]; then
+        echo "Only the ucagent environment is available in this image." >&2
+        exit 2
+      fi
+      shift 2
+      ;;
+    --no-capture-output)
+      shift
+      ;;
+    --*)
+      shift
+      ;;
+    *)
+      break
+      ;;
+  esac
+done
+
+if [[ $# -eq 0 ]]; then
+  echo "Missing command after conda run -n ucagent." >&2
+  exit 2
+fi
+
+exec "$@"

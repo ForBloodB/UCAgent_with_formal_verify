@@ -1,98 +1,77 @@
 # UCAgent with Formal Verify
 
-面向 Verilog/SystemVerilog 与 NutShell Cache 的可复现验证工程。项目的核心创新是把 SymbiYosys 形式验证封装成 UCAgent 可调用的通用 skill，让 agent 在原有 Picker/Toffee 动态验证流程之前，先具备“自动搜索 bounded counterexample”的能力。
+把形式验证作为 UCAgent 的一个通用工具接入硬件验证流程。本项目的重点不是重新实现 UCAgent、Picker 或 Toffee，而是提供一个可复现的最小工程：UCAgent 可以先调用 `generic-formal` skill 做 bounded formal diagnosis，发现反例后继续运行原本的 Picker/Toffee/pytest 动态验证。
 
-## 特性
+## 项目重点
 
-- 通用 Verilog formal 入口：任意可被 Yosys/Verilator 解析的 RTL 都可进入 smoke 或用户自定义 property 验证。
-- UCAgent skill：`src/ucagent_skills/generic-formal`，兼容官方 UCAgent `ListSkill -> ReadTextFile -> RunSkillScript -> SetSkillUsage` 流程。
-- 五个可复现案例：01 通用能力证明，02/03 真实 NutShell 历史 bug，04 latest candidate bug，05 latest-only UCAgent + formal skill 覆盖闭环。
-- 04 提供动态 VCD/FST 与波形截图；05 声明的 15 个 latest Cache functional coverage points 达到 15/15。
+- `generic-formal` 是通用 skill：任意可被 Yosys/SymbiYosys 处理的 Verilog/SystemVerilog 模块，都可以通过 YAML 描述 RTL、top、depth、期望结果和报告路径。
+- 形式验证不替代动态仿真：它用于快速暴露窄窗口协议问题；Toffee/pytest 用于把场景固化为可维护回归。
+- Docker 是推荐复现方式：镜像内包含 UCAgent、Picker、Toffee、Yosys、SymbiYosys、Z3、Verilator、Icarus Verilog、Mill/Java。
+- 01 是通用能力证明；02/03 是 NutShell 历史真实问题；04 是 latest NutShell Cache ready/valid candidate；05 是 latest-only 覆盖闭环和 UCAgent bug hypothesis 人工复查。
 
-## 目录结构
+## 目录
 
 ```text
-src/                         通用验证工具、UCAgent skill、runner helper
-tests/cases/                 01-05 可复现案例
-tests/ucagent_workspaces/    UCAgent 官方 workspace
-scripts/                     公开入口脚本
-scripts/internal/            案例内部脚本
-docs/                        用户文档与比赛报告
-reports/                     本轮本地复现结果
-docker/                      formal Dockerfile
+src/                         通用 formal runner、UCAgent skill、helper
+tests/cases/                 01-05 复现案例
+tests/ucagent_workspaces/    UCAgent workspace
+scripts/                     公开入口与内部复现脚本
+docker/                      一键复现镜像
+reports/                     轻量结果与波形证据
 ```
 
-## 环境构建
+## 构建环境
 
-准备官方依赖源码：
+默认构建不使用 Docker layer cache，适合模拟别人从零复现：
 
 ```bash
-bash scripts/setup_sources.sh
+bash scripts/docker_build.sh
 ```
 
-配置 UCAgent API：
+快速检查镜像和项目 smoke：
+
+```bash
+bash scripts/docker_smoke.sh
+```
+
+如需在容器中运行任意命令：
+
+```bash
+bash scripts/docker_run.sh bash scripts/run_cases.sh --case 01 --with-formal --smoke
+```
+
+开发 Dockerfile 时才建议显式启用缓存：
+
+```bash
+UCAGENT_FORMAL_DOCKER_CACHE=1 bash scripts/docker_build.sh
+```
+
+## 复现案例
+
+本地 smoke 不调用 API：
+
+```bash
+bash scripts/docker_run.sh bash scripts/run_cases.sh --case all --with-formal --smoke
+```
+
+单独复现某个案例：
+
+```bash
+bash scripts/docker_run.sh bash scripts/run_cases.sh --case 01 --with-formal --smoke
+bash scripts/docker_run.sh bash scripts/run_cases.sh --case 02 --with-formal --smoke
+bash scripts/docker_run.sh bash scripts/run_cases.sh --case 03 --with-formal --smoke
+bash scripts/docker_run.sh bash scripts/run_cases.sh --case 04 --with-formal --smoke
+bash scripts/docker_run.sh bash scripts/run_cases.sh --case 05 --with-formal --smoke
+```
+
+正式 UCAgent API 流程需要配置 `.ucagent_env`：
 
 ```bash
 cp .ucagent_env.example .ucagent_env
 vim .ucagent_env
-source .ucagent_env
-```
 
-检查工具链：
-
-```bash
-yosys -V
-verilator --version
-conda run -n ucagent python -c "import ucagent, toffee, toffee_test"
-```
-
-构建 formal Docker fallback：
-
-```bash
-docker build -f docker/formal.Dockerfile -t nutshell-cache-formal:latest .
-```
-
-## 验证任意 Verilog 模块
-
-只做本地 smoke，不调用 API：
-
-```bash
-bash scripts/verify_verilog.sh \
-  --rtl path/to/dut.sv \
-  --top MyDut \
-  --depth 8 \
-  --smoke
-```
-
-使用用户提供的 formal harness/property：
-
-```bash
-bash scripts/verify_verilog.sh \
-  --rtl path/to/dut.sv \
-  --property path/to/my_property.sv \
-  --top my_formal_top \
-  --depth 32 \
-  --smoke
-```
-
-说明：basic smoke 只能证明 RTL 能进入工具链；功能正确性需要 property、reference model 或人工确认后的 harness。
-
-## 复现 01-05
-
-本地 smoke，不调用 API：
-
-```bash
-bash scripts/run_cases.sh --case all --with-formal --smoke
-```
-
-正式 UCAgent API 流程：
-
-```bash
-source .ucagent_env
-bash scripts/run_cases.sh --case 02 --with-formal
-bash scripts/run_cases.sh --case 03 --with-formal
-bash scripts/run_cases.sh --case 04 --with-formal
-bash scripts/run_cases.sh --case 05
+bash scripts/docker_run.sh bash scripts/run_cases.sh --case 04 --with-formal
+bash scripts/docker_run.sh bash scripts/run_cases.sh --case 05
 ```
 
 参数：
@@ -100,31 +79,62 @@ bash scripts/run_cases.sh --case 05
 ```text
 --case all|01|02|03|04|05
 --with-formal    默认，运行 formal/skill 路径
---no-formal      动态 Toffee 路径；05 不支持该模式
+--no-formal      运行动态 Toffee 路径；05 不支持该模式
 --smoke          不调用 LLM/API
 ```
 
-## 本地复现结果
+## 案例说明
 
-| Case | 定位 | 本轮结果 |
+| Case | 目的 | 预期结果 |
 | --- | --- | --- |
-| 01 | 通用 formal skill 能力证明 | buggy `FAIL`，fixed `PASS` |
-| 02 | NutShell PR21 历史 bug | pre `FAIL`，fixed `PASS`，UCAgent 调用 `generic-formal` |
-| 03 | NutShell PR74 历史接口 bug | pre `ELAB_FAIL/ERROR`，fixed `PASS`，UCAgent 调用 `generic-formal` |
-| 04 | latest L2 readBurst ready/valid candidate bug | formal assert `FAIL`，cover `PASS`，Toffee `DYNAMIC_REPRODUCED`，场景覆盖 `5/5` |
-| 05 | latest-only formal-enabled UCAgent 覆盖闭环 | 15/15 declared functional coverage，latest candidate bug 汇总 |
+| 01 | 通用 formal skill 证明 | buggy adder `FAIL`，fixed adder `PASS` |
+| 02 | NutShell PR21 历史 MMIO prefetch 问题 | pre `FAIL`，fixed `PASS` |
+| 03 | NutShell PR74 CacheIO idBits/interface 问题 | pre elaboration `FAIL/ERROR`，fixed `PASS` |
+| 04 | latest L2 readBurst ready/valid candidate | formal assert `FAIL`，cover `PASS`，动态场景可复现 |
+| 05 | latest-only UCAgent + formal skill 覆盖闭环 | 15/15 declared functional coverage；UCAgent hypothesis 经过人工 Verilog 波形复查 |
 
-05 的 `100%` 只表示本仓库声明的 15 个 latest NutShell Cache functional coverage points 全部闭合，不代表完整 NutShell SoC 或 RTL line/toggle 覆盖率 100%。
+05 的 `100%` 只表示本仓库声明的 15 个 latest NutShell Cache functional coverage points 全部闭合，不代表完整 SoC 或 RTL line/toggle coverage 100%。
 
-## 报告入口
+## 任意 Verilog 模块
 
-- [比赛提交报告](docs/competition_report.md)
-- [形式验证与 UCAgent 集成说明](docs/formal_ucagent_integration.md)
-- [添加新的 Verilog/SystemVerilog 模块](docs/adding_new_verilog_module.md)
-- [本轮复现总览](reports/00_overview.md)
-- [04 latest candidate bug 报告](reports/04_l2_readburst.md)
-- [05 latest coverage 报告](reports/05_full_cache_coverage_plan.md)
-- [05 latest 可疑 bug 汇总](reports/05_ucagent_bug_candidates.md)
+只做工具链 smoke：
+
+```bash
+bash scripts/docker_run.sh bash scripts/verify_verilog.sh \
+  --rtl path/to/dut.sv \
+  --top MyDut \
+  --depth 8 \
+  --smoke
+```
+
+带用户自定义 property/harness：
+
+```bash
+bash scripts/docker_run.sh bash scripts/verify_verilog.sh \
+  --rtl path/to/dut.sv \
+  --property path/to/property.sv \
+  --top MyFormalTop \
+  --depth 32 \
+  --smoke
+```
+
+边界：basic smoke 只能证明 RTL 能进入 formal 工具链；功能正确性仍需要 property、reference model、scoreboard 或人工确认后的 harness。
+
+## 关键报告
+
+- `reports/04_l2_readburst.md`
+- `reports/assets/04_l2_readburst_ready_valid_waveform.png`
+- `reports/05_full_cache_coverage_plan.md`
+- `reports/05_ucagent_bug_candidates.md`
+- `reports/05_manual_verilog_validation.md`
+
+## 清理本地生成物
+
+```bash
+bash scripts/clean_local_env.sh
+```
+
+该脚本只清理本仓库内的 `third_party/`、venv、formal run dir、UCAgent cache 和动态二进制，不会删除全局 conda、系统工具或 `.ucagent_env`。
 
 ## License
 

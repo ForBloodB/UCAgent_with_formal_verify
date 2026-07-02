@@ -37,33 +37,15 @@ tests/ucagent_workspaces/*/reports/
 
 # Large or reproducible run artifacts. Keep lightweight evidence summaries.
 reports/artifacts/*
-!reports/artifacts/02_pr21/
-reports/artifacts/02_pr21/*
-!reports/artifacts/02_pr21/ucagent_formal/
-reports/artifacts/02_pr21/ucagent_formal/*
-!reports/artifacts/02_pr21/ucagent_formal/token_usage.md
-!reports/artifacts/03_pr74/
-reports/artifacts/03_pr74/*
-!reports/artifacts/03_pr74/ucagent_formal/
-reports/artifacts/03_pr74/ucagent_formal/*
-!reports/artifacts/03_pr74/ucagent_formal/token_usage.md
 !reports/artifacts/04_l2_readburst/
 reports/artifacts/04_l2_readburst/*
 !reports/artifacts/04_l2_readburst/dynamic_readburst_ready_deadlock.md
-!reports/artifacts/04_l2_readburst/*token_usage.md
-!reports/artifacts/04_l2_readburst/toffee/
-reports/artifacts/04_l2_readburst/toffee/*
-!reports/artifacts/04_l2_readburst/toffee/coverage_summary.json
 !reports/artifacts/05_full_cache_coverage_plan/
 reports/artifacts/05_full_cache_coverage_plan/*
 !reports/artifacts/05_full_cache_coverage_plan/coverage_plan_summary.json
 !reports/artifacts/05_full_cache_coverage_plan/bug_candidates.json
 !reports/artifacts/05_full_cache_coverage_plan/manual_hypothesis_probe.log
 !reports/artifacts/05_full_cache_coverage_plan/manual_hypothesis_probe.vcd
-!reports/artifacts/05_full_cache_coverage_plan/toffee_ucagent/
-reports/artifacts/05_full_cache_coverage_plan/toffee_ucagent/*
-!reports/artifacts/05_full_cache_coverage_plan/toffee_ucagent/token_usage.md
-!reports/artifacts/05_full_cache_coverage_plan/toffee_ucagent/token_usage_with_formal.md
 
 # Generic user-run Verilog verification outputs. Keep Markdown summaries only.
 reports/generic_verilog/**
